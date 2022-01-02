@@ -1,0 +1,18 @@
+{
+    "name": "go",
+    "dockerComposeFile": [
+        "../docker-compose.yml"
+    ],
+    "service": "go",
+    "workspaceFolder": "/app",
+    "extensions": [
+        "apollographql.vscode-apollo",
+        "golang.go",
+    ],
+    "shutdownAction": "stopCompose",
+    "settings": {
+        "files.insertFinalNewline": true,
+        "files.trimFinalNewlines": true,
+        "files.trimTrailingWhitespace": true,
+    }
+}
