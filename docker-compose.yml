@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: '.devcontainer/Dockerfile'
-      target: dev
+      # target: dev
     command: sleep infinity
     env_file: .env
     volumes:
