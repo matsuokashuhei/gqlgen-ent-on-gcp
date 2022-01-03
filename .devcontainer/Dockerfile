@@ -39,4 +39,14 @@
 # ENTRYPOINT ["/usr/local/bin/todo"]
 
 FROM golang:1.17-buster AS base
-WORKDIR /app
+WORKDIR /go/src/app
+
+ENV GO111MODULE="on"
+ENV GOOS="linux"
+ENV CGO_ENABLED=0
+RUN go get golang.org/x/tools/gopls
+
+
+COPY go.mod go.sum .
+RUN go mod download
+COPY . .

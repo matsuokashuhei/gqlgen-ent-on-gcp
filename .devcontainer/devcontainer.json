@@ -4,7 +4,7 @@
         "../docker-compose.yml"
     ],
     "service": "go",
-    "workspaceFolder": "/app",
+    "workspaceFolder": "/go/src/app",
     "extensions": [
         "apollographql.vscode-apollo",
         "golang.go",

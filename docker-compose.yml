@@ -9,7 +9,7 @@ services:
     command: sleep infinity
     env_file: .env
     volumes:
-      - .:/app
+      - .:/go/src/app
       - go-extensions:/root/.vscode-server/extensions
     ports:
       - "3000:3000"
