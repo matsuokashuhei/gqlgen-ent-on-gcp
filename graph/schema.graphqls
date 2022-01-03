@@ -9,14 +9,12 @@ type School {
   updated_at: String!
 }
 
-type Query {
-  schools: [School]!
-}
-
 input NewSchool {
   name: String!
 }
 
-type Mutation {
-  createSchool(input: NewSchool!): School!
+type Query {
+  schools: [School]!
 }
+
+scalar Time

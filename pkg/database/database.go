@@ -11,7 +11,7 @@ import (
 func Connect() (*gorm.DB, error) {
 	var err error
 	// https://gorm.io/docs/connecting_to_the_database.html
-	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s", config.Config("MYSQL_USER"), config.Config("MYSQL_PASSWORD"),config.Config("MYSQL_HOST"), config.Config("MYSQL_DATABASE"))
+	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?parseTime=True", config.Config("MYSQL_USER"), config.Config("MYSQL_PASSWORD"), config.Config("MYSQL_HOST"), config.Config("MYSQL_DATABASE"))
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		fmt.Println(err.Error())

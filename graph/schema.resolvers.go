@@ -5,44 +5,31 @@ package graph
 
 import (
 	"context"
-	"fmt"
+	"strconv"
+	"time"
 
 	"github.com/matsuokashuhei/landin/graph/generated"
-	"github.com/matsuokashuhei/landin/graph/model"
 	"github.com/matsuokashuhei/landin/internal/models"
 	"github.com/matsuokashuhei/landin/internal/repositories"
 )
 
-func (r *mutationResolver) CreateSchool(ctx context.Context, input model.NewSchool) (*models.School, error) {
+func (r *queryResolver) Schools(ctx context.Context) ([]*models.School, error) {
 	repository := repositories.NewSchoolRepository(r.DB)
-	data := new(models.School)
-	school, err := repository.Create(*data)
-	if err != nil {
-		panic(fmt.Errorf("not implemented"))
-	}
-	return &school, nil
-}
-
-func (r *queryResolver) Schools(ctx context.Context) ([]models.School, error) {
-	repository := repositories.NewSchoolRepository(r.DB)
-	var schools []models.School = repository.FindAll()
+	var schools []*models.School = repository.FindAll()
 	return schools, nil
 }
 
 func (r *schoolResolver) ID(ctx context.Context, obj *models.School) (string, error) {
-	panic(fmt.Errorf("not implemented"))
+	return strconv.Itoa((int(obj.ID))), nil
 }
 
 func (r *schoolResolver) CreatedAt(ctx context.Context, obj *models.School) (string, error) {
-	panic(fmt.Errorf("not implemented"))
+	return obj.CreatedAt.Format(time.RFC3339), nil
 }
 
 func (r *schoolResolver) UpdatedAt(ctx context.Context, obj *models.School) (string, error) {
-	panic(fmt.Errorf("not implemented"))
+	return obj.UpdatedAt.Format(time.RFC3339), nil
 }
-
-// Mutation returns generated.MutationResolver implementation.
-func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
 
 // Query returns generated.QueryResolver implementation.
 func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
@@ -50,6 +37,13 @@ func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 // School returns generated.SchoolResolver implementation.
 func (r *Resolver) School() generated.SchoolResolver { return &schoolResolver{r} }
 
-type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
 type schoolResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//    it when you're done.
+//  - You have helper methods in this file. Move them out to keep these resolver files clean.
+type mutationResolver struct{ *Resolver }

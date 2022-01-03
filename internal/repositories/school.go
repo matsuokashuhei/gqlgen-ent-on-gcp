@@ -9,8 +9,8 @@ type SchoolRepository struct {
 	database *gorm.DB
 }
 
-func (repository *SchoolRepository) FindAll() []models.School {
-	var schools []models.School
+func (repository *SchoolRepository) FindAll() []*models.School {
+	var schools []*models.School
 	repository.database.Find(&schools)
 	return schools
 }
