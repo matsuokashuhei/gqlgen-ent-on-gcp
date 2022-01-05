@@ -46,7 +46,9 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Mutation struct {
-		CreateSchool func(childComplexity int, input model.NewSchool) int
+		CreateSchool func(childComplexity int, input model.SchoolInput) int
+		DeleteSchool func(childComplexity int, id string) int
+		UpdateSchool func(childComplexity int, id string, input model.SchoolInput) int
 	}
 
 	Query struct {
@@ -62,7 +64,9 @@ type ComplexityRoot struct {
 }
 
 type MutationResolver interface {
-	CreateSchool(ctx context.Context, input model.NewSchool) (*models.School, error)
+	CreateSchool(ctx context.Context, input model.SchoolInput) (*models.School, error)
+	UpdateSchool(ctx context.Context, id string, input model.SchoolInput) (*models.School, error)
+	DeleteSchool(ctx context.Context, id string) (*models.School, error)
 }
 type QueryResolver interface {
 	Schools(ctx context.Context) ([]*models.School, error)
@@ -99,7 +103,31 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateSchool(childComplexity, args["input"].(model.NewSchool)), true
+		return e.complexity.Mutation.CreateSchool(childComplexity, args["input"].(model.SchoolInput)), true
+
+	case "Mutation.deleteSchool":
+		if e.complexity.Mutation.DeleteSchool == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteSchool_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteSchool(childComplexity, args["id"].(string)), true
+
+	case "Mutation.updateSchool":
+		if e.complexity.Mutation.UpdateSchool == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateSchool_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateSchool(childComplexity, args["id"].(string), args["input"].(model.SchoolInput)), true
 
 	case "Query.schools":
 		if e.complexity.Query.Schools == nil {
@@ -211,7 +239,7 @@ type School {
   updated_at: String!
 }
 
-input NewSchool {
+input SchoolInput {
   name: String!
 }
 
@@ -220,7 +248,9 @@ type Query {
 }
 
 type Mutation {
-  createSchool(input: NewSchool!): School!
+  createSchool(input: SchoolInput!): School!
+  updateSchool(id: ID!, input: SchoolInput!): School!
+  deleteSchool(id: ID!): School!
 }
 `, BuiltIn: false},
 }
@@ -233,15 +263,54 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 func (ec *executionContext) field_Mutation_createSchool_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.NewSchool
+	var arg0 model.SchoolInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNNewSchool2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐNewSchool(ctx, tmp)
+		arg0, err = ec.unmarshalNSchoolInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐSchoolInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
 	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_deleteSchool_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateSchool_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	var arg1 model.SchoolInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg1, err = ec.unmarshalNSchoolInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐSchoolInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg1
 	return args, nil
 }
 
@@ -323,7 +392,91 @@ func (ec *executionContext) _Mutation_createSchool(ctx context.Context, field gr
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateSchool(rctx, args["input"].(model.NewSchool))
+		return ec.resolvers.Mutation().CreateSchool(rctx, args["input"].(model.SchoolInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.School)
+	fc.Result = res
+	return ec.marshalNSchool2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐSchool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_updateSchool(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_updateSchool_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateSchool(rctx, args["id"].(string), args["input"].(model.SchoolInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.School)
+	fc.Result = res
+	return ec.marshalNSchool2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐSchool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_deleteSchool(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_deleteSchool_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteSchool(rctx, args["id"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1708,8 +1861,8 @@ func (ec *executionContext) ___Type_ofType(ctx context.Context, field graphql.Co
 
 // region    **************************** input.gotpl *****************************
 
-func (ec *executionContext) unmarshalInputNewSchool(ctx context.Context, obj interface{}) (model.NewSchool, error) {
-	var it model.NewSchool
+func (ec *executionContext) unmarshalInputSchoolInput(ctx context.Context, obj interface{}) (model.SchoolInput, error) {
+	var it model.SchoolInput
 	asMap := map[string]interface{}{}
 	for k, v := range obj.(map[string]interface{}) {
 		asMap[k] = v
@@ -1756,6 +1909,16 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			out.Values[i] = graphql.MarshalString("Mutation")
 		case "createSchool":
 			out.Values[i] = ec._Mutation_createSchool(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "updateSchool":
+			out.Values[i] = ec._Mutation_updateSchool(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "deleteSchool":
+			out.Values[i] = ec._Mutation_deleteSchool(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -2163,11 +2326,6 @@ func (ec *executionContext) marshalNID2string(ctx context.Context, sel ast.Selec
 	return res
 }
 
-func (ec *executionContext) unmarshalNNewSchool2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐNewSchool(ctx context.Context, v interface{}) (model.NewSchool, error) {
-	res, err := ec.unmarshalInputNewSchool(ctx, v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
 func (ec *executionContext) marshalNSchool2githubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐSchool(ctx context.Context, sel ast.SelectionSet, v models.School) graphql.Marshaler {
 	return ec._School(ctx, sel, &v)
 }
@@ -2218,6 +2376,11 @@ func (ec *executionContext) marshalNSchool2ᚖgithubᚗcomᚋmatsuokashuheiᚋla
 		return graphql.Null
 	}
 	return ec._School(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNSchoolInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐSchoolInput(ctx context.Context, v interface{}) (model.SchoolInput, error) {
+	res, err := ec.unmarshalInputSchoolInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {

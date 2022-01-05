@@ -2,6 +2,6 @@
 
 package model
 
-type NewSchool struct {
+type SchoolInput struct {
 	Name string `json:"name"`
 }

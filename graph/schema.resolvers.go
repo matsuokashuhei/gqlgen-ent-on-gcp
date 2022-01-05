@@ -14,7 +14,7 @@ import (
 	"github.com/matsuokashuhei/landin/internal/repositories"
 )
 
-func (r *mutationResolver) CreateSchool(ctx context.Context, input model.NewSchool) (*models.School, error) {
+func (r *mutationResolver) CreateSchool(ctx context.Context, input model.SchoolInput) (*models.School, error) {
 	repository := repositories.NewSchoolRepository(r.DB)
 	school := &models.School{
 		Name: input.Name,
@@ -26,9 +26,47 @@ func (r *mutationResolver) CreateSchool(ctx context.Context, input model.NewScho
 	return school, nil
 }
 
+func (r *mutationResolver) UpdateSchool(ctx context.Context, id string, input model.SchoolInput) (*models.School, error) {
+	repository := repositories.NewSchoolRepository(r.DB)
+	_id, err := strconv.Atoi(id)
+	if err != nil {
+		return nil, err
+	}
+	school, err := repository.Find(_id)
+	if err != nil {
+		return nil, err
+	}
+	school.Name = input.Name
+	repository.Update(school)
+	return school, nil
+}
+
+func (r *mutationResolver) DeleteSchool(ctx context.Context, id string) (*models.School, error) {
+	repository := repositories.NewSchoolRepository(r.DB)
+	_id, err := strconv.Atoi(id)
+	if err != nil {
+		return nil, err
+	}
+	school, err := repository.Find(_id)
+	if err != nil {
+		return nil, err
+	}
+	x, err := repository.Delete(school)
+	if err != nil {
+		return nil, err
+	} else {
+		_ = x
+		return school, nil
+	}
+}
+
 func (r *queryResolver) Schools(ctx context.Context) ([]*models.School, error) {
 	repository := repositories.NewSchoolRepository(r.DB)
-	var schools []*models.School = repository.FindAll()
+	// var schools []*models.School, err = repository.FindAll()
+	schools, err := repository.FindAll()
+	if err != nil {
+		return nil, err
+	}
 	return schools, nil
 }
 

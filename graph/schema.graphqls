@@ -9,7 +9,7 @@ type School {
   updated_at: String!
 }
 
-input NewSchool {
+input SchoolInput {
   name: String!
 }
 
@@ -18,5 +18,7 @@ type Query {
 }
 
 type Mutation {
-  createSchool(input: NewSchool!): School!
+  createSchool(input: SchoolInput!): School!
+  updateSchool(id: ID!, input: SchoolInput!): School!
+  deleteSchool(id: ID!): School!
 }
