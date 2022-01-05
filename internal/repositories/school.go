@@ -15,10 +15,10 @@ func (repository *SchoolRepository) FindAll() []*models.School {
 	return schools
 }
 
-func (repository *SchoolRepository) Create(school models.School) (models.School, error) {
+func (repository *SchoolRepository) Create(school *models.School) (*models.School, error) {
 	err := repository.database.Create(&school).Error
 	if err != nil {
-		return school, err
+		return nil, err
 	}
 	return school, nil
 }

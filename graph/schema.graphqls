@@ -17,4 +17,6 @@ type Query {
   schools: [School]!
 }
 
-scalar Time
+type Mutation {
+  createSchool(input: NewSchool!): School!
+}
