@@ -1,0 +1,28 @@
+# GraphQL schema example
+#
+# https://gqlgen.com/getting-started/
+
+type Studio {
+  id: ID!
+  name: String!
+  school: School!
+  rooms: [Room]!
+  created_at: String!
+  updated_at: String!
+}
+
+input StudioInput {
+  name: String!
+  schoolID: ID!
+}
+
+extend type Query {
+  studio(id: ID!): Studio!
+  studios: [Studio]!
+}
+
+extend type Mutation {
+  createStudio(input: StudioInput!): Studio!
+  updateStudio(id: ID!, input: StudioInput!): Studio!
+  deleteStudio(id: ID!): Studio!
+}

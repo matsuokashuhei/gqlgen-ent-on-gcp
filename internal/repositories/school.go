@@ -43,8 +43,9 @@ func (repsitory *SchoolRepository) Update(school *models.School) (*models.School
 	return school, nil
 }
 
-func (repsitory *SchoolRepository) Delete(school *models.School) (*models.School, error) {
-	err := repsitory.database.Delete(school, school.ID).Error
+func (repsitory *SchoolRepository) Delete(id int) (*models.School, error) {
+	var school *models.School
+	err := repsitory.database.Delete(&school, id).Error
 	if err != nil {
 		return nil, err
 	}

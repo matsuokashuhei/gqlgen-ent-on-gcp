@@ -2,6 +2,15 @@
 
 package model
 
+type RoomInput struct {
+	Name string `json:"name"`
+}
+
 type SchoolInput struct {
 	Name string `json:"name"`
+}
+
+type StudioInput struct {
+	Name     string `json:"name"`
+	SchoolID int    `json:"schoolID"`
 }

@@ -38,7 +38,9 @@ type Config struct {
 type ResolverRoot interface {
 	Mutation() MutationResolver
 	Query() QueryResolver
+	Room() RoomResolver
 	School() SchoolResolver
+	Studio() StudioResolver
 }
 
 type DirectiveRoot struct {
@@ -46,36 +48,92 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Mutation struct {
+		CreateRoom   func(childComplexity int, input model.RoomInput) int
 		CreateSchool func(childComplexity int, input model.SchoolInput) int
-		DeleteSchool func(childComplexity int, id string) int
-		UpdateSchool func(childComplexity int, id string, input model.SchoolInput) int
+		CreateStudio func(childComplexity int, input model.StudioInput) int
+		DeleteRoom   func(childComplexity int, id int) int
+		DeleteSchool func(childComplexity int, id int) int
+		DeleteStudio func(childComplexity int, id int) int
+		UpdateRoom   func(childComplexity int, id int, input model.RoomInput) int
+		UpdateSchool func(childComplexity int, id int, input model.SchoolInput) int
+		UpdateStudio func(childComplexity int, id int, input model.StudioInput) int
 	}
 
 	Query struct {
+		Room    func(childComplexity int, id int) int
+		Rooms   func(childComplexity int) int
+		School  func(childComplexity int, id int) int
 		Schools func(childComplexity int) int
+		Studio  func(childComplexity int, id int) int
+		Studios func(childComplexity int) int
+	}
+
+	Room struct {
+		CreatedAt func(childComplexity int) int
+		ID        func(childComplexity int) int
+		Name      func(childComplexity int) int
+		Studio    func(childComplexity int) int
+		UpdatedAt func(childComplexity int) int
 	}
 
 	School struct {
 		CreatedAt func(childComplexity int) int
 		ID        func(childComplexity int) int
 		Name      func(childComplexity int) int
+		Studios   func(childComplexity int) int
+		UpdatedAt func(childComplexity int) int
+	}
+
+	Studio struct {
+		CreatedAt func(childComplexity int) int
+		ID        func(childComplexity int) int
+		Name      func(childComplexity int) int
+		Rooms     func(childComplexity int) int
+		School    func(childComplexity int) int
 		UpdatedAt func(childComplexity int) int
 	}
 }
 
 type MutationResolver interface {
+	CreateRoom(ctx context.Context, input model.RoomInput) (*models.Room, error)
+	UpdateRoom(ctx context.Context, id int, input model.RoomInput) (*models.Room, error)
+	DeleteRoom(ctx context.Context, id int) (*models.Room, error)
 	CreateSchool(ctx context.Context, input model.SchoolInput) (*models.School, error)
-	UpdateSchool(ctx context.Context, id string, input model.SchoolInput) (*models.School, error)
-	DeleteSchool(ctx context.Context, id string) (*models.School, error)
+	UpdateSchool(ctx context.Context, id int, input model.SchoolInput) (*models.School, error)
+	DeleteSchool(ctx context.Context, id int) (*models.School, error)
+	CreateStudio(ctx context.Context, input model.StudioInput) (*models.Studio, error)
+	UpdateStudio(ctx context.Context, id int, input model.StudioInput) (*models.Studio, error)
+	DeleteStudio(ctx context.Context, id int) (*models.Studio, error)
 }
 type QueryResolver interface {
+	Room(ctx context.Context, id int) (*models.Room, error)
+	Rooms(ctx context.Context) ([]*models.Room, error)
+	School(ctx context.Context, id int) (*models.School, error)
 	Schools(ctx context.Context) ([]*models.School, error)
+	Studio(ctx context.Context, id int) (*models.Studio, error)
+	Studios(ctx context.Context) ([]*models.Studio, error)
+}
+type RoomResolver interface {
+	ID(ctx context.Context, obj *models.Room) (int, error)
+
+	Studio(ctx context.Context, obj *models.Room) (*models.Studio, error)
+	CreatedAt(ctx context.Context, obj *models.Room) (string, error)
+	UpdatedAt(ctx context.Context, obj *models.Room) (string, error)
 }
 type SchoolResolver interface {
-	ID(ctx context.Context, obj *models.School) (string, error)
+	ID(ctx context.Context, obj *models.School) (int, error)
 
+	Studios(ctx context.Context, obj *models.School) ([]*models.Studio, error)
 	CreatedAt(ctx context.Context, obj *models.School) (string, error)
 	UpdatedAt(ctx context.Context, obj *models.School) (string, error)
+}
+type StudioResolver interface {
+	ID(ctx context.Context, obj *models.Studio) (int, error)
+
+	School(ctx context.Context, obj *models.Studio) (*models.School, error)
+	Rooms(ctx context.Context, obj *models.Studio) ([]*models.Room, error)
+	CreatedAt(ctx context.Context, obj *models.Studio) (string, error)
+	UpdatedAt(ctx context.Context, obj *models.Studio) (string, error)
 }
 
 type executableSchema struct {
@@ -93,6 +151,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	_ = ec
 	switch typeName + "." + field {
 
+	case "Mutation.createRoom":
+		if e.complexity.Mutation.CreateRoom == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createRoom_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateRoom(childComplexity, args["input"].(model.RoomInput)), true
+
 	case "Mutation.createSchool":
 		if e.complexity.Mutation.CreateSchool == nil {
 			break
@@ -105,6 +175,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CreateSchool(childComplexity, args["input"].(model.SchoolInput)), true
 
+	case "Mutation.createStudio":
+		if e.complexity.Mutation.CreateStudio == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createStudio_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateStudio(childComplexity, args["input"].(model.StudioInput)), true
+
+	case "Mutation.deleteRoom":
+		if e.complexity.Mutation.DeleteRoom == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteRoom_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteRoom(childComplexity, args["id"].(int)), true
+
 	case "Mutation.deleteSchool":
 		if e.complexity.Mutation.DeleteSchool == nil {
 			break
@@ -115,7 +209,31 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.DeleteSchool(childComplexity, args["id"].(string)), true
+		return e.complexity.Mutation.DeleteSchool(childComplexity, args["id"].(int)), true
+
+	case "Mutation.deleteStudio":
+		if e.complexity.Mutation.DeleteStudio == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteStudio_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteStudio(childComplexity, args["id"].(int)), true
+
+	case "Mutation.updateRoom":
+		if e.complexity.Mutation.UpdateRoom == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateRoom_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateRoom(childComplexity, args["id"].(int), args["input"].(model.RoomInput)), true
 
 	case "Mutation.updateSchool":
 		if e.complexity.Mutation.UpdateSchool == nil {
@@ -127,7 +245,50 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateSchool(childComplexity, args["id"].(string), args["input"].(model.SchoolInput)), true
+		return e.complexity.Mutation.UpdateSchool(childComplexity, args["id"].(int), args["input"].(model.SchoolInput)), true
+
+	case "Mutation.updateStudio":
+		if e.complexity.Mutation.UpdateStudio == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateStudio_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateStudio(childComplexity, args["id"].(int), args["input"].(model.StudioInput)), true
+
+	case "Query.room":
+		if e.complexity.Query.Room == nil {
+			break
+		}
+
+		args, err := ec.field_Query_room_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Room(childComplexity, args["id"].(int)), true
+
+	case "Query.rooms":
+		if e.complexity.Query.Rooms == nil {
+			break
+		}
+
+		return e.complexity.Query.Rooms(childComplexity), true
+
+	case "Query.school":
+		if e.complexity.Query.School == nil {
+			break
+		}
+
+		args, err := ec.field_Query_school_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.School(childComplexity, args["id"].(int)), true
 
 	case "Query.schools":
 		if e.complexity.Query.Schools == nil {
@@ -135,6 +296,60 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.Schools(childComplexity), true
+
+	case "Query.studio":
+		if e.complexity.Query.Studio == nil {
+			break
+		}
+
+		args, err := ec.field_Query_studio_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Studio(childComplexity, args["id"].(int)), true
+
+	case "Query.studios":
+		if e.complexity.Query.Studios == nil {
+			break
+		}
+
+		return e.complexity.Query.Studios(childComplexity), true
+
+	case "Room.created_at":
+		if e.complexity.Room.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Room.CreatedAt(childComplexity), true
+
+	case "Room.id":
+		if e.complexity.Room.ID == nil {
+			break
+		}
+
+		return e.complexity.Room.ID(childComplexity), true
+
+	case "Room.name":
+		if e.complexity.Room.Name == nil {
+			break
+		}
+
+		return e.complexity.Room.Name(childComplexity), true
+
+	case "Room.studio":
+		if e.complexity.Room.Studio == nil {
+			break
+		}
+
+		return e.complexity.Room.Studio(childComplexity), true
+
+	case "Room.updated_at":
+		if e.complexity.Room.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.Room.UpdatedAt(childComplexity), true
 
 	case "School.created_at":
 		if e.complexity.School.CreatedAt == nil {
@@ -157,12 +372,61 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.School.Name(childComplexity), true
 
+	case "School.studios":
+		if e.complexity.School.Studios == nil {
+			break
+		}
+
+		return e.complexity.School.Studios(childComplexity), true
+
 	case "School.updated_at":
 		if e.complexity.School.UpdatedAt == nil {
 			break
 		}
 
 		return e.complexity.School.UpdatedAt(childComplexity), true
+
+	case "Studio.created_at":
+		if e.complexity.Studio.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Studio.CreatedAt(childComplexity), true
+
+	case "Studio.id":
+		if e.complexity.Studio.ID == nil {
+			break
+		}
+
+		return e.complexity.Studio.ID(childComplexity), true
+
+	case "Studio.name":
+		if e.complexity.Studio.Name == nil {
+			break
+		}
+
+		return e.complexity.Studio.Name(childComplexity), true
+
+	case "Studio.rooms":
+		if e.complexity.Studio.Rooms == nil {
+			break
+		}
+
+		return e.complexity.Studio.Rooms(childComplexity), true
+
+	case "Studio.school":
+		if e.complexity.Studio.School == nil {
+			break
+		}
+
+		return e.complexity.Studio.School(childComplexity), true
+
+	case "Studio.updated_at":
+		if e.complexity.Studio.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.Studio.UpdatedAt(childComplexity), true
 
 	}
 	return 0, false
@@ -228,13 +492,41 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
-	{Name: "graph/schema.graphqls", Input: `# GraphQL schema example
+	{Name: "graph/schema/room.graphql", Input: `# GraphQL schema example
+#
+# https://gqlgen.com/getting-started/
+
+type Room {
+  id: ID!
+  name: String!
+  studio: Studio!
+  created_at: String!
+  updated_at: String!
+}
+
+input RoomInput {
+  name: String!
+}
+
+extend type Query {
+  room(id: ID!): Room!
+  rooms: [Room]!
+}
+
+extend type Mutation {
+  createRoom(input: RoomInput!): Room!
+  updateRoom(id: ID!, input: RoomInput!): Room!
+  deleteRoom(id: ID!): Room!
+}
+`, BuiltIn: false},
+	{Name: "graph/schema/school.graphql", Input: `# GraphQL schema example
 #
 # https://gqlgen.com/getting-started/
 
 type School {
   id: ID!
   name: String!
+  studios: [Studio]!
   created_at: String!
   updated_at: String!
 }
@@ -243,14 +535,44 @@ input SchoolInput {
   name: String!
 }
 
-type Query {
+extend type Query {
+  school(id: ID!): School!
   schools: [School]!
 }
 
-type Mutation {
+extend type Mutation {
   createSchool(input: SchoolInput!): School!
   updateSchool(id: ID!, input: SchoolInput!): School!
   deleteSchool(id: ID!): School!
+}
+`, BuiltIn: false},
+	{Name: "graph/schema/studio.graphql", Input: `# GraphQL schema example
+#
+# https://gqlgen.com/getting-started/
+
+type Studio {
+  id: ID!
+  name: String!
+  school: School!
+  rooms: [Room]!
+  created_at: String!
+  updated_at: String!
+}
+
+input StudioInput {
+  name: String!
+  schoolID: ID!
+}
+
+extend type Query {
+  studio(id: ID!): Studio!
+  studios: [Studio]!
+}
+
+extend type Mutation {
+  createStudio(input: StudioInput!): Studio!
+  updateStudio(id: ID!, input: StudioInput!): Studio!
+  deleteStudio(id: ID!): Studio!
 }
 `, BuiltIn: false},
 }
@@ -259,6 +581,21 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 // endregion ************************** generated!.gotpl **************************
 
 // region    ***************************** args.gotpl *****************************
+
+func (ec *executionContext) field_Mutation_createRoom_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.RoomInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNRoomInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐRoomInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
 
 func (ec *executionContext) field_Mutation_createSchool_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
@@ -275,13 +612,28 @@ func (ec *executionContext) field_Mutation_createSchool_args(ctx context.Context
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_deleteSchool_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_createStudio_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
+	var arg0 model.StudioInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNStudioInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐStudioInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_deleteRoom_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 int
 	if tmp, ok := rawArgs["id"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		arg0, err = ec.unmarshalNID2int(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -290,13 +642,67 @@ func (ec *executionContext) field_Mutation_deleteSchool_args(ctx context.Context
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_deleteSchool_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 int
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_deleteStudio_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 int
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateRoom_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 int
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	var arg1 model.RoomInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg1, err = ec.unmarshalNRoomInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐRoomInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg1
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_updateSchool_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
+	var arg0 int
 	if tmp, ok := rawArgs["id"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		arg0, err = ec.unmarshalNID2int(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -306,6 +712,30 @@ func (ec *executionContext) field_Mutation_updateSchool_args(ctx context.Context
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg1, err = ec.unmarshalNSchoolInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐSchoolInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateStudio_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 int
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	var arg1 model.StudioInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg1, err = ec.unmarshalNStudioInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐStudioInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -326,6 +756,51 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 		}
 	}
 	args["name"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_room_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 int
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_school_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 int
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_studio_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 int
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
 	return args, nil
 }
 
@@ -366,6 +841,132 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 // endregion ************************** directives.gotpl **************************
 
 // region    **************************** field.gotpl *****************************
+
+func (ec *executionContext) _Mutation_createRoom(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_createRoom_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateRoom(rctx, args["input"].(model.RoomInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.Room)
+	fc.Result = res
+	return ec.marshalNRoom2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐRoom(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_updateRoom(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_updateRoom_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateRoom(rctx, args["id"].(int), args["input"].(model.RoomInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.Room)
+	fc.Result = res
+	return ec.marshalNRoom2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐRoom(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_deleteRoom(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_deleteRoom_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteRoom(rctx, args["id"].(int))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.Room)
+	fc.Result = res
+	return ec.marshalNRoom2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐRoom(ctx, field.Selections, res)
+}
 
 func (ec *executionContext) _Mutation_createSchool(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
@@ -434,7 +1035,7 @@ func (ec *executionContext) _Mutation_updateSchool(ctx context.Context, field gr
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdateSchool(rctx, args["id"].(string), args["input"].(model.SchoolInput))
+		return ec.resolvers.Mutation().UpdateSchool(rctx, args["id"].(int), args["input"].(model.SchoolInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -476,7 +1077,252 @@ func (ec *executionContext) _Mutation_deleteSchool(ctx context.Context, field gr
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().DeleteSchool(rctx, args["id"].(string))
+		return ec.resolvers.Mutation().DeleteSchool(rctx, args["id"].(int))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.School)
+	fc.Result = res
+	return ec.marshalNSchool2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐSchool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_createStudio(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_createStudio_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateStudio(rctx, args["input"].(model.StudioInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.Studio)
+	fc.Result = res
+	return ec.marshalNStudio2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐStudio(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_updateStudio(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_updateStudio_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateStudio(rctx, args["id"].(int), args["input"].(model.StudioInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.Studio)
+	fc.Result = res
+	return ec.marshalNStudio2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐStudio(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_deleteStudio(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_deleteStudio_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteStudio(rctx, args["id"].(int))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.Studio)
+	fc.Result = res
+	return ec.marshalNStudio2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐStudio(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_room(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_room_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Room(rctx, args["id"].(int))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.Room)
+	fc.Result = res
+	return ec.marshalNRoom2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐRoom(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_rooms(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Rooms(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*models.Room)
+	fc.Result = res
+	return ec.marshalNRoom2ᚕᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐRoom(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_school(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_school_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().School(rctx, args["id"].(int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -526,6 +1372,83 @@ func (ec *executionContext) _Query_schools(ctx context.Context, field graphql.Co
 	res := resTmp.([]*models.School)
 	fc.Result = res
 	return ec.marshalNSchool2ᚕᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐSchool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_studio(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_studio_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Studio(rctx, args["id"].(int))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.Studio)
+	fc.Result = res
+	return ec.marshalNStudio2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐStudio(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_studios(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Studios(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*models.Studio)
+	fc.Result = res
+	return ec.marshalNStudio2ᚕᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐStudio(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -599,6 +1522,181 @@ func (ec *executionContext) _Query___schema(ctx context.Context, field graphql.C
 	return ec.marshalO__Schema2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐSchema(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Room_id(ctx context.Context, field graphql.CollectedField, obj *models.Room) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Room",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Room().ID(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNID2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Room_name(ctx context.Context, field graphql.CollectedField, obj *models.Room) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Room",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Name, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Room_studio(ctx context.Context, field graphql.CollectedField, obj *models.Room) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Room",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Room().Studio(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.Studio)
+	fc.Result = res
+	return ec.marshalNStudio2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐStudio(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Room_created_at(ctx context.Context, field graphql.CollectedField, obj *models.Room) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Room",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Room().CreatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Room_updated_at(ctx context.Context, field graphql.CollectedField, obj *models.Room) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Room",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Room().UpdatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _School_id(ctx context.Context, field graphql.CollectedField, obj *models.School) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -629,9 +1727,9 @@ func (ec *executionContext) _School_id(ctx context.Context, field graphql.Collec
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(int)
 	fc.Result = res
-	return ec.marshalNID2string(ctx, field.Selections, res)
+	return ec.marshalNID2int(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _School_name(ctx context.Context, field graphql.CollectedField, obj *models.School) (ret graphql.Marshaler) {
@@ -667,6 +1765,41 @@ func (ec *executionContext) _School_name(ctx context.Context, field graphql.Coll
 	res := resTmp.(string)
 	fc.Result = res
 	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _School_studios(ctx context.Context, field graphql.CollectedField, obj *models.School) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "School",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.School().Studios(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*models.Studio)
+	fc.Result = res
+	return ec.marshalNStudio2ᚕᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐStudio(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _School_created_at(ctx context.Context, field graphql.CollectedField, obj *models.School) (ret graphql.Marshaler) {
@@ -723,6 +1856,216 @@ func (ec *executionContext) _School_updated_at(ctx context.Context, field graphq
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.School().UpdatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Studio_id(ctx context.Context, field graphql.CollectedField, obj *models.Studio) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Studio",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Studio().ID(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNID2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Studio_name(ctx context.Context, field graphql.CollectedField, obj *models.Studio) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Studio",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Name, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Studio_school(ctx context.Context, field graphql.CollectedField, obj *models.Studio) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Studio",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Studio().School(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.School)
+	fc.Result = res
+	return ec.marshalNSchool2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐSchool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Studio_rooms(ctx context.Context, field graphql.CollectedField, obj *models.Studio) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Studio",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Studio().Rooms(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*models.Room)
+	fc.Result = res
+	return ec.marshalNRoom2ᚕᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐRoom(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Studio_created_at(ctx context.Context, field graphql.CollectedField, obj *models.Studio) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Studio",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Studio().CreatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Studio_updated_at(ctx context.Context, field graphql.CollectedField, obj *models.Studio) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Studio",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Studio().UpdatedAt(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1861,6 +3204,29 @@ func (ec *executionContext) ___Type_ofType(ctx context.Context, field graphql.Co
 
 // region    **************************** input.gotpl *****************************
 
+func (ec *executionContext) unmarshalInputRoomInput(ctx context.Context, obj interface{}) (model.RoomInput, error) {
+	var it model.RoomInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputSchoolInput(ctx context.Context, obj interface{}) (model.SchoolInput, error) {
 	var it model.SchoolInput
 	asMap := map[string]interface{}{}
@@ -1875,6 +3241,37 @@ func (ec *executionContext) unmarshalInputSchoolInput(ctx context.Context, obj i
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
 			it.Name, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputStudioInput(ctx context.Context, obj interface{}) (model.StudioInput, error) {
+	var it model.StudioInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "schoolID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("schoolID"))
+			it.SchoolID, err = ec.unmarshalNID2int(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -1907,6 +3304,21 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Mutation")
+		case "createRoom":
+			out.Values[i] = ec._Mutation_createRoom(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "updateRoom":
+			out.Values[i] = ec._Mutation_updateRoom(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "deleteRoom":
+			out.Values[i] = ec._Mutation_deleteRoom(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "createSchool":
 			out.Values[i] = ec._Mutation_createSchool(ctx, field)
 			if out.Values[i] == graphql.Null {
@@ -1919,6 +3331,21 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			}
 		case "deleteSchool":
 			out.Values[i] = ec._Mutation_deleteSchool(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "createStudio":
+			out.Values[i] = ec._Mutation_createStudio(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "updateStudio":
+			out.Values[i] = ec._Mutation_updateStudio(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "deleteStudio":
+			out.Values[i] = ec._Mutation_deleteStudio(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -1948,6 +3375,48 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Query")
+		case "room":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_room(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "rooms":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_rooms(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "school":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_school(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		case "schools":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
@@ -1962,10 +3431,121 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				}
 				return res
 			})
+		case "studio":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_studio(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "studios":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_studios(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		case "__type":
 			out.Values[i] = ec._Query___type(ctx, field)
 		case "__schema":
 			out.Values[i] = ec._Query___schema(ctx, field)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var roomImplementors = []string{"Room"}
+
+func (ec *executionContext) _Room(ctx context.Context, sel ast.SelectionSet, obj *models.Room) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, roomImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Room")
+		case "id":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Room_id(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "name":
+			out.Values[i] = ec._Room_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "studio":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Room_studio(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "created_at":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Room_created_at(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "updated_at":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Room_updated_at(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -2007,6 +3587,20 @@ func (ec *executionContext) _School(ctx context.Context, sel ast.SelectionSet, o
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
+		case "studios":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._School_studios(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		case "created_at":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
@@ -2030,6 +3624,103 @@ func (ec *executionContext) _School(ctx context.Context, sel ast.SelectionSet, o
 					}
 				}()
 				res = ec._School_updated_at(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var studioImplementors = []string{"Studio"}
+
+func (ec *executionContext) _Studio(ctx context.Context, sel ast.SelectionSet, obj *models.Studio) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, studioImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Studio")
+		case "id":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Studio_id(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "name":
+			out.Values[i] = ec._Studio_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "school":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Studio_school(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "rooms":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Studio_rooms(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "created_at":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Studio_created_at(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "updated_at":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Studio_updated_at(ctx, field, obj)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -2311,19 +4002,76 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) unmarshalNID2string(ctx context.Context, v interface{}) (string, error) {
-	res, err := graphql.UnmarshalID(v)
+func (ec *executionContext) unmarshalNID2int(ctx context.Context, v interface{}) (int, error) {
+	res, err := graphql.UnmarshalInt(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNID2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
-	res := graphql.MarshalID(v)
+func (ec *executionContext) marshalNID2int(ctx context.Context, sel ast.SelectionSet, v int) graphql.Marshaler {
+	res := graphql.MarshalInt(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) marshalNRoom2githubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐRoom(ctx context.Context, sel ast.SelectionSet, v models.Room) graphql.Marshaler {
+	return ec._Room(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNRoom2ᚕᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐRoom(ctx context.Context, sel ast.SelectionSet, v []*models.Room) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalORoom2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐRoom(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalNRoom2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐRoom(ctx context.Context, sel ast.SelectionSet, v *models.Room) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Room(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNRoomInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐRoomInput(ctx context.Context, v interface{}) (model.RoomInput, error) {
+	res, err := ec.unmarshalInputRoomInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalNSchool2githubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐSchool(ctx context.Context, sel ast.SelectionSet, v models.School) graphql.Marshaler {
@@ -2396,6 +4144,63 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) marshalNStudio2githubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐStudio(ctx context.Context, sel ast.SelectionSet, v models.Studio) graphql.Marshaler {
+	return ec._Studio(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNStudio2ᚕᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐStudio(ctx context.Context, sel ast.SelectionSet, v []*models.Studio) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOStudio2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐStudio(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalNStudio2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐStudio(ctx context.Context, sel ast.SelectionSet, v *models.Studio) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Studio(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNStudioInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐStudioInput(ctx context.Context, v interface{}) (model.StudioInput, error) {
+	res, err := ec.unmarshalInputStudioInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalN__Directive2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx context.Context, sel ast.SelectionSet, v introspection.Directive) graphql.Marshaler {
@@ -2679,6 +4484,13 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	return graphql.MarshalBoolean(*v)
 }
 
+func (ec *executionContext) marshalORoom2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐRoom(ctx context.Context, sel ast.SelectionSet, v *models.Room) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Room(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalOSchool2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐSchool(ctx context.Context, sel ast.SelectionSet, v *models.School) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
@@ -2708,6 +4520,13 @@ func (ec *executionContext) marshalOString2ᚖstring(ctx context.Context, sel as
 		return graphql.Null
 	}
 	return graphql.MarshalString(*v)
+}
+
+func (ec *executionContext) marshalOStudio2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐStudio(ctx context.Context, sel ast.SelectionSet, v *models.Studio) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Studio(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalO__EnumValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐEnumValueᚄ(ctx context.Context, sel ast.SelectionSet, v []introspection.EnumValue) graphql.Marshaler {
