@@ -44,7 +44,7 @@ func (r *mutationResolver) DeleteSchool(ctx context.Context, id int) (*models.Sc
 	if err != nil {
 		return nil, err
 	}
-	school, err = repository.Delete(school)
+	school, err = repository.Delete(id)
 	if err != nil {
 		return nil, err
 	} else {
