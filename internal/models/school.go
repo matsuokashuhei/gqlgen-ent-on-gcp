@@ -9,4 +9,5 @@ type School struct {
 	Name      string    `json:"name"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
+	// Studios   []*Studio `json:"studios"`
 }

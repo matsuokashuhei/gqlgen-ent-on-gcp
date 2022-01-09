@@ -18,6 +18,15 @@ func (repository *StudioRepository) FindAll(schoolID uint) ([]*models.Studio, er
 	return studios, nil
 }
 
+// func (repository *StudioRepository) FindAll(school *models.School) ([]*models.Studio, error) {
+// 	var studios []*models.Studio
+// 	err := repository.db.Model(&school).Association("Studios").Find(&studios)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	return studios, nil
+// }
+
 func (repository *StudioRepository) Find(id uint) (*models.Studio, error) {
 	var studios *models.Studio
 	err := repository.db.First(&studios, id).Error

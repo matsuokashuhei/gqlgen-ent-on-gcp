@@ -44,7 +44,7 @@ WORKDIR /go/src/app
 ENV GO111MODULE="on"
 ENV GOOS="linux"
 ENV CGO_ENABLED=0
-RUN go get -u golang.org/x/tools/gopls
+RUN go get golang.org/x/tools/gopls@latest
 RUN go get -u github.com/BurntSushi/toml
 RUN go get -u github.com/cosmtrek/air
 
