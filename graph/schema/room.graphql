@@ -6,12 +6,19 @@ type Room {
   id: ID!
   name: String!
   studio: Studio!
-  created_at: Time!
-  updated_at: Time!
+  createdAt: Time!
+  updatedAt: Time!
 }
 
-input RoomInput {
+input CreateRoomInput {
   name: String!
+  studioID: ID!
+}
+
+input UpdateRoomInput {
+  id: ID!
+  name: String
+  studioID: ID
 }
 
 extend type Query {
@@ -20,7 +27,7 @@ extend type Query {
 }
 
 extend type Mutation {
-  createRoom(input: RoomInput!): Room!
-  updateRoom(id: ID!, input: RoomInput!): Room!
+  createRoom(input: CreateRoomInput!): Room!
+  updateRoom(input: UpdateRoomInput!): Room!
   deleteRoom(id: ID!): Room!
 }

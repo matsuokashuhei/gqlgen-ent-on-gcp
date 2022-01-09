@@ -6,12 +6,12 @@ import (
 )
 
 type StudioRepository struct {
-	database *gorm.DB
+	db *gorm.DB
 }
 
 func (repository *StudioRepository) FindAll(schoolID uint) ([]*models.Studio, error) {
 	var studios []*models.Studio
-	err := repository.database.Where("school_id = ?", schoolID).Find(&studios).Error
+	err := repository.db.Where("school_id = ?", schoolID).Find(&studios).Error
 	if err != nil {
 		return nil, err
 	}
@@ -20,37 +20,41 @@ func (repository *StudioRepository) FindAll(schoolID uint) ([]*models.Studio, er
 
 func (repository *StudioRepository) Find(id uint) (*models.Studio, error) {
 	var studios *models.Studio
-	err := repository.database.First(&studios, id).Error
+	err := repository.db.First(&studios, id).Error
 	if err != nil {
 		return nil, err
 	}
 	return studios, nil
 }
 
-func (repository *StudioRepository) Create(studios *models.Studio) (*models.Studio, error) {
-	err := repository.database.Create(&studios).Error
+func (repository *StudioRepository) Create(studio *models.Studio) (*models.Studio, error) {
+	err := repository.db.Create(&studio).Error
 	if err != nil {
 		return nil, err
 	}
-	return studios, nil
+	return studio, nil
 }
 
-func (repsitory *StudioRepository) Update(studios *models.Studio) (*models.Studio, error) {
-	err := repsitory.database.Save(studios).Error
+func (repository *StudioRepository) Update(studio *models.Studio) (*models.Studio, error) {
+	err := repository.db.Save(studio).Error
 	if err != nil {
 		return nil, err
 	}
-	return studios, nil
+	return studio, nil
 }
 
-func (repsitory *StudioRepository) Delete(studios *models.Studio) (*models.Studio, error) {
-	err := repsitory.database.Delete(studios, studios.ID).Error
+func (repository *StudioRepository) Delete(id uint) (*models.Studio, error) {
+	var studio, err = repository.Find(id)
 	if err != nil {
 		return nil, err
 	}
-	return studios, nil
+	err = repository.db.Delete(&studio, id).Error
+	if err != nil {
+		return nil, err
+	}
+	return studio, nil
 }
 
-func NewStudioRepository(database *gorm.DB) *StudioRepository {
-	return &StudioRepository{database: database}
+func NewStudioRepository(db *gorm.DB) *StudioRepository {
+	return &StudioRepository{db: db}
 }

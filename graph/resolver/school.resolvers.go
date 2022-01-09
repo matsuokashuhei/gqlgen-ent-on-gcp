@@ -12,7 +12,7 @@ import (
 	"github.com/matsuokashuhei/landin/internal/repositories"
 )
 
-func (r *mutationResolver) CreateSchool(ctx context.Context, input model.SchoolInput) (*models.School, error) {
+func (r *mutationResolver) CreateSchool(ctx context.Context, input model.CreateSchoolInput) (*models.School, error) {
 	repository := repositories.NewSchoolRepository(r.DB)
 	school := &models.School{
 		Name: input.Name,
@@ -24,31 +24,27 @@ func (r *mutationResolver) CreateSchool(ctx context.Context, input model.SchoolI
 	return school, nil
 }
 
-func (r *mutationResolver) UpdateSchool(ctx context.Context, id uint, input model.SchoolInput) (*models.School, error) {
+func (r *mutationResolver) UpdateSchool(ctx context.Context, input model.UpdateSchoolInput) (*models.School, error) {
 	repository := repositories.NewSchoolRepository(r.DB)
-	school, err := repository.Find(id)
+	var school, err = repository.Find(input.ID)
 	if err != nil {
 		return nil, err
 	}
 	school.Name = input.Name
-	repository.Update(school)
+	_, err = repository.Update(school)
+	if err != nil {
+		return nil, err
+	}
 	return school, nil
 }
 
 func (r *mutationResolver) DeleteSchool(ctx context.Context, id uint) (*models.School, error) {
 	repository := repositories.NewSchoolRepository(r.DB)
-	var school *models.School
-	var err error
-	school, err = repository.Find(id)
+	school, err := repository.Delete(id)
 	if err != nil {
 		return nil, err
 	}
-	school, err = repository.Delete(id)
-	if err != nil {
-		return nil, err
-	} else {
-		return school, nil
-	}
+	return school, nil
 }
 
 func (r *queryResolver) School(ctx context.Context, id uint) (*models.School, error) {

@@ -49,15 +49,15 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Mutation struct {
-		CreateRoom   func(childComplexity int, input model.RoomInput) int
-		CreateSchool func(childComplexity int, input model.SchoolInput) int
-		CreateStudio func(childComplexity int, input model.StudioInput) int
+		CreateRoom   func(childComplexity int, input model.CreateRoomInput) int
+		CreateSchool func(childComplexity int, input model.CreateSchoolInput) int
+		CreateStudio func(childComplexity int, input model.CreateStudioInput) int
 		DeleteRoom   func(childComplexity int, id uint) int
 		DeleteSchool func(childComplexity int, id uint) int
 		DeleteStudio func(childComplexity int, id uint) int
-		UpdateRoom   func(childComplexity int, id uint, input model.RoomInput) int
-		UpdateSchool func(childComplexity int, id uint, input model.SchoolInput) int
-		UpdateStudio func(childComplexity int, id uint, input model.StudioInput) int
+		UpdateRoom   func(childComplexity int, input model.UpdateRoomInput) int
+		UpdateSchool func(childComplexity int, input model.UpdateSchoolInput) int
+		UpdateStudio func(childComplexity int, input model.UpdateStudioInput) int
 	}
 
 	Query struct {
@@ -96,14 +96,14 @@ type ComplexityRoot struct {
 }
 
 type MutationResolver interface {
-	CreateRoom(ctx context.Context, input model.RoomInput) (*models.Room, error)
-	UpdateRoom(ctx context.Context, id uint, input model.RoomInput) (*models.Room, error)
+	CreateRoom(ctx context.Context, input model.CreateRoomInput) (*models.Room, error)
+	UpdateRoom(ctx context.Context, input model.UpdateRoomInput) (*models.Room, error)
 	DeleteRoom(ctx context.Context, id uint) (*models.Room, error)
-	CreateSchool(ctx context.Context, input model.SchoolInput) (*models.School, error)
-	UpdateSchool(ctx context.Context, id uint, input model.SchoolInput) (*models.School, error)
+	CreateSchool(ctx context.Context, input model.CreateSchoolInput) (*models.School, error)
+	UpdateSchool(ctx context.Context, input model.UpdateSchoolInput) (*models.School, error)
 	DeleteSchool(ctx context.Context, id uint) (*models.School, error)
-	CreateStudio(ctx context.Context, input model.StudioInput) (*models.Studio, error)
-	UpdateStudio(ctx context.Context, id uint, input model.StudioInput) (*models.Studio, error)
+	CreateStudio(ctx context.Context, input model.CreateStudioInput) (*models.Studio, error)
+	UpdateStudio(ctx context.Context, input model.UpdateStudioInput) (*models.Studio, error)
 	DeleteStudio(ctx context.Context, id uint) (*models.Studio, error)
 }
 type QueryResolver interface {
@@ -150,7 +150,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateRoom(childComplexity, args["input"].(model.RoomInput)), true
+		return e.complexity.Mutation.CreateRoom(childComplexity, args["input"].(model.CreateRoomInput)), true
 
 	case "Mutation.createSchool":
 		if e.complexity.Mutation.CreateSchool == nil {
@@ -162,7 +162,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateSchool(childComplexity, args["input"].(model.SchoolInput)), true
+		return e.complexity.Mutation.CreateSchool(childComplexity, args["input"].(model.CreateSchoolInput)), true
 
 	case "Mutation.createStudio":
 		if e.complexity.Mutation.CreateStudio == nil {
@@ -174,7 +174,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateStudio(childComplexity, args["input"].(model.StudioInput)), true
+		return e.complexity.Mutation.CreateStudio(childComplexity, args["input"].(model.CreateStudioInput)), true
 
 	case "Mutation.deleteRoom":
 		if e.complexity.Mutation.DeleteRoom == nil {
@@ -222,7 +222,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateRoom(childComplexity, args["id"].(uint), args["input"].(model.RoomInput)), true
+		return e.complexity.Mutation.UpdateRoom(childComplexity, args["input"].(model.UpdateRoomInput)), true
 
 	case "Mutation.updateSchool":
 		if e.complexity.Mutation.UpdateSchool == nil {
@@ -234,7 +234,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateSchool(childComplexity, args["id"].(uint), args["input"].(model.SchoolInput)), true
+		return e.complexity.Mutation.UpdateSchool(childComplexity, args["input"].(model.UpdateSchoolInput)), true
 
 	case "Mutation.updateStudio":
 		if e.complexity.Mutation.UpdateStudio == nil {
@@ -246,7 +246,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateStudio(childComplexity, args["id"].(uint), args["input"].(model.StudioInput)), true
+		return e.complexity.Mutation.UpdateStudio(childComplexity, args["input"].(model.UpdateStudioInput)), true
 
 	case "Query.room":
 		if e.complexity.Query.Room == nil {
@@ -305,7 +305,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Studios(childComplexity), true
 
-	case "Room.created_at":
+	case "Room.createdAt":
 		if e.complexity.Room.CreatedAt == nil {
 			break
 		}
@@ -333,14 +333,14 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Room.Studio(childComplexity), true
 
-	case "Room.updated_at":
+	case "Room.updatedAt":
 		if e.complexity.Room.UpdatedAt == nil {
 			break
 		}
 
 		return e.complexity.Room.UpdatedAt(childComplexity), true
 
-	case "School.created_at":
+	case "School.createdAt":
 		if e.complexity.School.CreatedAt == nil {
 			break
 		}
@@ -368,14 +368,14 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.School.Studios(childComplexity), true
 
-	case "School.updated_at":
+	case "School.updatedAt":
 		if e.complexity.School.UpdatedAt == nil {
 			break
 		}
 
 		return e.complexity.School.UpdatedAt(childComplexity), true
 
-	case "Studio.created_at":
+	case "Studio.createdAt":
 		if e.complexity.Studio.CreatedAt == nil {
 			break
 		}
@@ -410,7 +410,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Studio.School(childComplexity), true
 
-	case "Studio.updated_at":
+	case "Studio.updatedAt":
 		if e.complexity.Studio.UpdatedAt == nil {
 			break
 		}
@@ -489,12 +489,19 @@ type Room {
   id: ID!
   name: String!
   studio: Studio!
-  created_at: Time!
-  updated_at: Time!
+  createdAt: Time!
+  updatedAt: Time!
 }
 
-input RoomInput {
+input CreateRoomInput {
   name: String!
+  studioID: ID!
+}
+
+input UpdateRoomInput {
+  id: ID!
+  name: String
+  studioID: ID
 }
 
 extend type Query {
@@ -503,8 +510,8 @@ extend type Query {
 }
 
 extend type Mutation {
-  createRoom(input: RoomInput!): Room!
-  updateRoom(id: ID!, input: RoomInput!): Room!
+  createRoom(input: CreateRoomInput!): Room!
+  updateRoom(input: UpdateRoomInput!): Room!
   deleteRoom(id: ID!): Room!
 }
 `, BuiltIn: false},
@@ -518,11 +525,16 @@ type School {
   id: ID!
   name: String!
   studios: [Studio]!
-  created_at: Time!
-  updated_at: Time!
+  createdAt: Time!
+  updatedAt: Time!
 }
 
-input SchoolInput {
+input CreateSchoolInput {
+  name: String!
+}
+
+input UpdateSchoolInput {
+  id: ID!
   name: String!
 }
 
@@ -532,8 +544,8 @@ extend type Query {
 }
 
 extend type Mutation {
-  createSchool(input: SchoolInput!): School!
-  updateSchool(id: ID!, input: SchoolInput!): School!
+  createSchool(input: CreateSchoolInput!): School!
+  updateSchool(input: UpdateSchoolInput!): School!
   deleteSchool(id: ID!): School!
 }
 `, BuiltIn: false},
@@ -546,13 +558,19 @@ type Studio {
   name: String!
   school: School!
   rooms: [Room]!
-  created_at: Time!
-  updated_at: Time!
+  createdAt: Time!
+  updatedAt: Time!
 }
 
-input StudioInput {
+input CreateStudioInput {
   name: String!
   schoolID: ID!
+}
+
+input UpdateStudioInput {
+  id: ID!
+  name: String
+  schoolID: ID
 }
 
 extend type Query {
@@ -561,8 +579,8 @@ extend type Query {
 }
 
 extend type Mutation {
-  createStudio(input: StudioInput!): Studio!
-  updateStudio(id: ID!, input: StudioInput!): Studio!
+  createStudio(input: CreateStudioInput!): Studio!
+  updateStudio(input: UpdateStudioInput!): Studio!
   deleteStudio(id: ID!): Studio!
 }
 `, BuiltIn: false},
@@ -576,10 +594,10 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 func (ec *executionContext) field_Mutation_createRoom_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.RoomInput
+	var arg0 model.CreateRoomInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNRoomInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐRoomInput(ctx, tmp)
+		arg0, err = ec.unmarshalNCreateRoomInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐCreateRoomInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -591,10 +609,10 @@ func (ec *executionContext) field_Mutation_createRoom_args(ctx context.Context, 
 func (ec *executionContext) field_Mutation_createSchool_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.SchoolInput
+	var arg0 model.CreateSchoolInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNSchoolInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐSchoolInput(ctx, tmp)
+		arg0, err = ec.unmarshalNCreateSchoolInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐCreateSchoolInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -606,10 +624,10 @@ func (ec *executionContext) field_Mutation_createSchool_args(ctx context.Context
 func (ec *executionContext) field_Mutation_createStudio_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.StudioInput
+	var arg0 model.CreateStudioInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNStudioInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐStudioInput(ctx, tmp)
+		arg0, err = ec.unmarshalNCreateStudioInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐCreateStudioInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -666,72 +684,45 @@ func (ec *executionContext) field_Mutation_deleteStudio_args(ctx context.Context
 func (ec *executionContext) field_Mutation_updateRoom_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 uint
-	if tmp, ok := rawArgs["id"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-		arg0, err = ec.unmarshalNID2uint(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["id"] = arg0
-	var arg1 model.RoomInput
+	var arg0 model.UpdateRoomInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg1, err = ec.unmarshalNRoomInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐRoomInput(ctx, tmp)
+		arg0, err = ec.unmarshalNUpdateRoomInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐUpdateRoomInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["input"] = arg1
+	args["input"] = arg0
 	return args, nil
 }
 
 func (ec *executionContext) field_Mutation_updateSchool_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 uint
-	if tmp, ok := rawArgs["id"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-		arg0, err = ec.unmarshalNID2uint(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["id"] = arg0
-	var arg1 model.SchoolInput
+	var arg0 model.UpdateSchoolInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg1, err = ec.unmarshalNSchoolInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐSchoolInput(ctx, tmp)
+		arg0, err = ec.unmarshalNUpdateSchoolInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐUpdateSchoolInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["input"] = arg1
+	args["input"] = arg0
 	return args, nil
 }
 
 func (ec *executionContext) field_Mutation_updateStudio_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 uint
-	if tmp, ok := rawArgs["id"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-		arg0, err = ec.unmarshalNID2uint(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["id"] = arg0
-	var arg1 model.StudioInput
+	var arg0 model.UpdateStudioInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg1, err = ec.unmarshalNStudioInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐStudioInput(ctx, tmp)
+		arg0, err = ec.unmarshalNUpdateStudioInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐUpdateStudioInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["input"] = arg1
+	args["input"] = arg0
 	return args, nil
 }
 
@@ -858,7 +849,7 @@ func (ec *executionContext) _Mutation_createRoom(ctx context.Context, field grap
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateRoom(rctx, args["input"].(model.RoomInput))
+		return ec.resolvers.Mutation().CreateRoom(rctx, args["input"].(model.CreateRoomInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -900,7 +891,7 @@ func (ec *executionContext) _Mutation_updateRoom(ctx context.Context, field grap
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdateRoom(rctx, args["id"].(uint), args["input"].(model.RoomInput))
+		return ec.resolvers.Mutation().UpdateRoom(rctx, args["input"].(model.UpdateRoomInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -984,7 +975,7 @@ func (ec *executionContext) _Mutation_createSchool(ctx context.Context, field gr
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateSchool(rctx, args["input"].(model.SchoolInput))
+		return ec.resolvers.Mutation().CreateSchool(rctx, args["input"].(model.CreateSchoolInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1026,7 +1017,7 @@ func (ec *executionContext) _Mutation_updateSchool(ctx context.Context, field gr
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdateSchool(rctx, args["id"].(uint), args["input"].(model.SchoolInput))
+		return ec.resolvers.Mutation().UpdateSchool(rctx, args["input"].(model.UpdateSchoolInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1110,7 +1101,7 @@ func (ec *executionContext) _Mutation_createStudio(ctx context.Context, field gr
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateStudio(rctx, args["input"].(model.StudioInput))
+		return ec.resolvers.Mutation().CreateStudio(rctx, args["input"].(model.CreateStudioInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1152,7 +1143,7 @@ func (ec *executionContext) _Mutation_updateStudio(ctx context.Context, field gr
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdateStudio(rctx, args["id"].(uint), args["input"].(model.StudioInput))
+		return ec.resolvers.Mutation().UpdateStudio(rctx, args["input"].(model.UpdateStudioInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1618,7 +1609,7 @@ func (ec *executionContext) _Room_studio(ctx context.Context, field graphql.Coll
 	return ec.marshalNStudio2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐStudio(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Room_created_at(ctx context.Context, field graphql.CollectedField, obj *models.Room) (ret graphql.Marshaler) {
+func (ec *executionContext) _Room_createdAt(ctx context.Context, field graphql.CollectedField, obj *models.Room) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1653,7 +1644,7 @@ func (ec *executionContext) _Room_created_at(ctx context.Context, field graphql.
 	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Room_updated_at(ctx context.Context, field graphql.CollectedField, obj *models.Room) (ret graphql.Marshaler) {
+func (ec *executionContext) _Room_updatedAt(ctx context.Context, field graphql.CollectedField, obj *models.Room) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1793,7 +1784,7 @@ func (ec *executionContext) _School_studios(ctx context.Context, field graphql.C
 	return ec.marshalNStudio2ᚕᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐStudio(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _School_created_at(ctx context.Context, field graphql.CollectedField, obj *models.School) (ret graphql.Marshaler) {
+func (ec *executionContext) _School_createdAt(ctx context.Context, field graphql.CollectedField, obj *models.School) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1828,7 +1819,7 @@ func (ec *executionContext) _School_created_at(ctx context.Context, field graphq
 	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _School_updated_at(ctx context.Context, field graphql.CollectedField, obj *models.School) (ret graphql.Marshaler) {
+func (ec *executionContext) _School_updatedAt(ctx context.Context, field graphql.CollectedField, obj *models.School) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -2003,7 +1994,7 @@ func (ec *executionContext) _Studio_rooms(ctx context.Context, field graphql.Col
 	return ec.marshalNRoom2ᚕᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐRoom(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Studio_created_at(ctx context.Context, field graphql.CollectedField, obj *models.Studio) (ret graphql.Marshaler) {
+func (ec *executionContext) _Studio_createdAt(ctx context.Context, field graphql.CollectedField, obj *models.Studio) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -2038,7 +2029,7 @@ func (ec *executionContext) _Studio_created_at(ctx context.Context, field graphq
 	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Studio_updated_at(ctx context.Context, field graphql.CollectedField, obj *models.Studio) (ret graphql.Marshaler) {
+func (ec *executionContext) _Studio_updatedAt(ctx context.Context, field graphql.CollectedField, obj *models.Studio) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -3195,8 +3186,39 @@ func (ec *executionContext) ___Type_ofType(ctx context.Context, field graphql.Co
 
 // region    **************************** input.gotpl *****************************
 
-func (ec *executionContext) unmarshalInputRoomInput(ctx context.Context, obj interface{}) (model.RoomInput, error) {
-	var it model.RoomInput
+func (ec *executionContext) unmarshalInputCreateRoomInput(ctx context.Context, obj interface{}) (model.CreateRoomInput, error) {
+	var it model.CreateRoomInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "studioID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("studioID"))
+			it.StudioID, err = ec.unmarshalNID2uint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputCreateSchoolInput(ctx context.Context, obj interface{}) (model.CreateSchoolInput, error) {
+	var it model.CreateSchoolInput
 	asMap := map[string]interface{}{}
 	for k, v := range obj.(map[string]interface{}) {
 		asMap[k] = v
@@ -3218,31 +3240,8 @@ func (ec *executionContext) unmarshalInputRoomInput(ctx context.Context, obj int
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputSchoolInput(ctx context.Context, obj interface{}) (model.SchoolInput, error) {
-	var it model.SchoolInput
-	asMap := map[string]interface{}{}
-	for k, v := range obj.(map[string]interface{}) {
-		asMap[k] = v
-	}
-
-	for k, v := range asMap {
-		switch k {
-		case "name":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
-			it.Name, err = ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		}
-	}
-
-	return it, nil
-}
-
-func (ec *executionContext) unmarshalInputStudioInput(ctx context.Context, obj interface{}) (model.StudioInput, error) {
-	var it model.StudioInput
+func (ec *executionContext) unmarshalInputCreateStudioInput(ctx context.Context, obj interface{}) (model.CreateStudioInput, error) {
+	var it model.CreateStudioInput
 	asMap := map[string]interface{}{}
 	for k, v := range obj.(map[string]interface{}) {
 		asMap[k] = v
@@ -3263,6 +3262,115 @@ func (ec *executionContext) unmarshalInputStudioInput(ctx context.Context, obj i
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("schoolID"))
 			it.SchoolID, err = ec.unmarshalNID2uint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputUpdateRoomInput(ctx context.Context, obj interface{}) (model.UpdateRoomInput, error) {
+	var it model.UpdateRoomInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalNID2uint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "studioID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("studioID"))
+			it.StudioID, err = ec.unmarshalOID2ᚖuint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputUpdateSchoolInput(ctx context.Context, obj interface{}) (model.UpdateSchoolInput, error) {
+	var it model.UpdateSchoolInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalNID2uint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputUpdateStudioInput(ctx context.Context, obj interface{}) (model.UpdateStudioInput, error) {
+	var it model.UpdateStudioInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalNID2uint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "schoolID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("schoolID"))
+			it.SchoolID, err = ec.unmarshalOID2ᚖuint(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3500,13 +3608,13 @@ func (ec *executionContext) _Room(ctx context.Context, sel ast.SelectionSet, obj
 				}
 				return res
 			})
-		case "created_at":
-			out.Values[i] = ec._Room_created_at(ctx, field, obj)
+		case "createdAt":
+			out.Values[i] = ec._Room_createdAt(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
-		case "updated_at":
-			out.Values[i] = ec._Room_updated_at(ctx, field, obj)
+		case "updatedAt":
+			out.Values[i] = ec._Room_updatedAt(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
@@ -3556,13 +3664,13 @@ func (ec *executionContext) _School(ctx context.Context, sel ast.SelectionSet, o
 				}
 				return res
 			})
-		case "created_at":
-			out.Values[i] = ec._School_created_at(ctx, field, obj)
+		case "createdAt":
+			out.Values[i] = ec._School_createdAt(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
-		case "updated_at":
-			out.Values[i] = ec._School_updated_at(ctx, field, obj)
+		case "updatedAt":
+			out.Values[i] = ec._School_updatedAt(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
@@ -3626,13 +3734,13 @@ func (ec *executionContext) _Studio(ctx context.Context, sel ast.SelectionSet, o
 				}
 				return res
 			})
-		case "created_at":
-			out.Values[i] = ec._Studio_created_at(ctx, field, obj)
+		case "createdAt":
+			out.Values[i] = ec._Studio_createdAt(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
-		case "updated_at":
-			out.Values[i] = ec._Studio_updated_at(ctx, field, obj)
+		case "updatedAt":
+			out.Values[i] = ec._Studio_updatedAt(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
@@ -3912,6 +4020,21 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
+func (ec *executionContext) unmarshalNCreateRoomInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐCreateRoomInput(ctx context.Context, v interface{}) (model.CreateRoomInput, error) {
+	res, err := ec.unmarshalInputCreateRoomInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNCreateSchoolInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐCreateSchoolInput(ctx context.Context, v interface{}) (model.CreateSchoolInput, error) {
+	res, err := ec.unmarshalInputCreateSchoolInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNCreateStudioInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐCreateStudioInput(ctx context.Context, v interface{}) (model.CreateStudioInput, error) {
+	res, err := ec.unmarshalInputCreateStudioInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNID2uint(ctx context.Context, v interface{}) (uint, error) {
 	res, err := graphql.UnmarshalUint(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -3979,11 +4102,6 @@ func (ec *executionContext) marshalNRoom2ᚖgithubᚗcomᚋmatsuokashuheiᚋland
 	return ec._Room(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNRoomInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐRoomInput(ctx context.Context, v interface{}) (model.RoomInput, error) {
-	res, err := ec.unmarshalInputRoomInput(ctx, v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
 func (ec *executionContext) marshalNSchool2githubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐSchool(ctx context.Context, sel ast.SelectionSet, v models.School) graphql.Marshaler {
 	return ec._School(ctx, sel, &v)
 }
@@ -4034,11 +4152,6 @@ func (ec *executionContext) marshalNSchool2ᚖgithubᚗcomᚋmatsuokashuheiᚋla
 		return graphql.Null
 	}
 	return ec._School(ctx, sel, v)
-}
-
-func (ec *executionContext) unmarshalNSchoolInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐSchoolInput(ctx context.Context, v interface{}) (model.SchoolInput, error) {
-	res, err := ec.unmarshalInputSchoolInput(ctx, v)
-	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {
@@ -4108,11 +4221,6 @@ func (ec *executionContext) marshalNStudio2ᚖgithubᚗcomᚋmatsuokashuheiᚋla
 	return ec._Studio(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNStudioInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐStudioInput(ctx context.Context, v interface{}) (model.StudioInput, error) {
-	res, err := ec.unmarshalInputStudioInput(ctx, v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
 func (ec *executionContext) unmarshalNTime2timeᚐTime(ctx context.Context, v interface{}) (time.Time, error) {
 	res, err := graphql.UnmarshalTime(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -4126,6 +4234,21 @@ func (ec *executionContext) marshalNTime2timeᚐTime(ctx context.Context, sel as
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) unmarshalNUpdateRoomInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐUpdateRoomInput(ctx context.Context, v interface{}) (model.UpdateRoomInput, error) {
+	res, err := ec.unmarshalInputUpdateRoomInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNUpdateSchoolInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐUpdateSchoolInput(ctx context.Context, v interface{}) (model.UpdateSchoolInput, error) {
+	res, err := ec.unmarshalInputUpdateSchoolInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNUpdateStudioInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐUpdateStudioInput(ctx context.Context, v interface{}) (model.UpdateStudioInput, error) {
+	res, err := ec.unmarshalInputUpdateStudioInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalN__Directive2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx context.Context, sel ast.SelectionSet, v introspection.Directive) graphql.Marshaler {
@@ -4407,6 +4530,21 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 		return graphql.Null
 	}
 	return graphql.MarshalBoolean(*v)
+}
+
+func (ec *executionContext) unmarshalOID2ᚖuint(ctx context.Context, v interface{}) (*uint, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := graphql.UnmarshalUint(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOID2ᚖuint(ctx context.Context, sel ast.SelectionSet, v *uint) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return graphql.MarshalUint(*v)
 }
 
 func (ec *executionContext) marshalORoom2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐRoom(ctx context.Context, sel ast.SelectionSet, v *models.Room) graphql.Marshaler {

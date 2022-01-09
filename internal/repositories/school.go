@@ -6,12 +6,12 @@ import (
 )
 
 type SchoolRepository struct {
-	database *gorm.DB
+	db *gorm.DB
 }
 
 func (repository *SchoolRepository) FindAll() ([]*models.School, error) {
 	var schools []*models.School
-	err := repository.database.Find(&schools).Error
+	err := repository.db.Find(&schools).Error
 	if err != nil {
 		return nil, err
 	}
@@ -20,7 +20,7 @@ func (repository *SchoolRepository) FindAll() ([]*models.School, error) {
 
 func (repository *SchoolRepository) Find(id uint) (*models.School, error) {
 	var school *models.School
-	err := repository.database.First(&school, id).Error
+	err := repository.db.First(&school, id).Error
 	if err != nil {
 		return nil, err
 	}
@@ -28,30 +28,33 @@ func (repository *SchoolRepository) Find(id uint) (*models.School, error) {
 }
 
 func (repository *SchoolRepository) Create(school *models.School) (*models.School, error) {
-	err := repository.database.Create(&school).Error
+	err := repository.db.Create(&school).Error
 	if err != nil {
 		return nil, err
 	}
 	return school, nil
 }
 
-func (repsitory *SchoolRepository) Update(school *models.School) (*models.School, error) {
-	err := repsitory.database.Save(school).Error
+func (repository *SchoolRepository) Update(school *models.School) (*models.School, error) {
+	err := repository.db.Save(school).Error
 	if err != nil {
 		return nil, err
 	}
 	return school, nil
 }
 
-func (repsitory *SchoolRepository) Delete(id uint) (*models.School, error) {
-	var school *models.School
-	err := repsitory.database.Delete(&school, id).Error
+func (repository *SchoolRepository) Delete(id uint) (*models.School, error) {
+	var school, err = repository.Find(id)
+	if err != nil {
+		return nil, err
+	}
+	err = repository.db.Delete(&school, id).Error
 	if err != nil {
 		return nil, err
 	}
 	return school, nil
 }
 
-func NewSchoolRepository(database *gorm.DB) *SchoolRepository {
-	return &SchoolRepository{database: database}
+func NewSchoolRepository(db *gorm.DB) *SchoolRepository {
+	return &SchoolRepository{db: db}
 }

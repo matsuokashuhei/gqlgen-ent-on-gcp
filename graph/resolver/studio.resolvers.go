@@ -6,58 +6,84 @@ package resolver
 import (
 	"context"
 	"fmt"
-	"time"
 
 	"github.com/matsuokashuhei/landin/graph/generated"
 	"github.com/matsuokashuhei/landin/graph/model"
 	"github.com/matsuokashuhei/landin/internal/models"
+	"github.com/matsuokashuhei/landin/internal/repositories"
 )
 
-func (r *mutationResolver) CreateStudio(ctx context.Context, input model.StudioInput) (*models.Studio, error) {
-	panic(fmt.Errorf("not implemented"))
+func (r *mutationResolver) CreateStudio(ctx context.Context, input model.CreateStudioInput) (*models.Studio, error) {
+	repository := repositories.NewStudioRepository(r.DB)
+	studio := &models.Studio{
+		Name:     input.Name,
+		SchoolID: input.SchoolID,
+	}
+	_, err := repository.Create(studio)
+	if err != nil {
+		return nil, err
+	}
+	return studio, nil
 }
 
-func (r *mutationResolver) UpdateStudio(ctx context.Context, id uint, input model.StudioInput) (*models.Studio, error) {
-	panic(fmt.Errorf("not implemented"))
+func (r *mutationResolver) UpdateStudio(ctx context.Context, input model.UpdateStudioInput) (*models.Studio, error) {
+	repository := repositories.NewStudioRepository(r.DB)
+	var studio, err = repository.Find(input.ID)
+	if err != nil {
+		return nil, err
+	}
+	if input.Name != nil || input.SchoolID != nil {
+		return studio, nil
+	}
+	if input.Name != nil {
+		studio.Name = *input.Name
+	}
+	if input.SchoolID != nil {
+		studio.SchoolID = *input.SchoolID
+	}
+	_, err = repository.Update(studio)
+	if err != nil {
+		return nil, err
+	}
+	return studio, nil
 }
 
 func (r *mutationResolver) DeleteStudio(ctx context.Context, id uint) (*models.Studio, error) {
-	panic(fmt.Errorf("not implemented"))
+	repository := repositories.NewStudioRepository(r.DB)
+	studio, err := repository.Delete(id)
+	if err != nil {
+		return nil, err
+	}
+	return studio, nil
 }
 
 func (r *queryResolver) Studio(ctx context.Context, id uint) (*models.Studio, error) {
-	panic(fmt.Errorf("not implemented"))
+	panic(fmt.Errorf("Studio was not implemented"))
 }
 
 func (r *queryResolver) Studios(ctx context.Context) ([]*models.Studio, error) {
-	panic(fmt.Errorf("not implemented"))
+	panic(fmt.Errorf("Studios was not implemented"))
 }
 
 func (r *studioResolver) School(ctx context.Context, obj *models.Studio) (*models.School, error) {
-	panic(fmt.Errorf("not implemented"))
+	repository := repositories.NewSchoolRepository(r.DB)
+	school, err := repository.Find(obj.SchoolID)
+	if err != nil {
+		return nil, err
+	}
+	return school, nil
 }
 
 func (r *studioResolver) Rooms(ctx context.Context, obj *models.Studio) ([]*models.Room, error) {
-	panic(fmt.Errorf("not implemented"))
+	repository := repositories.NewRoomRepository(r.DB)
+	rooms, err := repository.FindAll(obj.ID)
+	if err != nil {
+		return nil, err
+	}
+	return rooms, nil
 }
 
 // Studio returns generated.StudioResolver implementation.
 func (r *Resolver) Studio() generated.StudioResolver { return &studioResolver{r} }
 
 type studioResolver struct{ *Resolver }
-
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//    it when you're done.
-//  - You have helper methods in this file. Move them out to keep these resolver files clean.
-func (r *studioResolver) ID(ctx context.Context, obj *models.Studio) (int, error) {
-	return int(obj.ID), nil
-}
-func (r *studioResolver) CreatedAt(ctx context.Context, obj *models.Studio) (string, error) {
-	return obj.CreatedAt.Format(time.RFC3339), nil
-}
-func (r *studioResolver) UpdatedAt(ctx context.Context, obj *models.Studio) (string, error) {
-	return obj.UpdatedAt.Format(time.RFC3339), nil
-}

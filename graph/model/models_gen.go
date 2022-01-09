@@ -2,15 +2,33 @@
 
 package model
 
-type RoomInput struct {
+type CreateRoomInput struct {
+	Name     string `json:"name"`
+	StudioID uint   `json:"studioID"`
+}
+
+type CreateSchoolInput struct {
 	Name string `json:"name"`
 }
 
-type SchoolInput struct {
-	Name string `json:"name"`
-}
-
-type StudioInput struct {
+type CreateStudioInput struct {
 	Name     string `json:"name"`
 	SchoolID uint   `json:"schoolID"`
+}
+
+type UpdateRoomInput struct {
+	ID       uint    `json:"id"`
+	Name     *string `json:"name"`
+	StudioID *uint   `json:"studioID"`
+}
+
+type UpdateSchoolInput struct {
+	ID   uint   `json:"id"`
+	Name string `json:"name"`
+}
+
+type UpdateStudioInput struct {
+	ID       uint    `json:"id"`
+	Name     *string `json:"name"`
+	SchoolID *uint   `json:"schoolID"`
 }

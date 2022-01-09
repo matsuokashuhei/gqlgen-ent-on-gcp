@@ -6,11 +6,16 @@ type School {
   id: ID!
   name: String!
   studios: [Studio]!
-  created_at: Time!
-  updated_at: Time!
+  createdAt: Time!
+  updatedAt: Time!
 }
 
-input SchoolInput {
+input CreateSchoolInput {
+  name: String!
+}
+
+input UpdateSchoolInput {
+  id: ID!
   name: String!
 }
 
@@ -20,7 +25,7 @@ extend type Query {
 }
 
 extend type Mutation {
-  createSchool(input: SchoolInput!): School!
-  updateSchool(id: ID!, input: SchoolInput!): School!
+  createSchool(input: CreateSchoolInput!): School!
+  updateSchool(input: UpdateSchoolInput!): School!
   deleteSchool(id: ID!): School!
 }
