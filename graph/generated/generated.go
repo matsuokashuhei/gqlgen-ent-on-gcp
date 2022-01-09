@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"sync"
 	"sync/atomic"
+	"time"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
@@ -51,20 +52,20 @@ type ComplexityRoot struct {
 		CreateRoom   func(childComplexity int, input model.RoomInput) int
 		CreateSchool func(childComplexity int, input model.SchoolInput) int
 		CreateStudio func(childComplexity int, input model.StudioInput) int
-		DeleteRoom   func(childComplexity int, id int) int
-		DeleteSchool func(childComplexity int, id int) int
-		DeleteStudio func(childComplexity int, id int) int
-		UpdateRoom   func(childComplexity int, id int, input model.RoomInput) int
-		UpdateSchool func(childComplexity int, id int, input model.SchoolInput) int
-		UpdateStudio func(childComplexity int, id int, input model.StudioInput) int
+		DeleteRoom   func(childComplexity int, id uint) int
+		DeleteSchool func(childComplexity int, id uint) int
+		DeleteStudio func(childComplexity int, id uint) int
+		UpdateRoom   func(childComplexity int, id uint, input model.RoomInput) int
+		UpdateSchool func(childComplexity int, id uint, input model.SchoolInput) int
+		UpdateStudio func(childComplexity int, id uint, input model.StudioInput) int
 	}
 
 	Query struct {
-		Room    func(childComplexity int, id int) int
+		Room    func(childComplexity int, id uint) int
 		Rooms   func(childComplexity int) int
-		School  func(childComplexity int, id int) int
+		School  func(childComplexity int, id uint) int
 		Schools func(childComplexity int) int
-		Studio  func(childComplexity int, id int) int
+		Studio  func(childComplexity int, id uint) int
 		Studios func(childComplexity int) int
 	}
 
@@ -96,44 +97,32 @@ type ComplexityRoot struct {
 
 type MutationResolver interface {
 	CreateRoom(ctx context.Context, input model.RoomInput) (*models.Room, error)
-	UpdateRoom(ctx context.Context, id int, input model.RoomInput) (*models.Room, error)
-	DeleteRoom(ctx context.Context, id int) (*models.Room, error)
+	UpdateRoom(ctx context.Context, id uint, input model.RoomInput) (*models.Room, error)
+	DeleteRoom(ctx context.Context, id uint) (*models.Room, error)
 	CreateSchool(ctx context.Context, input model.SchoolInput) (*models.School, error)
-	UpdateSchool(ctx context.Context, id int, input model.SchoolInput) (*models.School, error)
-	DeleteSchool(ctx context.Context, id int) (*models.School, error)
+	UpdateSchool(ctx context.Context, id uint, input model.SchoolInput) (*models.School, error)
+	DeleteSchool(ctx context.Context, id uint) (*models.School, error)
 	CreateStudio(ctx context.Context, input model.StudioInput) (*models.Studio, error)
-	UpdateStudio(ctx context.Context, id int, input model.StudioInput) (*models.Studio, error)
-	DeleteStudio(ctx context.Context, id int) (*models.Studio, error)
+	UpdateStudio(ctx context.Context, id uint, input model.StudioInput) (*models.Studio, error)
+	DeleteStudio(ctx context.Context, id uint) (*models.Studio, error)
 }
 type QueryResolver interface {
-	Room(ctx context.Context, id int) (*models.Room, error)
+	Room(ctx context.Context, id uint) (*models.Room, error)
 	Rooms(ctx context.Context) ([]*models.Room, error)
-	School(ctx context.Context, id int) (*models.School, error)
+	School(ctx context.Context, id uint) (*models.School, error)
 	Schools(ctx context.Context) ([]*models.School, error)
-	Studio(ctx context.Context, id int) (*models.Studio, error)
+	Studio(ctx context.Context, id uint) (*models.Studio, error)
 	Studios(ctx context.Context) ([]*models.Studio, error)
 }
 type RoomResolver interface {
-	ID(ctx context.Context, obj *models.Room) (int, error)
-
 	Studio(ctx context.Context, obj *models.Room) (*models.Studio, error)
-	CreatedAt(ctx context.Context, obj *models.Room) (string, error)
-	UpdatedAt(ctx context.Context, obj *models.Room) (string, error)
 }
 type SchoolResolver interface {
-	ID(ctx context.Context, obj *models.School) (int, error)
-
 	Studios(ctx context.Context, obj *models.School) ([]*models.Studio, error)
-	CreatedAt(ctx context.Context, obj *models.School) (string, error)
-	UpdatedAt(ctx context.Context, obj *models.School) (string, error)
 }
 type StudioResolver interface {
-	ID(ctx context.Context, obj *models.Studio) (int, error)
-
 	School(ctx context.Context, obj *models.Studio) (*models.School, error)
 	Rooms(ctx context.Context, obj *models.Studio) ([]*models.Room, error)
-	CreatedAt(ctx context.Context, obj *models.Studio) (string, error)
-	UpdatedAt(ctx context.Context, obj *models.Studio) (string, error)
 }
 
 type executableSchema struct {
@@ -197,7 +186,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.DeleteRoom(childComplexity, args["id"].(int)), true
+		return e.complexity.Mutation.DeleteRoom(childComplexity, args["id"].(uint)), true
 
 	case "Mutation.deleteSchool":
 		if e.complexity.Mutation.DeleteSchool == nil {
@@ -209,7 +198,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.DeleteSchool(childComplexity, args["id"].(int)), true
+		return e.complexity.Mutation.DeleteSchool(childComplexity, args["id"].(uint)), true
 
 	case "Mutation.deleteStudio":
 		if e.complexity.Mutation.DeleteStudio == nil {
@@ -221,7 +210,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.DeleteStudio(childComplexity, args["id"].(int)), true
+		return e.complexity.Mutation.DeleteStudio(childComplexity, args["id"].(uint)), true
 
 	case "Mutation.updateRoom":
 		if e.complexity.Mutation.UpdateRoom == nil {
@@ -233,7 +222,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateRoom(childComplexity, args["id"].(int), args["input"].(model.RoomInput)), true
+		return e.complexity.Mutation.UpdateRoom(childComplexity, args["id"].(uint), args["input"].(model.RoomInput)), true
 
 	case "Mutation.updateSchool":
 		if e.complexity.Mutation.UpdateSchool == nil {
@@ -245,7 +234,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateSchool(childComplexity, args["id"].(int), args["input"].(model.SchoolInput)), true
+		return e.complexity.Mutation.UpdateSchool(childComplexity, args["id"].(uint), args["input"].(model.SchoolInput)), true
 
 	case "Mutation.updateStudio":
 		if e.complexity.Mutation.UpdateStudio == nil {
@@ -257,7 +246,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateStudio(childComplexity, args["id"].(int), args["input"].(model.StudioInput)), true
+		return e.complexity.Mutation.UpdateStudio(childComplexity, args["id"].(uint), args["input"].(model.StudioInput)), true
 
 	case "Query.room":
 		if e.complexity.Query.Room == nil {
@@ -269,7 +258,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Room(childComplexity, args["id"].(int)), true
+		return e.complexity.Query.Room(childComplexity, args["id"].(uint)), true
 
 	case "Query.rooms":
 		if e.complexity.Query.Rooms == nil {
@@ -288,7 +277,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.School(childComplexity, args["id"].(int)), true
+		return e.complexity.Query.School(childComplexity, args["id"].(uint)), true
 
 	case "Query.schools":
 		if e.complexity.Query.Schools == nil {
@@ -307,7 +296,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Studio(childComplexity, args["id"].(int)), true
+		return e.complexity.Query.Studio(childComplexity, args["id"].(uint)), true
 
 	case "Query.studios":
 		if e.complexity.Query.Studios == nil {
@@ -500,8 +489,8 @@ type Room {
   id: ID!
   name: String!
   studio: Studio!
-  created_at: String!
-  updated_at: String!
+  created_at: Time!
+  updated_at: Time!
 }
 
 input RoomInput {
@@ -519,6 +508,8 @@ extend type Mutation {
   deleteRoom(id: ID!): Room!
 }
 `, BuiltIn: false},
+	{Name: "graph/schema/scalar.graphql", Input: `scalar Time
+`, BuiltIn: false},
 	{Name: "graph/schema/school.graphql", Input: `# GraphQL schema example
 #
 # https://gqlgen.com/getting-started/
@@ -527,8 +518,8 @@ type School {
   id: ID!
   name: String!
   studios: [Studio]!
-  created_at: String!
-  updated_at: String!
+  created_at: Time!
+  updated_at: Time!
 }
 
 input SchoolInput {
@@ -555,8 +546,8 @@ type Studio {
   name: String!
   school: School!
   rooms: [Room]!
-  created_at: String!
-  updated_at: String!
+  created_at: Time!
+  updated_at: Time!
 }
 
 input StudioInput {
@@ -630,10 +621,10 @@ func (ec *executionContext) field_Mutation_createStudio_args(ctx context.Context
 func (ec *executionContext) field_Mutation_deleteRoom_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 int
+	var arg0 uint
 	if tmp, ok := rawArgs["id"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-		arg0, err = ec.unmarshalNID2int(ctx, tmp)
+		arg0, err = ec.unmarshalNID2uint(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -645,10 +636,10 @@ func (ec *executionContext) field_Mutation_deleteRoom_args(ctx context.Context, 
 func (ec *executionContext) field_Mutation_deleteSchool_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 int
+	var arg0 uint
 	if tmp, ok := rawArgs["id"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-		arg0, err = ec.unmarshalNID2int(ctx, tmp)
+		arg0, err = ec.unmarshalNID2uint(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -660,10 +651,10 @@ func (ec *executionContext) field_Mutation_deleteSchool_args(ctx context.Context
 func (ec *executionContext) field_Mutation_deleteStudio_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 int
+	var arg0 uint
 	if tmp, ok := rawArgs["id"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-		arg0, err = ec.unmarshalNID2int(ctx, tmp)
+		arg0, err = ec.unmarshalNID2uint(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -675,10 +666,10 @@ func (ec *executionContext) field_Mutation_deleteStudio_args(ctx context.Context
 func (ec *executionContext) field_Mutation_updateRoom_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 int
+	var arg0 uint
 	if tmp, ok := rawArgs["id"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-		arg0, err = ec.unmarshalNID2int(ctx, tmp)
+		arg0, err = ec.unmarshalNID2uint(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -699,10 +690,10 @@ func (ec *executionContext) field_Mutation_updateRoom_args(ctx context.Context, 
 func (ec *executionContext) field_Mutation_updateSchool_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 int
+	var arg0 uint
 	if tmp, ok := rawArgs["id"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-		arg0, err = ec.unmarshalNID2int(ctx, tmp)
+		arg0, err = ec.unmarshalNID2uint(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -723,10 +714,10 @@ func (ec *executionContext) field_Mutation_updateSchool_args(ctx context.Context
 func (ec *executionContext) field_Mutation_updateStudio_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 int
+	var arg0 uint
 	if tmp, ok := rawArgs["id"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-		arg0, err = ec.unmarshalNID2int(ctx, tmp)
+		arg0, err = ec.unmarshalNID2uint(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -762,10 +753,10 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 func (ec *executionContext) field_Query_room_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 int
+	var arg0 uint
 	if tmp, ok := rawArgs["id"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-		arg0, err = ec.unmarshalNID2int(ctx, tmp)
+		arg0, err = ec.unmarshalNID2uint(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -777,10 +768,10 @@ func (ec *executionContext) field_Query_room_args(ctx context.Context, rawArgs m
 func (ec *executionContext) field_Query_school_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 int
+	var arg0 uint
 	if tmp, ok := rawArgs["id"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-		arg0, err = ec.unmarshalNID2int(ctx, tmp)
+		arg0, err = ec.unmarshalNID2uint(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -792,10 +783,10 @@ func (ec *executionContext) field_Query_school_args(ctx context.Context, rawArgs
 func (ec *executionContext) field_Query_studio_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 int
+	var arg0 uint
 	if tmp, ok := rawArgs["id"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-		arg0, err = ec.unmarshalNID2int(ctx, tmp)
+		arg0, err = ec.unmarshalNID2uint(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -909,7 +900,7 @@ func (ec *executionContext) _Mutation_updateRoom(ctx context.Context, field grap
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdateRoom(rctx, args["id"].(int), args["input"].(model.RoomInput))
+		return ec.resolvers.Mutation().UpdateRoom(rctx, args["id"].(uint), args["input"].(model.RoomInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -951,7 +942,7 @@ func (ec *executionContext) _Mutation_deleteRoom(ctx context.Context, field grap
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().DeleteRoom(rctx, args["id"].(int))
+		return ec.resolvers.Mutation().DeleteRoom(rctx, args["id"].(uint))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1035,7 +1026,7 @@ func (ec *executionContext) _Mutation_updateSchool(ctx context.Context, field gr
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdateSchool(rctx, args["id"].(int), args["input"].(model.SchoolInput))
+		return ec.resolvers.Mutation().UpdateSchool(rctx, args["id"].(uint), args["input"].(model.SchoolInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1077,7 +1068,7 @@ func (ec *executionContext) _Mutation_deleteSchool(ctx context.Context, field gr
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().DeleteSchool(rctx, args["id"].(int))
+		return ec.resolvers.Mutation().DeleteSchool(rctx, args["id"].(uint))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1161,7 +1152,7 @@ func (ec *executionContext) _Mutation_updateStudio(ctx context.Context, field gr
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdateStudio(rctx, args["id"].(int), args["input"].(model.StudioInput))
+		return ec.resolvers.Mutation().UpdateStudio(rctx, args["id"].(uint), args["input"].(model.StudioInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1203,7 +1194,7 @@ func (ec *executionContext) _Mutation_deleteStudio(ctx context.Context, field gr
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().DeleteStudio(rctx, args["id"].(int))
+		return ec.resolvers.Mutation().DeleteStudio(rctx, args["id"].(uint))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1245,7 +1236,7 @@ func (ec *executionContext) _Query_room(ctx context.Context, field graphql.Colle
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Room(rctx, args["id"].(int))
+		return ec.resolvers.Query().Room(rctx, args["id"].(uint))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1322,7 +1313,7 @@ func (ec *executionContext) _Query_school(ctx context.Context, field graphql.Col
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().School(rctx, args["id"].(int))
+		return ec.resolvers.Query().School(rctx, args["id"].(uint))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1399,7 +1390,7 @@ func (ec *executionContext) _Query_studio(ctx context.Context, field graphql.Col
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Studio(rctx, args["id"].(int))
+		return ec.resolvers.Query().Studio(rctx, args["id"].(uint))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1533,14 +1524,14 @@ func (ec *executionContext) _Room_id(ctx context.Context, field graphql.Collecte
 		Object:     "Room",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Room().ID(rctx, obj)
+		return obj.ID, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1552,9 +1543,9 @@ func (ec *executionContext) _Room_id(ctx context.Context, field graphql.Collecte
 		}
 		return graphql.Null
 	}
-	res := resTmp.(int)
+	res := resTmp.(uint)
 	fc.Result = res
-	return ec.marshalNID2int(ctx, field.Selections, res)
+	return ec.marshalNID2uint(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Room_name(ctx context.Context, field graphql.CollectedField, obj *models.Room) (ret graphql.Marshaler) {
@@ -1638,14 +1629,14 @@ func (ec *executionContext) _Room_created_at(ctx context.Context, field graphql.
 		Object:     "Room",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Room().CreatedAt(rctx, obj)
+		return obj.CreatedAt, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1657,9 +1648,9 @@ func (ec *executionContext) _Room_created_at(ctx context.Context, field graphql.
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(time.Time)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Room_updated_at(ctx context.Context, field graphql.CollectedField, obj *models.Room) (ret graphql.Marshaler) {
@@ -1673,14 +1664,14 @@ func (ec *executionContext) _Room_updated_at(ctx context.Context, field graphql.
 		Object:     "Room",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Room().UpdatedAt(rctx, obj)
+		return obj.UpdatedAt, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1692,9 +1683,9 @@ func (ec *executionContext) _Room_updated_at(ctx context.Context, field graphql.
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(time.Time)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _School_id(ctx context.Context, field graphql.CollectedField, obj *models.School) (ret graphql.Marshaler) {
@@ -1708,14 +1699,14 @@ func (ec *executionContext) _School_id(ctx context.Context, field graphql.Collec
 		Object:     "School",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.School().ID(rctx, obj)
+		return obj.ID, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1727,9 +1718,9 @@ func (ec *executionContext) _School_id(ctx context.Context, field graphql.Collec
 		}
 		return graphql.Null
 	}
-	res := resTmp.(int)
+	res := resTmp.(uint)
 	fc.Result = res
-	return ec.marshalNID2int(ctx, field.Selections, res)
+	return ec.marshalNID2uint(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _School_name(ctx context.Context, field graphql.CollectedField, obj *models.School) (ret graphql.Marshaler) {
@@ -1813,14 +1804,14 @@ func (ec *executionContext) _School_created_at(ctx context.Context, field graphq
 		Object:     "School",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.School().CreatedAt(rctx, obj)
+		return obj.CreatedAt, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1832,9 +1823,9 @@ func (ec *executionContext) _School_created_at(ctx context.Context, field graphq
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(time.Time)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _School_updated_at(ctx context.Context, field graphql.CollectedField, obj *models.School) (ret graphql.Marshaler) {
@@ -1848,14 +1839,14 @@ func (ec *executionContext) _School_updated_at(ctx context.Context, field graphq
 		Object:     "School",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.School().UpdatedAt(rctx, obj)
+		return obj.UpdatedAt, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1867,9 +1858,9 @@ func (ec *executionContext) _School_updated_at(ctx context.Context, field graphq
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(time.Time)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Studio_id(ctx context.Context, field graphql.CollectedField, obj *models.Studio) (ret graphql.Marshaler) {
@@ -1883,14 +1874,14 @@ func (ec *executionContext) _Studio_id(ctx context.Context, field graphql.Collec
 		Object:     "Studio",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Studio().ID(rctx, obj)
+		return obj.ID, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1902,9 +1893,9 @@ func (ec *executionContext) _Studio_id(ctx context.Context, field graphql.Collec
 		}
 		return graphql.Null
 	}
-	res := resTmp.(int)
+	res := resTmp.(uint)
 	fc.Result = res
-	return ec.marshalNID2int(ctx, field.Selections, res)
+	return ec.marshalNID2uint(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Studio_name(ctx context.Context, field graphql.CollectedField, obj *models.Studio) (ret graphql.Marshaler) {
@@ -2023,14 +2014,14 @@ func (ec *executionContext) _Studio_created_at(ctx context.Context, field graphq
 		Object:     "Studio",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Studio().CreatedAt(rctx, obj)
+		return obj.CreatedAt, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2042,9 +2033,9 @@ func (ec *executionContext) _Studio_created_at(ctx context.Context, field graphq
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(time.Time)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Studio_updated_at(ctx context.Context, field graphql.CollectedField, obj *models.Studio) (ret graphql.Marshaler) {
@@ -2058,14 +2049,14 @@ func (ec *executionContext) _Studio_updated_at(ctx context.Context, field graphq
 		Object:     "Studio",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Studio().UpdatedAt(rctx, obj)
+		return obj.UpdatedAt, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2077,9 +2068,9 @@ func (ec *executionContext) _Studio_updated_at(ctx context.Context, field graphq
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(time.Time)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) ___Directive_name(ctx context.Context, field graphql.CollectedField, obj *introspection.Directive) (ret graphql.Marshaler) {
@@ -3271,7 +3262,7 @@ func (ec *executionContext) unmarshalInputStudioInput(ctx context.Context, obj i
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("schoolID"))
-			it.SchoolID, err = ec.unmarshalNID2int(ctx, v)
+			it.SchoolID, err = ec.unmarshalNID2uint(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3486,19 +3477,10 @@ func (ec *executionContext) _Room(ctx context.Context, sel ast.SelectionSet, obj
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Room")
 		case "id":
-			field := field
-			out.Concurrently(i, func() (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Room_id(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
-				}
-				return res
-			})
+			out.Values[i] = ec._Room_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
 		case "name":
 			out.Values[i] = ec._Room_name(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -3519,33 +3501,15 @@ func (ec *executionContext) _Room(ctx context.Context, sel ast.SelectionSet, obj
 				return res
 			})
 		case "created_at":
-			field := field
-			out.Concurrently(i, func() (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Room_created_at(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
-				}
-				return res
-			})
+			out.Values[i] = ec._Room_created_at(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
 		case "updated_at":
-			field := field
-			out.Concurrently(i, func() (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Room_updated_at(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
-				}
-				return res
-			})
+			out.Values[i] = ec._Room_updated_at(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -3569,19 +3533,10 @@ func (ec *executionContext) _School(ctx context.Context, sel ast.SelectionSet, o
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("School")
 		case "id":
-			field := field
-			out.Concurrently(i, func() (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._School_id(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
-				}
-				return res
-			})
+			out.Values[i] = ec._School_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
 		case "name":
 			out.Values[i] = ec._School_name(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -3602,33 +3557,15 @@ func (ec *executionContext) _School(ctx context.Context, sel ast.SelectionSet, o
 				return res
 			})
 		case "created_at":
-			field := field
-			out.Concurrently(i, func() (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._School_created_at(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
-				}
-				return res
-			})
+			out.Values[i] = ec._School_created_at(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
 		case "updated_at":
-			field := field
-			out.Concurrently(i, func() (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._School_updated_at(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
-				}
-				return res
-			})
+			out.Values[i] = ec._School_updated_at(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -3652,19 +3589,10 @@ func (ec *executionContext) _Studio(ctx context.Context, sel ast.SelectionSet, o
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Studio")
 		case "id":
-			field := field
-			out.Concurrently(i, func() (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Studio_id(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
-				}
-				return res
-			})
+			out.Values[i] = ec._Studio_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
 		case "name":
 			out.Values[i] = ec._Studio_name(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -3699,33 +3627,15 @@ func (ec *executionContext) _Studio(ctx context.Context, sel ast.SelectionSet, o
 				return res
 			})
 		case "created_at":
-			field := field
-			out.Concurrently(i, func() (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Studio_created_at(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
-				}
-				return res
-			})
+			out.Values[i] = ec._Studio_created_at(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
 		case "updated_at":
-			field := field
-			out.Concurrently(i, func() (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Studio_updated_at(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
-				}
-				return res
-			})
+			out.Values[i] = ec._Studio_updated_at(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -4002,13 +3912,13 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) unmarshalNID2int(ctx context.Context, v interface{}) (int, error) {
-	res, err := graphql.UnmarshalInt(v)
+func (ec *executionContext) unmarshalNID2uint(ctx context.Context, v interface{}) (uint, error) {
+	res, err := graphql.UnmarshalUint(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNID2int(ctx context.Context, sel ast.SelectionSet, v int) graphql.Marshaler {
-	res := graphql.MarshalInt(v)
+func (ec *executionContext) marshalNID2uint(ctx context.Context, sel ast.SelectionSet, v uint) graphql.Marshaler {
+	res := graphql.MarshalUint(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -4201,6 +4111,21 @@ func (ec *executionContext) marshalNStudio2ᚖgithubᚗcomᚋmatsuokashuheiᚋla
 func (ec *executionContext) unmarshalNStudioInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐStudioInput(ctx context.Context, v interface{}) (model.StudioInput, error) {
 	res, err := ec.unmarshalInputStudioInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNTime2timeᚐTime(ctx context.Context, v interface{}) (time.Time, error) {
+	res, err := graphql.UnmarshalTime(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNTime2timeᚐTime(ctx context.Context, sel ast.SelectionSet, v time.Time) graphql.Marshaler {
+	res := graphql.MarshalTime(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+	}
+	return res
 }
 
 func (ec *executionContext) marshalN__Directive2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx context.Context, sel ast.SelectionSet, v introspection.Directive) graphql.Marshaler {

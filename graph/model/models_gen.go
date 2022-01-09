@@ -12,5 +12,5 @@ type SchoolInput struct {
 
 type StudioInput struct {
 	Name     string `json:"name"`
-	SchoolID int    `json:"schoolID"`
+	SchoolID uint   `json:"schoolID"`
 }

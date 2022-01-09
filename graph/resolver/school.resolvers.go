@@ -5,7 +5,6 @@ package resolver
 
 import (
 	"context"
-	"time"
 
 	"github.com/matsuokashuhei/landin/graph/generated"
 	"github.com/matsuokashuhei/landin/graph/model"
@@ -25,7 +24,7 @@ func (r *mutationResolver) CreateSchool(ctx context.Context, input model.SchoolI
 	return school, nil
 }
 
-func (r *mutationResolver) UpdateSchool(ctx context.Context, id int, input model.SchoolInput) (*models.School, error) {
+func (r *mutationResolver) UpdateSchool(ctx context.Context, id uint, input model.SchoolInput) (*models.School, error) {
 	repository := repositories.NewSchoolRepository(r.DB)
 	school, err := repository.Find(id)
 	if err != nil {
@@ -36,7 +35,7 @@ func (r *mutationResolver) UpdateSchool(ctx context.Context, id int, input model
 	return school, nil
 }
 
-func (r *mutationResolver) DeleteSchool(ctx context.Context, id int) (*models.School, error) {
+func (r *mutationResolver) DeleteSchool(ctx context.Context, id uint) (*models.School, error) {
 	repository := repositories.NewSchoolRepository(r.DB)
 	var school *models.School
 	var err error
@@ -52,7 +51,7 @@ func (r *mutationResolver) DeleteSchool(ctx context.Context, id int) (*models.Sc
 	}
 }
 
-func (r *queryResolver) School(ctx context.Context, id int) (*models.School, error) {
+func (r *queryResolver) School(ctx context.Context, id uint) (*models.School, error) {
 	repository := repositories.NewSchoolRepository(r.DB)
 	school, err := repository.Find(id)
 	if err != nil {
@@ -70,25 +69,13 @@ func (r *queryResolver) Schools(ctx context.Context) ([]*models.School, error) {
 	return schools, err
 }
 
-func (r *schoolResolver) ID(ctx context.Context, obj *models.School) (int, error) {
-	return int(obj.ID), nil
-}
-
 func (r *schoolResolver) Studios(ctx context.Context, obj *models.School) ([]*models.Studio, error) {
 	repository := repositories.NewStudioRepository(r.DB)
-	studios, err := repository.FindAll(int(obj.ID))
+	studios, err := repository.FindAll(obj.ID)
 	if err != nil {
 		return nil, err
 	}
 	return studios, nil
-}
-
-func (r *schoolResolver) CreatedAt(ctx context.Context, obj *models.School) (string, error) {
-	return obj.CreatedAt.Format(time.RFC3339), nil
-}
-
-func (r *schoolResolver) UpdatedAt(ctx context.Context, obj *models.School) (string, error) {
-	return obj.UpdatedAt.Format(time.RFC3339), nil
 }
 
 // School returns generated.SchoolResolver implementation.

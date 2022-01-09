@@ -7,8 +7,8 @@ type Studio {
   name: String!
   school: School!
   rooms: [Room]!
-  created_at: String!
-  updated_at: String!
+  created_at: Time!
+  updated_at: Time!
 }
 
 input StudioInput {

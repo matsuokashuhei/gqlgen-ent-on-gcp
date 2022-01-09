@@ -46,15 +46,13 @@ autobind:
 models:
   ID:
     model:
-      # - github.com/99designs/gqlgen/graphql.ID
-      - github.com/99designs/gqlgen/graphql.Int
-      # - github.com/99designs/gqlgen/graphql.Int64
-      # - github.com/99designs/gqlgen/graphql.Int32
+      - github.com/99designs/gqlgen/graphql.Uint
   Int:
     model:
-      - github.com/99designs/gqlgen/graphql.Int
-      # - github.com/99designs/gqlgen/graphql.Int64
-      # - github.com/99designs/gqlgen/graphql.Int32
+      - github.com/99designs/gqlgen/graphql.Uint
+  Time:
+    model:
+      - github.com/99designs/gqlgen/graphql.Time
   # School:
   #   model: github.com/matsuokashuhei/landin/internal/models.School
   # Studio:

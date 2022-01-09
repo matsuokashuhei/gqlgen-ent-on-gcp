@@ -16,15 +16,15 @@ func (r *mutationResolver) CreateRoom(ctx context.Context, input model.RoomInput
 	panic(fmt.Errorf("not implemented"))
 }
 
-func (r *mutationResolver) UpdateRoom(ctx context.Context, id int, input model.RoomInput) (*models.Room, error) {
+func (r *mutationResolver) UpdateRoom(ctx context.Context, id uint, input model.RoomInput) (*models.Room, error) {
 	panic(fmt.Errorf("not implemented"))
 }
 
-func (r *mutationResolver) DeleteRoom(ctx context.Context, id int) (*models.Room, error) {
+func (r *mutationResolver) DeleteRoom(ctx context.Context, id uint) (*models.Room, error) {
 	panic(fmt.Errorf("not implemented"))
 }
 
-func (r *queryResolver) Room(ctx context.Context, id int) (*models.Room, error) {
+func (r *queryResolver) Room(ctx context.Context, id uint) (*models.Room, error) {
 	panic(fmt.Errorf("not implemented"))
 }
 
@@ -32,19 +32,7 @@ func (r *queryResolver) Rooms(ctx context.Context) ([]*models.Room, error) {
 	panic(fmt.Errorf("not implemented"))
 }
 
-func (r *roomResolver) ID(ctx context.Context, obj *models.Room) (int, error) {
-	panic(fmt.Errorf("not implemented"))
-}
-
 func (r *roomResolver) Studio(ctx context.Context, obj *models.Room) (*models.Studio, error) {
-	panic(fmt.Errorf("not implemented"))
-}
-
-func (r *roomResolver) CreatedAt(ctx context.Context, obj *models.Room) (string, error) {
-	panic(fmt.Errorf("not implemented"))
-}
-
-func (r *roomResolver) UpdatedAt(ctx context.Context, obj *models.Room) (string, error) {
 	panic(fmt.Errorf("not implemented"))
 }
 

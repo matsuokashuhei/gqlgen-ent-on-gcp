@@ -9,7 +9,7 @@ type StudioRepository struct {
 	database *gorm.DB
 }
 
-func (repository *StudioRepository) FindAll(schoolID int) ([]*models.Studio, error) {
+func (repository *StudioRepository) FindAll(schoolID uint) ([]*models.Studio, error) {
 	var studios []*models.Studio
 	err := repository.database.Where("school_id = ?", schoolID).Find(&studios).Error
 	if err != nil {
@@ -18,7 +18,7 @@ func (repository *StudioRepository) FindAll(schoolID int) ([]*models.Studio, err
 	return studios, nil
 }
 
-func (repository *StudioRepository) Find(id int) (*models.Studio, error) {
+func (repository *StudioRepository) Find(id uint) (*models.Studio, error) {
 	var studios *models.Studio
 	err := repository.database.First(&studios, id).Error
 	if err != nil {

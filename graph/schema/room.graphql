@@ -6,8 +6,8 @@ type Room {
   id: ID!
   name: String!
   studio: Studio!
-  created_at: String!
-  updated_at: String!
+  created_at: Time!
+  updated_at: Time!
 }
 
 input RoomInput {

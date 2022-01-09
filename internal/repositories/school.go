@@ -18,7 +18,7 @@ func (repository *SchoolRepository) FindAll() ([]*models.School, error) {
 	return schools, nil
 }
 
-func (repository *SchoolRepository) Find(id int) (*models.School, error) {
+func (repository *SchoolRepository) Find(id uint) (*models.School, error) {
 	var school *models.School
 	err := repository.database.First(&school, id).Error
 	if err != nil {
@@ -43,7 +43,7 @@ func (repsitory *SchoolRepository) Update(school *models.School) (*models.School
 	return school, nil
 }
 
-func (repsitory *SchoolRepository) Delete(id int) (*models.School, error) {
+func (repsitory *SchoolRepository) Delete(id uint) (*models.School, error) {
 	var school *models.School
 	err := repsitory.database.Delete(&school, id).Error
 	if err != nil {
