@@ -1,9 +1,9 @@
 {
-    "name": "go",
+    "name": "backend",
     "dockerComposeFile": [
-        "../docker-compose.yml"
+        "../../docker-compose.yml"
     ],
-    "service": "go",
+    "service": "backend",
     "workspaceFolder": "/go/src/app",
     "extensions": [
         "apollographql.vscode-apollo",

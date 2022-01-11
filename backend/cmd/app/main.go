@@ -12,7 +12,7 @@ import (
 	"github.com/matsuokashuhei/landin/pkg/database"
 )
 
-const defaultPort = "8080"
+const defaultPort = "3000"
 
 func main() {
 	db, _ := database.Connect()

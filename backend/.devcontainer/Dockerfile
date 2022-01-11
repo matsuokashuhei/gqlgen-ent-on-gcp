@@ -39,7 +39,8 @@
 # ENTRYPOINT ["/usr/local/bin/todo"]
 
 FROM golang:1.17-buster AS base
-WORKDIR /go/src/app
+ENV workdir=/go/src/app
+WORKDIR $workdir
 
 ENV GO111MODULE="on"
 ENV GOOS="linux"
@@ -49,6 +50,6 @@ RUN go get -u github.com/BurntSushi/toml
 RUN go get -u github.com/cosmtrek/air
 
 
-COPY go.mod go.sum .
+COPY go.mod go.sum $workdir
 RUN go mod download
 COPY . .
