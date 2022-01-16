@@ -38,6 +38,17 @@ services:
       - "3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
+  firebase:
+    build:
+      context: firebase
+    command: firebase emulators:start
+    ports:
+      - "4000:4000"
+      - "9099:9099"
+    volumes:
+      - ./firebase/firebase.json:/app/firebase.json
+      - ./firebase/.firebaserc:/app/.firebaserc
+      - ./firebase/.config/configstore:/root/.config/configstore
 
 volumes:
   frontend-extensions:

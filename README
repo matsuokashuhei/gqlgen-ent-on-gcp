@@ -1,0 +1,15 @@
+# Set up Firebase Local Emulator Suite
+
+```
+docker-compose run --rm firebase firebase login --no-localhost
+```
+
+`.firebaserc`
+
+```
+{
+  "projects": {
+    "default": "<PROJECT_ID>"
+  }
+}
+```
