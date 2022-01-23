@@ -4,7 +4,8 @@
         "../../docker-compose.yml"
     ],
     "service": "backend",
-    "workspaceFolder": "/go/src/app",
+    // "workspaceFolder": "/go/src/app",
+    "workspaceFolder": "/app/backend",
     "extensions": [
         "apollographql.vscode-apollo",
         "golang.go",
@@ -14,5 +15,6 @@
         "files.insertFinalNewline": true,
         "files.trimFinalNewlines": true,
         "files.trimTrailingWhitespace": true,
+        "workbench.tree.indent": 16,
     }
 }

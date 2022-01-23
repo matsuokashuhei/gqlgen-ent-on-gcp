@@ -1,40 +1,40 @@
 {
-    "name": "frontend",
-    "dockerComposeFile": [
-        "../../docker-compose.yml",
+  "name": "frontend",
+  "dockerComposeFile": ["../../docker-compose.yml"],
+  "service": "frontend",
+  "shutdownAction": "none",
+  // "workspaceFolder": "/usr/local/src",
+  "workspaceFolder": "/app/frontend",
+  "extensions": [
+    "bradlc.vscode-tailwindcss",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode"
+  ],
+  "settings": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "files.insertFinalNewline": true,
+    "files.trimFinalNewlines": true,
+    "files.trimTrailingWhitespace": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll": true,
+      "source.organizeImports": false
+    },
+    "editor.formatOnSave": true,
+    "workbench.editor.enablePreview": false,
+    "workbench.editor.enablePreviewFromQuickOpen": false,
+    "workbench.tree.indent": 16,
+    "[javascript]": {
+      "editor.tabSize": 2
+    },
+    "eslint.validate": [
+      "javascript",
+      "javascriptreact",
+      "typescript",
+      "typescriptreact"
     ],
-    "service": "frontend",
-    "shutdownAction": "none",
-    "workspaceFolder": "/usr/local/src",
-    "extensions": [
-      "bradlc.vscode-tailwindcss",
-      "dbaeumer.vscode-eslint",
-      "esbenp.prettier-vscode"
-    ],
-    "settings": {
-      "editor.defaultFormatter": "esbenp.prettier-vscode",
-      "files.insertFinalNewline": true,
-      "files.trimFinalNewlines": true,
-      "files.trimTrailingWhitespace": true,
-      "editor.codeActionsOnSave": {
-        "source.fixAll": true,
-        "source.organizeImports": false
-      },
-      "editor.formatOnSave": true,
-      "workbench.editor.enablePreview": false,
-      "workbench.editor.enablePreviewFromQuickOpen": false,
-      "[javascript]": {
-        "editor.tabSize": 2
-      },
-      "eslint.validate": [
-        "javascript",
-        "javascriptreact",
-        "typescript",
-        "typescriptreact"
-      ],
-      "tailwindCSS.emmetCompletions": true,
-      "tailwindCSS.includeLanguages": {
-        "plaintext": "javascript"
-      }
+    "tailwindCSS.emmetCompletions": true,
+    "tailwindCSS.includeLanguages": {
+      "plaintext": "javascript"
     }
   }
+}
