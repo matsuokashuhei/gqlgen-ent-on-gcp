@@ -6,6 +6,7 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   UserCredential,
+  onAuthStateChanged,
 } from "firebase/auth";
 import { config } from "../firebase";
 
@@ -22,7 +23,7 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider: FC = ({ children }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  //   const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const auth = getAuth();
 
   const signUp = (email: string, password: string) => {
@@ -38,13 +39,17 @@ export const AuthProvider: FC = ({ children }) => {
   };
 
   useEffect(() => {
-    auth.onAuthStateChanged((user) => setCurrentUser(user));
+    const unsubscribed = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+      setLoading(false);
+    });
+    return () => unsubscribed();
   }, [auth]);
 
   return (
     <AuthContext.Provider
       value={{ currentUser, signUp, signIn, signOut }}
-      children={children}
+      children={!loading && children}
     />
   );
 };
