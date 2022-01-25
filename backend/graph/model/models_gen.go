@@ -16,6 +16,12 @@ type CreateStudioInput struct {
 	SchoolID uint   `json:"schoolID"`
 }
 
+type CreateUserInput struct {
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
 type UpdateRoomInput struct {
 	ID       uint    `json:"id"`
 	Name     *string `json:"name"`
