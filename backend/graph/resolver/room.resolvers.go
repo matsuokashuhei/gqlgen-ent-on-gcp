@@ -74,15 +74,7 @@ func (r *roomResolver) Studio(ctx context.Context, obj *models.Room) (*models.St
 	return studio, nil
 }
 
-// Mutation returns generated.MutationResolver implementation.
-func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
-
-// Query returns generated.QueryResolver implementation.
-func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
-
 // Room returns generated.RoomResolver implementation.
 func (r *Resolver) Room() generated.RoomResolver { return &roomResolver{r} }
 
-type mutationResolver struct{ *Resolver }
-type queryResolver struct{ *Resolver }
 type roomResolver struct{ *Resolver }

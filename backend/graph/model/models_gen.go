@@ -22,6 +22,11 @@ type CreateUserInput struct {
 	Password string `json:"password"`
 }
 
+type SignUpInput struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
 type UpdateRoomInput struct {
 	ID       uint    `json:"id"`
 	Name     *string `json:"name"`

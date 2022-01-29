@@ -19,12 +19,21 @@ func (repository *UserRepository) FindAll() ([]*models.User, error) {
 }
 
 func (repository *UserRepository) Find(id uint) (*models.User, error) {
-	var users *models.User
-	err := repository.db.First(&users, id).Error
+	var user *models.User
+	err := repository.db.First(&user, id).Error
 	if err != nil {
 		return nil, err
 	}
-	return users, nil
+	return user, nil
+}
+
+func (repository *UserRepository) FindByAuth(UID string) (*models.User, error) {
+	var user *models.User
+	err := repository.db.Where("firebase_uid = ?", UID).First(&user).Error
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
 }
 
 func (repository *UserRepository) Create(user *models.User) (*models.User, error) {

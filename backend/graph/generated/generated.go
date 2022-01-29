@@ -56,6 +56,7 @@ type ComplexityRoot struct {
 		DeleteRoom   func(childComplexity int, id uint) int
 		DeleteSchool func(childComplexity int, id uint) int
 		DeleteStudio func(childComplexity int, id uint) int
+		SignUp       func(childComplexity int, input model.SignUpInput) int
 		UpdateRoom   func(childComplexity int, input model.UpdateRoomInput) int
 		UpdateSchool func(childComplexity int, input model.UpdateSchoolInput) int
 		UpdateStudio func(childComplexity int, input model.UpdateStudioInput) int
@@ -68,6 +69,7 @@ type ComplexityRoot struct {
 		Schools func(childComplexity int) int
 		Studio  func(childComplexity int, id uint) int
 		Studios func(childComplexity int) int
+		User    func(childComplexity int) int
 	}
 
 	Room struct {
@@ -105,6 +107,7 @@ type ComplexityRoot struct {
 }
 
 type MutationResolver interface {
+	SignUp(ctx context.Context, input model.SignUpInput) (*models.User, error)
 	CreateRoom(ctx context.Context, input model.CreateRoomInput) (*models.Room, error)
 	UpdateRoom(ctx context.Context, input model.UpdateRoomInput) (*models.Room, error)
 	DeleteRoom(ctx context.Context, id uint) (*models.Room, error)
@@ -117,6 +120,7 @@ type MutationResolver interface {
 	CreateUser(ctx context.Context, input model.CreateUserInput) (*models.User, error)
 }
 type QueryResolver interface {
+	User(ctx context.Context) (*models.User, error)
 	Room(ctx context.Context, id uint) (*models.Room, error)
 	Rooms(ctx context.Context) ([]*models.Room, error)
 	School(ctx context.Context, id uint) (*models.School, error)
@@ -234,6 +238,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.DeleteStudio(childComplexity, args["id"].(uint)), true
 
+	case "Mutation.signUp":
+		if e.complexity.Mutation.SignUp == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_signUp_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.SignUp(childComplexity, args["input"].(model.SignUpInput)), true
+
 	case "Mutation.updateRoom":
 		if e.complexity.Mutation.UpdateRoom == nil {
 			break
@@ -326,6 +342,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.Studios(childComplexity), true
+
+	case "Query.user":
+		if e.complexity.Query.User == nil {
+			break
+		}
+
+		return e.complexity.Query.User(childComplexity), true
 
 	case "Room.createdAt":
 		if e.complexity.Room.CreatedAt == nil {
@@ -538,6 +561,19 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
+	{Name: "graph/schema/auth.graphql", Input: `input SignUpInput {
+  email: String!
+  password: String!
+}
+
+extend type Query {
+    user: User!
+}
+
+extend type Mutation {
+    signUp(input: SignUpInput!): User!
+}
+`, BuiltIn: false},
 	{Name: "graph/schema/room.graphql", Input: `# GraphQL schema example
 #
 # https://gqlgen.com/getting-started/
@@ -771,6 +807,21 @@ func (ec *executionContext) field_Mutation_deleteStudio_args(ctx context.Context
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_signUp_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.SignUpInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNSignUpInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐSignUpInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_updateRoom_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -913,6 +964,48 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 // endregion ************************** directives.gotpl **************************
 
 // region    **************************** field.gotpl *****************************
+
+func (ec *executionContext) _Mutation_signUp(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_signUp_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().SignUp(rctx, args["input"].(model.SignUpInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.User)
+	fc.Result = res
+	return ec.marshalNUser2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐUser(ctx, field.Selections, res)
+}
 
 func (ec *executionContext) _Mutation_createRoom(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
@@ -1318,6 +1411,41 @@ func (ec *executionContext) _Mutation_createUser(ctx context.Context, field grap
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Mutation().CreateUser(rctx, args["input"].(model.CreateUserInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.User)
+	fc.Result = res
+	return ec.marshalNUser2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐUser(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_user(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().User(rctx)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3617,6 +3745,37 @@ func (ec *executionContext) unmarshalInputCreateUserInput(ctx context.Context, o
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputSignUpInput(ctx context.Context, obj interface{}) (model.SignUpInput, error) {
+	var it model.SignUpInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "email":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("email"))
+			it.Email, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "password":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("password"))
+			it.Password, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputUpdateRoomInput(ctx context.Context, obj interface{}) (model.UpdateRoomInput, error) {
 	var it model.UpdateRoomInput
 	asMap := map[string]interface{}{}
@@ -3749,6 +3908,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Mutation")
+		case "signUp":
+			out.Values[i] = ec._Mutation_signUp(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "createRoom":
 			out.Values[i] = ec._Mutation_createRoom(ctx, field)
 			if out.Values[i] == graphql.Null {
@@ -3825,6 +3989,20 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Query")
+		case "user":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_user(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		case "room":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
@@ -4555,6 +4733,11 @@ func (ec *executionContext) marshalNSchool2ᚖgithubᚗcomᚋmatsuokashuheiᚋla
 		return graphql.Null
 	}
 	return ec._School(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNSignUpInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐSignUpInput(ctx context.Context, v interface{}) (model.SignUpInput, error) {
+	res, err := ec.unmarshalInputSignUpInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {
