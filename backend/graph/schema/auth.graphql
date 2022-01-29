@@ -1,0 +1,12 @@
+input SignUpInput {
+  email: String!
+  password: String!
+}
+
+extend type Query {
+    user: User!
+}
+
+extend type Mutation {
+    signUp(input: SignUpInput!): User!
+}

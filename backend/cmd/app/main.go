@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/matsuokashuhei/landin/graph/generated"
 	"github.com/matsuokashuhei/landin/graph/resolver"
+	"github.com/matsuokashuhei/landin/internal/middleware"
 	"github.com/matsuokashuhei/landin/pkg/database"
 	"gorm.io/gorm"
 )
@@ -29,6 +30,8 @@ func playgroundHandler() gin.HandlerFunc {
 func main() {
 	db, _ := database.Connect()
 	r := gin.Default()
+	r.Use(middleware.GinContextToContext())
+	r.Use(middleware.Auth(db))
 	r.POST("/query", graphqlHandler(db))
 	r.GET("/", playgroundHandler())
 	r.Run()
