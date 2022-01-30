@@ -9,6 +9,7 @@ import {
   onAuthStateChanged,
 } from "firebase/auth";
 import { config } from "../firebase";
+import { gql } from "@apollo/client";
 
 initializeApp(config);
 
@@ -20,6 +21,15 @@ type AuthContextType = {
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
+
+const SIGN_UP = gql`
+  mutation SignUp($input: SignUpInput!) {
+    signUp(input: $input) {
+      id
+      firebaseUid
+    }
+  }
+`;
 
 export const AuthProvider: FC = ({ children }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);

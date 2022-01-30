@@ -1,3 +1,4 @@
+import { gql, useMutation } from "@apollo/client";
 import { ChangeEventHandler, useEffect, useReducer, VFC } from "react";
 import { useForm } from "react-hook-form";
 import { useAuth } from "../../contexts/AuthContext";
@@ -43,6 +44,15 @@ const reducer = (state: State, action: Action): State => {
   }
 };
 
+const SIGN_UP = gql`
+  mutation SignUp($input: SignUpInput!) {
+    signUp(input: $input) {
+      id
+      firebaseUid
+    }
+  }
+`;
+
 export const SignUp: VFC = () => {
   type FormType = {
     email: string;
@@ -54,7 +64,8 @@ export const SignUp: VFC = () => {
     formState: { errors },
   } = useForm<FormType>();
   const [state, dispatch] = useReducer(reducer, initialState);
-  const { signUp } = useAuth();
+  const { signIn } = useAuth();
+  const [signUp, { data, loading, error }] = useMutation(SIGN_UP);
 
   const { email, password, isSignUpButtonDisabled } = state;
 
@@ -84,11 +95,17 @@ export const SignUp: VFC = () => {
 
   const handleSignUp = async ({ email, password }: FormType) => {
     try {
-      await signUp(email, password);
+      await signUp({
+        variables: { input: { email: email, password: password } },
+      });
+      await signIn(email, password);
     } catch (error) {
       console.error(error);
     }
   };
+
+  if (loading) return <>Submitting...</>;
+  if (error) return <>{error.message}</>;
 
   return (
     <form>
