@@ -25,7 +25,13 @@ func Auth(db *gorm.DB) gin.HandlerFunc {
 		}
 
 		h := c.Request.Header.Get("Authorization")
-		t := strings.Split(h, "Bearer ")[1]
+		var t string
+		if s := strings.Split(h, "Bearer "); len(s) > 1 {
+			t = s[1]
+		} else {
+			return
+		}
+
 		log.Printf("t: %s", t)
 
 		token, err := client.VerifyIDToken(c, t)
