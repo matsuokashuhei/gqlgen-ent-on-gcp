@@ -4,6 +4,7 @@ package model
 
 type CreateRoomInput struct {
 	Name     string `json:"name"`
+	Capacity uint   `json:"capacity"`
 	StudioID uint   `json:"studioID"`
 }
 
@@ -13,6 +14,7 @@ type CreateSchoolInput struct {
 
 type CreateStudioInput struct {
 	Name     string `json:"name"`
+	Location string `json:"location"`
 	SchoolID uint   `json:"schoolID"`
 }
 
@@ -29,6 +31,7 @@ type SignUpInput struct {
 type UpdateRoomInput struct {
 	ID       uint    `json:"id"`
 	Name     *string `json:"name"`
+	Capacity uint    `json:"capacity"`
 	StudioID *uint   `json:"studioID"`
 }
 
@@ -40,5 +43,6 @@ type UpdateSchoolInput struct {
 type UpdateStudioInput struct {
 	ID       uint    `json:"id"`
 	Name     *string `json:"name"`
+	Location string  `json:"location"`
 	SchoolID *uint   `json:"schoolID"`
 }

@@ -1,0 +1,8 @@
+type Schedule {
+    id: ID!
+    dayOfWeek: Int!
+    startTime: String!
+    endTime: String!
+    createdAt: Time!
+    updatedAt: Time!
+}

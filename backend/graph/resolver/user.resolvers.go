@@ -33,18 +33,6 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.CreateUse
 	return user, nil
 }
 
-func (r *queryResolver) Users(ctx context.Context) ([]*models.User, error) {
-	if !IsAuthenticated(ctx) {
-		return nil, auth.Error()
-	}
-	repository := repositories.NewUserRepository(r.DB)
-	users, err := repository.FindAll()
-	if err != nil {
-		return nil, err
-	}
-	return users, nil
-}
-
 func (r *queryResolver) User(ctx context.Context, id uint) (*models.User, error) {
 	if !IsAuthenticated(ctx) {
 		return nil, auth.Error()
@@ -55,4 +43,16 @@ func (r *queryResolver) User(ctx context.Context, id uint) (*models.User, error)
 		return nil, err
 	}
 	return user, nil
+}
+
+func (r *queryResolver) Users(ctx context.Context) ([]*models.User, error) {
+	if !IsAuthenticated(ctx) {
+		return nil, auth.Error()
+	}
+	repository := repositories.NewUserRepository(r.DB)
+	users, err := repository.FindAll()
+	if err != nil {
+		return nil, err
+	}
+	return users, nil
 }
