@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	firebase "firebase.google.com/go"
@@ -10,7 +11,7 @@ import (
 
 const USER_KEY = "user"
 
-func CreateUser(ctx context.Context, email string, password string) (*auth.UserRecord, error) {
+func CreateFirebaseUser(ctx context.Context, email string, password string) (*auth.UserRecord, error) {
 	app, err := firebase.NewApp(ctx, nil)
 	if err != nil {
 		log.Printf("error initializing App: %v\n", err)
@@ -29,3 +30,24 @@ func CreateUser(ctx context.Context, email string, password string) (*auth.UserR
 	}
 	return user, nil
 }
+
+func Error() error {
+	return fmt.Errorf("access defnied")
+}
+
+// func CreateUser(ctx context.Context, email string, password string) (*models.User, error) {
+// 	fUser, err := CreateFirebaseUser(ctx, email, password)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	user := &models.User{
+// 		Name:        strings.Split(fUser.Email, "@")[0],
+// 		FirebaseUID: fUser.UID,
+// 	}
+// 	repository := repositories.NewUserRepository(r.DB)
+// 	_, err = repository.Create(user)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	return user, nil
+// }

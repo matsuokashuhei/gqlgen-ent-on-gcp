@@ -5,6 +5,7 @@ go 1.17
 require (
 	firebase.google.com/go v3.13.0+incompatible
 	github.com/99designs/gqlgen v0.14.0
+	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-gonic/gin v1.7.7
 	github.com/joho/godotenv v1.4.0
 	github.com/vektah/gqlparser/v2 v2.2.0
@@ -18,7 +19,6 @@ require (
 	cloud.google.com/go/storage v1.10.0 // indirect
 	github.com/agnivade/levenshtein v1.1.1 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.1 // indirect
-	github.com/gin-contrib/cors v1.3.1 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.13.0 // indirect
 	github.com/go-playground/universal-translator v0.17.0 // indirect

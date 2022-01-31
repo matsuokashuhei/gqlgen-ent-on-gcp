@@ -5,7 +5,6 @@ package resolver
 
 import (
 	"context"
-	"errors"
 	"log"
 	"strings"
 
@@ -17,7 +16,7 @@ import (
 )
 
 func (r *mutationResolver) SignUp(ctx context.Context, input model.SignUpInput) (*models.User, error) {
-	firebaseUser, err := auth.CreateUser(ctx, input.Email, input.Password)
+	firebaseUser, err := auth.CreateFirebaseUser(ctx, input.Email, input.Password)
 	if err != nil {
 		return nil, err
 	}
@@ -33,7 +32,7 @@ func (r *mutationResolver) SignUp(ctx context.Context, input model.SignUpInput) 
 	return user, nil
 }
 
-func (r *queryResolver) User(ctx context.Context) (*models.User, error) {
+func (r *queryResolver) CurrentUser(ctx context.Context) (*models.User, error) {
 	gc, err := GinContextFromContext(ctx)
 	if err != nil {
 		return nil, err
@@ -41,7 +40,7 @@ func (r *queryResolver) User(ctx context.Context) (*models.User, error) {
 	user, exists := gc.Get(auth.USER_KEY)
 	log.Printf("user: %v, exists: %t", user, exists)
 	if exists == false {
-		return nil, errors.New("user does not exist")
+		return nil, auth.Error()
 	}
 	return user.(*models.User), nil
 }

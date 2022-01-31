@@ -4,7 +4,7 @@ input SignUpInput {
 }
 
 extend type Query {
-    user: User!
+    currentUser: User!
 }
 
 extend type Mutation {
