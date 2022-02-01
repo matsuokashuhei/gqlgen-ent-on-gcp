@@ -1,0 +1,27 @@
+type Instructor {
+  id: ID!
+  name: String!
+  syllabicCharacters: String!
+  biography: String
+  phoneNumber: String
+  email: String
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+input CreateInstructorInput {
+  name: String!
+  syllabicCharacters: String!
+  biography: String
+  phoneNumber: String
+  email: String
+}
+
+extend type Query {
+  instructor(id: ID!): Instructor!
+  instructors: [Instructor]!
+}
+
+extend type Mutation {
+  createInstructor(input: CreateInstructorInput!): Instructor!
+}

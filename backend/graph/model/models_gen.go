@@ -2,6 +2,14 @@
 
 package model
 
+type CreateInstructorInput struct {
+	Name               string  `json:"name"`
+	SyllabicCharacters string  `json:"syllabicCharacters"`
+	Biography          *string `json:"biography"`
+	PhoneNumber        *string `json:"phoneNumber"`
+	Email              *string `json:"email"`
+}
+
 type CreateRoomInput struct {
 	Name     string `json:"name"`
 	Capacity uint   `json:"capacity"`

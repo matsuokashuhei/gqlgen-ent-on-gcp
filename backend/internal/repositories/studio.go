@@ -9,55 +9,55 @@ type StudioRepository struct {
 	db *gorm.DB
 }
 
-func (repository *StudioRepository) FindAll(schoolID uint) ([]*models.Studio, error) {
+func (r *StudioRepository) FindAll(schoolID uint) ([]*models.Studio, error) {
 	var studios []*models.Studio
-	err := repository.db.Where("school_id = ?", schoolID).Find(&studios).Error
+	err := r.db.Where("school_id = ?", schoolID).Find(&studios).Error
 	if err != nil {
 		return nil, err
 	}
 	return studios, nil
 }
 
-// func (repository *StudioRepository) FindAll(school *models.School) ([]*models.Studio, error) {
+// func (r *StudioRepository) FindAll(school *models.School) ([]*models.Studio, error) {
 // 	var studios []*models.Studio
-// 	err := repository.db.Model(&school).Association("Studios").Find(&studios)
+// 	err := r.db.Model(&school).Association("Studios").Find(&studios)
 // 	if err != nil {
 // 		return nil, err
 // 	}
 // 	return studios, nil
 // }
 
-func (repository *StudioRepository) Find(id uint) (*models.Studio, error) {
+func (r *StudioRepository) Find(id uint) (*models.Studio, error) {
 	var studios *models.Studio
-	err := repository.db.First(&studios, id).Error
+	err := r.db.First(&studios, id).Error
 	if err != nil {
 		return nil, err
 	}
 	return studios, nil
 }
 
-func (repository *StudioRepository) Create(studio *models.Studio) (*models.Studio, error) {
-	err := repository.db.Create(&studio).Error
+func (r *StudioRepository) Create(studio *models.Studio) (*models.Studio, error) {
+	err := r.db.Create(&studio).Error
 	if err != nil {
 		return nil, err
 	}
 	return studio, nil
 }
 
-func (repository *StudioRepository) Update(studio *models.Studio) (*models.Studio, error) {
-	err := repository.db.Save(studio).Error
+func (r *StudioRepository) Update(studio *models.Studio) (*models.Studio, error) {
+	err := r.db.Save(studio).Error
 	if err != nil {
 		return nil, err
 	}
 	return studio, nil
 }
 
-func (repository *StudioRepository) Delete(id uint) (*models.Studio, error) {
-	var studio, err = repository.Find(id)
+func (r *StudioRepository) Delete(id uint) (*models.Studio, error) {
+	var studio, err = r.Find(id)
 	if err != nil {
 		return nil, err
 	}
-	err = repository.db.Delete(&studio, id).Error
+	err = r.db.Delete(&studio, id).Error
 	if err != nil {
 		return nil, err
 	}
