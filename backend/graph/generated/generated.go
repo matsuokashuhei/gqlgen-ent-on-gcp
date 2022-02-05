@@ -77,7 +77,7 @@ type ComplexityRoot struct {
 	Query struct {
 		CurrentUser func(childComplexity int) int
 		Instructor  func(childComplexity int, id uint) int
-		Instructors func(childComplexity int) int
+		Instructors func(childComplexity int, offset *uint, limit *uint) int
 		Room        func(childComplexity int, id uint) int
 		Rooms       func(childComplexity int) int
 		School      func(childComplexity int, id uint) int
@@ -151,7 +151,7 @@ type MutationResolver interface {
 type QueryResolver interface {
 	CurrentUser(ctx context.Context) (*models.User, error)
 	Instructor(ctx context.Context, id uint) (*models.Instructor, error)
-	Instructors(ctx context.Context) ([]*models.Instructor, error)
+	Instructors(ctx context.Context, offset *uint, limit *uint) ([]*models.Instructor, error)
 	Room(ctx context.Context, id uint) (*models.Room, error)
 	Rooms(ctx context.Context) ([]*models.Room, error)
 	School(ctx context.Context, id uint) (*models.School, error)
@@ -412,7 +412,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		return e.complexity.Query.Instructors(childComplexity), true
+		args, err := ec.field_Query_instructors_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Instructors(childComplexity, args["offset"].(*uint), args["limit"].(*uint)), true
 
 	case "Query.room":
 		if e.complexity.Query.Room == nil {
@@ -788,6 +793,18 @@ extend type Mutation {
   updatedAt: Time!
 }
 
+# type InstructorsConnection {
+#   totalCount: Int!
+#   edges: [InstructorEdge!]
+#   instructors: [Instructor!]
+#   pageInfo: PageInfo!
+# }
+#
+# type InstructorEdge {
+#   cursor: ID!
+#   node: Instructor
+# }
+
 input CreateInstructorInput {
   name: String!
   syllabicCharacters: String!
@@ -798,7 +815,7 @@ input CreateInstructorInput {
 
 extend type Query {
   instructor(id: ID!): Instructor!
-  instructors: [Instructor]!
+  instructors(offset: Int, limit: Int): [Instructor]!
 }
 
 extend type Mutation {
@@ -842,8 +859,6 @@ extend type Mutation {
   updateRoom(input: UpdateRoomInput!): Room!
   deleteRoom(id: ID!): Room!
 }
-`, BuiltIn: false},
-	{Name: "graph/schema/scalar.graphql", Input: `scalar Time
 `, BuiltIn: false},
 	{Name: "graph/schema/schedule.graphql", Input: `type Schedule {
     id: ID!
@@ -945,6 +960,14 @@ extend type Query {
 extend type Mutation {
   createUser(input: CreateUserInput!): User!
 }
+`, BuiltIn: false},
+	{Name: "graph/schema/util.graphql", Input: `scalar Time
+
+# type PageInfo {
+#   startCursor: ID!
+#   endCursor: ID!
+#   hasNextPage: Boolean!
+# }
 `, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
@@ -1160,6 +1183,30 @@ func (ec *executionContext) field_Query_instructor_args(ctx context.Context, raw
 		}
 	}
 	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_instructors_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *uint
+	if tmp, ok := rawArgs["offset"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("offset"))
+		arg0, err = ec.unmarshalOInt2ᚖuint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["offset"] = arg0
+	var arg1 *uint
+	if tmp, ok := rawArgs["limit"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
+		arg1, err = ec.unmarshalOInt2ᚖuint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["limit"] = arg1
 	return args, nil
 }
 
@@ -2129,9 +2176,16 @@ func (ec *executionContext) _Query_instructors(ctx context.Context, field graphq
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_instructors_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Instructors(rctx)
+		return ec.resolvers.Query().Instructors(rctx, args["offset"].(*uint), args["limit"].(*uint))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -6647,6 +6701,21 @@ func (ec *executionContext) marshalOInstructor2ᚖgithubᚗcomᚋmatsuokashuhei�
 		return graphql.Null
 	}
 	return ec._Instructor(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOInt2ᚖuint(ctx context.Context, v interface{}) (*uint, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := graphql.UnmarshalUint(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOInt2ᚖuint(ctx context.Context, sel ast.SelectionSet, v *uint) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return graphql.MarshalUint(*v)
 }
 
 func (ec *executionContext) marshalORoom2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐRoom(ctx context.Context, sel ast.SelectionSet, v *models.Room) graphql.Marshaler {

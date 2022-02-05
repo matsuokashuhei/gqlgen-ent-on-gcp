@@ -9,6 +9,18 @@ type Instructor {
   updatedAt: Time!
 }
 
+# type InstructorsConnection {
+#   totalCount: Int!
+#   edges: [InstructorEdge!]
+#   instructors: [Instructor!]
+#   pageInfo: PageInfo!
+# }
+#
+# type InstructorEdge {
+#   cursor: ID!
+#   node: Instructor
+# }
+
 input CreateInstructorInput {
   name: String!
   syllabicCharacters: String!
@@ -19,7 +31,7 @@ input CreateInstructorInput {
 
 extend type Query {
   instructor(id: ID!): Instructor!
-  instructors: [Instructor]!
+  instructors(offset: Int, limit: Int): [Instructor]!
 }
 
 extend type Mutation {

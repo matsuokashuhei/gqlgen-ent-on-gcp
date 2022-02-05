@@ -25,9 +25,17 @@ func (r *queryResolver) Instructor(ctx context.Context, id uint) (*models.Instru
 	return instructor, nil
 }
 
-func (r *queryResolver) Instructors(ctx context.Context) ([]*models.Instructor, error) {
+func (r *queryResolver) Instructors(ctx context.Context, offset *uint, limit *uint) ([]*models.Instructor, error) {
+	if offset == nil {
+		offset = new(uint)
+		*offset = 0
+	}
+	if limit == nil {
+		limit = new(uint)
+		*limit = 10
+	}
 	repository := repositories.NewInstructorRepository(r.DB)
-	instructors, err := repository.FindAll()
+	instructors, err := repository.FindAll(int(*offset), int(*limit))
 	if err != nil {
 		return nil, err
 	}
