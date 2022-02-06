@@ -3,7 +3,7 @@
 package model
 
 import (
-	"github.com/matsuokashuhei/landin/internal/models"
+	"github.com/matsuokashuhei/landin/ent"
 )
 
 type CreateInstructorInput struct {
@@ -16,8 +16,8 @@ type CreateInstructorInput struct {
 
 type CreateRoomInput struct {
 	Name     string `json:"name"`
-	Capacity uint   `json:"capacity"`
-	StudioID uint   `json:"studioID"`
+	Capacity int    `json:"capacity"`
+	StudioID int    `json:"studioID"`
 }
 
 type CreateSchoolInput struct {
@@ -27,7 +27,7 @@ type CreateSchoolInput struct {
 type CreateStudioInput struct {
 	Name     string `json:"name"`
 	Location string `json:"location"`
-	SchoolID uint   `json:"schoolID"`
+	SchoolID int    `json:"schoolID"`
 }
 
 type CreateUserInput struct {
@@ -36,21 +36,21 @@ type CreateUserInput struct {
 }
 
 type CursorBasedPageInfo struct {
-	StartCursor       uint `json:"startCursor"`
-	EndCursor         uint `json:"endCursor"`
+	StartCursor       int  `json:"startCursor"`
+	EndCursor         int  `json:"endCursor"`
 	HasNextPage       bool `json:"hasNextPage"`
 	HasPreviciousPage bool `json:"hasPreviciousPage"`
 }
 
 type InstructorsConnection struct {
-	Nodes    []*models.Instructor `json:"nodes"`
+	Nodes    []*ent.Instructor    `json:"nodes"`
 	PageInfo *OffsetBasedPageInfo `json:"pageInfo"`
 }
 
 type OffsetBasedPageInfo struct {
-	CurrentPage uint `json:"currentPage"`
-	TotalPage   uint `json:"totalPage"`
-	TotalCount  uint `json:"totalCount"`
+	CurrentPage int `json:"currentPage"`
+	TotalPage   int `json:"totalPage"`
+	TotalCount  int `json:"totalCount"`
 }
 
 type SignUpInput struct {
@@ -59,20 +59,20 @@ type SignUpInput struct {
 }
 
 type UpdateRoomInput struct {
-	ID       uint    `json:"id"`
+	ID       int     `json:"id"`
 	Name     *string `json:"name"`
-	Capacity uint    `json:"capacity"`
-	StudioID *uint   `json:"studioID"`
+	Capacity *int    `json:"capacity"`
+	StudioID *int    `json:"studioID"`
 }
 
 type UpdateSchoolInput struct {
-	ID   uint   `json:"id"`
+	ID   int    `json:"id"`
 	Name string `json:"name"`
 }
 
 type UpdateStudioInput struct {
-	ID       uint    `json:"id"`
+	ID       int     `json:"id"`
 	Name     *string `json:"name"`
-	Location string  `json:"location"`
-	SchoolID *uint   `json:"schoolID"`
+	Location *string `json:"location"`
+	SchoolID *int    `json:"schoolID"`
 }

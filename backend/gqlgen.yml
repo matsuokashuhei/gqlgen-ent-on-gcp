@@ -36,7 +36,14 @@ resolver:
 # gqlgen will search for any type names in the schema in these go packages
 # if they match it will use them, otherwise it will generate them.
 autobind:
-  - "github.com/matsuokashuhei/landin/internal/models"
+  - "github.com/matsuokashuhei/landin/ent"
+  - "github.com/matsuokashuhei/landin/user"
+  - "github.com/matsuokashuhei/landin/school"
+  - "github.com/matsuokashuhei/landin/studio"
+  - "github.com/matsuokashuhei/landin/room"
+  - "github.com/matsuokashuhei/landin/schedule"
+  - "github.com/matsuokashuhei/landin/instructor"
+  - "github.com/matsuokashuhei/landin/class"
 
 # This section declares type mapping between the GraphQL and go type systems
 #
@@ -46,10 +53,10 @@ autobind:
 models:
   ID:
     model:
-      - github.com/99designs/gqlgen/graphql.Uint
-  Int:
+      - github.com/99designs/gqlgen/graphql.IntID
+  Uint64:
     model:
-      - github.com/99designs/gqlgen/graphql.Uint
+      - github.com/99designs/gqlgen/graphql.Uint64
   Time:
     model:
       - github.com/99designs/gqlgen/graphql.Time

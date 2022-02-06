@@ -6,8 +6,8 @@ type School {
   id: ID!
   name: String!
   studios: [Studio]!
-  createdAt: Time!
-  updatedAt: Time!
+  createTime: Time!
+  updateTime: Time!
 }
 
 input CreateSchoolInput {

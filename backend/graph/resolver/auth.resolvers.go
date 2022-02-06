@@ -8,31 +8,27 @@ import (
 	"log"
 	"strings"
 
+	"github.com/matsuokashuhei/landin/ent"
 	"github.com/matsuokashuhei/landin/graph/generated"
 	"github.com/matsuokashuhei/landin/graph/model"
 	"github.com/matsuokashuhei/landin/internal/auth"
-	"github.com/matsuokashuhei/landin/internal/models"
-	"github.com/matsuokashuhei/landin/internal/repositories"
 )
 
-func (r *mutationResolver) SignUp(ctx context.Context, input model.SignUpInput) (*models.User, error) {
+func (r *mutationResolver) SignUp(ctx context.Context, input model.SignUpInput) (*ent.User, error) {
 	firebaseUser, err := auth.CreateFirebaseUser(ctx, input.Email, input.Password)
 	if err != nil {
 		return nil, err
 	}
-	user := &models.User{
-		Name:        strings.Split(firebaseUser.Email, "@")[0],
-		FirebaseUID: firebaseUser.UID,
-	}
-	repository := repositories.NewUserRepository(r.DB)
-	_, err = repository.Create(user)
-	if err != nil {
-		return nil, err
-	}
+	user, err := r.client.
+		User.
+		Create().
+		SetName(strings.Split(firebaseUser.Email, "@")[0]).
+		SetFirebaseUID(firebaseUser.UID).
+		Save(ctx)
 	return user, nil
 }
 
-func (r *queryResolver) CurrentUser(ctx context.Context) (*models.User, error) {
+func (r *queryResolver) CurrentUser(ctx context.Context) (*ent.User, error) {
 	gc, err := GinContextFromContext(ctx)
 	if err != nil {
 		return nil, err
@@ -42,7 +38,7 @@ func (r *queryResolver) CurrentUser(ctx context.Context) (*models.User, error) {
 	if exists == false {
 		return nil, auth.Error()
 	}
-	return user.(*models.User), nil
+	return user.(*ent.User), nil
 }
 
 // Mutation returns generated.MutationResolver implementation.

@@ -2,8 +2,8 @@ type User {
   id: ID!
   name: String!
   firebaseUid: String!
-  createdAt: Time!
-  updatedAt: Time!
+  createTime: Time!
+  updateTime: Time!
 }
 
 input CreateUserInput {

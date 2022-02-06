@@ -5,8 +5,8 @@ type Instructor {
   biography: String
   phoneNumber: String
   email: String
-  createdAt: Time!
-  updatedAt: Time!
+  createTime: Time!
+  updateTime: Time!
 }
 
 type InstructorsConnection {

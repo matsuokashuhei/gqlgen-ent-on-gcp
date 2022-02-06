@@ -1,23 +1,25 @@
 package main
 
 import (
+	"fmt"
+	"log"
+	"os"
 	"time"
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/matsuokashuhei/landin/graph/generated"
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/matsuokashuhei/landin/ent"
 	"github.com/matsuokashuhei/landin/graph/resolver"
 	"github.com/matsuokashuhei/landin/internal/middleware"
-	"github.com/matsuokashuhei/landin/pkg/database"
-	"gorm.io/gorm"
 )
 
 const defaultPort = "8080"
 
-func graphqlHandler(db *gorm.DB) gin.HandlerFunc {
-	h := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &resolver.Resolver{DB: db}}))
+func graphqlHandler(client *ent.Client) gin.HandlerFunc {
+	h := handler.NewDefaultServer(resolver.NewSchema(client))
 	return func(c *gin.Context) {
 		h.ServeHTTP(c.Writer, c.Request)
 	}
@@ -31,10 +33,16 @@ func playgroundHandler() gin.HandlerFunc {
 }
 
 func main() {
-	db, _ := database.Connect()
+	// db, _ := database.Connect()
+	client, err := ent.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", os.Getenv("MYSQL_USER"), os.Getenv("MYSQL_PASSWORD"), os.Getenv("MYSQL_HOST"), os.Getenv("MYSQL_PORT"), os.Getenv("MYSQL_DATABASE")))
+	if err != nil {
+		log.Fatalf("opening ent client: %v", err)
+	}
+	defer client.Close()
+
 	r := gin.Default()
 	r.Use(middleware.GinContextToContext())
-	r.Use(middleware.Auth(db))
+	r.Use(middleware.Auth(client))
 	r.Use(cors.New(cors.Config{
 		// AllowAllOrigins: true,
 		AllowOrigins: []string{
@@ -55,7 +63,7 @@ func main() {
 		AllowCredentials: true,
 		MaxAge:           24 * time.Hour,
 	}))
-	r.POST("/query", graphqlHandler(db))
+	r.POST("/query", graphqlHandler(client))
 	r.GET("/", playgroundHandler())
 	r.Run()
 }

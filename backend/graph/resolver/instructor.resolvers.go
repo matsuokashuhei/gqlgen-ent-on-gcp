@@ -7,70 +7,33 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/matsuokashuhei/landin/ent"
+	"github.com/matsuokashuhei/landin/ent/instructor"
 	"github.com/matsuokashuhei/landin/graph/model"
-	"github.com/matsuokashuhei/landin/internal/models"
-	"github.com/matsuokashuhei/landin/internal/repositories"
 )
 
-func (r *mutationResolver) CreateInstructor(ctx context.Context, input model.CreateInstructorInput) (*models.Instructor, error) {
-	panic(fmt.Errorf("not implemented"))
-}
-
-func (r *queryResolver) Instructor(ctx context.Context, id uint) (*models.Instructor, error) {
-	repository := repositories.NewInstructorRepository(r.DB)
-	instructor, err := repository.Find(id)
+func (r *mutationResolver) CreateInstructor(ctx context.Context, input model.CreateInstructorInput) (*ent.Instructor, error) {
+	instructor, err := r.client.Instructor.Create().
+		SetName(input.Name).
+		SetSyllabicCharacters(input.SyllabicCharacters).
+		SetBiography(*input.Biography).
+		SetPhoneNumber(*input.PhoneNumber).
+		SetEmail(*input.Email).
+		Save(ctx)
 	if err != nil {
 		return nil, err
 	}
 	return instructor, nil
 }
 
-func (r *queryResolver) InstructorsConnection(ctx context.Context, offset *uint, limit *uint) (*model.InstructorsConnection, error) {
-	if offset == nil {
-		offset = new(uint)
-		*offset = 0
-	}
-	if limit == nil {
-		limit = new(uint)
-		*limit = 10
-	}
-	instructors, err := r.resolveInstructors(ctx, offset, limit)
+func (r *queryResolver) Instructor(ctx context.Context, id int) (*ent.Instructor, error) {
+	instructor, err := r.client.Instructor.Query().Where(instructor.ID(id)).First(ctx)
 	if err != nil {
 		return nil, err
 	}
-	pageInfo, err := r.resolvePageInfo(ctx, offset, limit)
-	if err != nil {
-		return nil, err
-	}
-	return &model.InstructorsConnection{
-		Nodes:    instructors,
-		PageInfo: pageInfo,
-	}, nil
+	return instructor, nil
 }
 
-func (r *queryResolver) resolveInstructors(ctx context.Context, offset *uint, limit *uint) ([]*models.Instructor, error) {
-	repository := repositories.NewInstructorRepository(r.DB)
-	instructors, err := repository.FindAll(int(*offset), int(*limit))
-	if err != nil {
-		return nil, err
-	}
-	return instructors, nil
-}
-
-func (r *queryResolver) resolvePageInfo(ctx context.Context, offset *uint, limit *uint) (*model.OffsetBasedPageInfo, error) {
-	repository := repositories.NewInstructorRepository(r.DB)
-	totalCount, err := repository.CountAll()
-	if err != nil {
-		return nil, err
-	}
-	totalPage := uint(*totalCount) / *limit
-	if uint(*totalCount)%*limit > 0 {
-		totalPage++
-	}
-
-	return &model.OffsetBasedPageInfo{
-		TotalCount:  uint(*totalCount),
-		TotalPage:   totalPage,
-		CurrentPage: *offset,
-	}, nil
+func (r *queryResolver) InstructorsConnection(ctx context.Context, offset *int, limit *int) (*model.InstructorsConnection, error) {
+	panic(fmt.Errorf("not implemented"))
 }
