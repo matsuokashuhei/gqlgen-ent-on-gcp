@@ -2,6 +2,10 @@
 
 package model
 
+import (
+	"github.com/matsuokashuhei/landin/internal/models"
+)
+
 type CreateInstructorInput struct {
 	Name               string  `json:"name"`
 	SyllabicCharacters string  `json:"syllabicCharacters"`
@@ -29,6 +33,24 @@ type CreateStudioInput struct {
 type CreateUserInput struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
+}
+
+type CursorBasedPageInfo struct {
+	StartCursor       uint `json:"startCursor"`
+	EndCursor         uint `json:"endCursor"`
+	HasNextPage       bool `json:"hasNextPage"`
+	HasPreviciousPage bool `json:"hasPreviciousPage"`
+}
+
+type InstructorsConnection struct {
+	Nodes    []*models.Instructor `json:"nodes"`
+	PageInfo *OffsetBasedPageInfo `json:"pageInfo"`
+}
+
+type OffsetBasedPageInfo struct {
+	CurrentPage uint `json:"currentPage"`
+	TotalPage   uint `json:"totalPage"`
+	TotalCount  uint `json:"totalCount"`
 }
 
 type SignUpInput struct {

@@ -48,6 +48,13 @@ type DirectiveRoot struct {
 }
 
 type ComplexityRoot struct {
+	CursorBasedPageInfo struct {
+		EndCursor         func(childComplexity int) int
+		HasNextPage       func(childComplexity int) int
+		HasPreviciousPage func(childComplexity int) int
+		StartCursor       func(childComplexity int) int
+	}
+
 	Instructor struct {
 		Biography          func(childComplexity int) int
 		CreatedAt          func(childComplexity int) int
@@ -57,6 +64,11 @@ type ComplexityRoot struct {
 		PhoneNumber        func(childComplexity int) int
 		SyllabicCharacters func(childComplexity int) int
 		UpdatedAt          func(childComplexity int) int
+	}
+
+	InstructorsConnection struct {
+		Nodes    func(childComplexity int) int
+		PageInfo func(childComplexity int) int
 	}
 
 	Mutation struct {
@@ -74,18 +86,24 @@ type ComplexityRoot struct {
 		UpdateStudio     func(childComplexity int, input model.UpdateStudioInput) int
 	}
 
+	OffsetBasedPageInfo struct {
+		CurrentPage func(childComplexity int) int
+		TotalCount  func(childComplexity int) int
+		TotalPage   func(childComplexity int) int
+	}
+
 	Query struct {
-		CurrentUser func(childComplexity int) int
-		Instructor  func(childComplexity int, id uint) int
-		Instructors func(childComplexity int, offset *uint, limit *uint) int
-		Room        func(childComplexity int, id uint) int
-		Rooms       func(childComplexity int) int
-		School      func(childComplexity int, id uint) int
-		Schools     func(childComplexity int) int
-		Studio      func(childComplexity int, id uint) int
-		Studios     func(childComplexity int) int
-		User        func(childComplexity int, id uint) int
-		Users       func(childComplexity int) int
+		CurrentUser           func(childComplexity int) int
+		Instructor            func(childComplexity int, id uint) int
+		InstructorsConnection func(childComplexity int, offset *uint, limit *uint) int
+		Room                  func(childComplexity int, id uint) int
+		Rooms                 func(childComplexity int) int
+		School                func(childComplexity int, id uint) int
+		Schools               func(childComplexity int) int
+		Studio                func(childComplexity int, id uint) int
+		Studios               func(childComplexity int) int
+		User                  func(childComplexity int, id uint) int
+		Users                 func(childComplexity int) int
 	}
 
 	Room struct {
@@ -151,7 +169,7 @@ type MutationResolver interface {
 type QueryResolver interface {
 	CurrentUser(ctx context.Context) (*models.User, error)
 	Instructor(ctx context.Context, id uint) (*models.Instructor, error)
-	Instructors(ctx context.Context, offset *uint, limit *uint) ([]*models.Instructor, error)
+	InstructorsConnection(ctx context.Context, offset *uint, limit *uint) (*model.InstructorsConnection, error)
 	Room(ctx context.Context, id uint) (*models.Room, error)
 	Rooms(ctx context.Context) ([]*models.Room, error)
 	School(ctx context.Context, id uint) (*models.School, error)
@@ -187,6 +205,34 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	ec := executionContext{nil, e}
 	_ = ec
 	switch typeName + "." + field {
+
+	case "CursorBasedPageInfo.endCursor":
+		if e.complexity.CursorBasedPageInfo.EndCursor == nil {
+			break
+		}
+
+		return e.complexity.CursorBasedPageInfo.EndCursor(childComplexity), true
+
+	case "CursorBasedPageInfo.hasNextPage":
+		if e.complexity.CursorBasedPageInfo.HasNextPage == nil {
+			break
+		}
+
+		return e.complexity.CursorBasedPageInfo.HasNextPage(childComplexity), true
+
+	case "CursorBasedPageInfo.hasPreviciousPage":
+		if e.complexity.CursorBasedPageInfo.HasPreviciousPage == nil {
+			break
+		}
+
+		return e.complexity.CursorBasedPageInfo.HasPreviciousPage(childComplexity), true
+
+	case "CursorBasedPageInfo.startCursor":
+		if e.complexity.CursorBasedPageInfo.StartCursor == nil {
+			break
+		}
+
+		return e.complexity.CursorBasedPageInfo.StartCursor(childComplexity), true
 
 	case "Instructor.biography":
 		if e.complexity.Instructor.Biography == nil {
@@ -243,6 +289,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Instructor.UpdatedAt(childComplexity), true
+
+	case "InstructorsConnection.nodes":
+		if e.complexity.InstructorsConnection.Nodes == nil {
+			break
+		}
+
+		return e.complexity.InstructorsConnection.Nodes(childComplexity), true
+
+	case "InstructorsConnection.pageInfo":
+		if e.complexity.InstructorsConnection.PageInfo == nil {
+			break
+		}
+
+		return e.complexity.InstructorsConnection.PageInfo(childComplexity), true
 
 	case "Mutation.createInstructor":
 		if e.complexity.Mutation.CreateInstructor == nil {
@@ -388,6 +448,27 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.UpdateStudio(childComplexity, args["input"].(model.UpdateStudioInput)), true
 
+	case "OffsetBasedPageInfo.currentPage":
+		if e.complexity.OffsetBasedPageInfo.CurrentPage == nil {
+			break
+		}
+
+		return e.complexity.OffsetBasedPageInfo.CurrentPage(childComplexity), true
+
+	case "OffsetBasedPageInfo.totalCount":
+		if e.complexity.OffsetBasedPageInfo.TotalCount == nil {
+			break
+		}
+
+		return e.complexity.OffsetBasedPageInfo.TotalCount(childComplexity), true
+
+	case "OffsetBasedPageInfo.totalPage":
+		if e.complexity.OffsetBasedPageInfo.TotalPage == nil {
+			break
+		}
+
+		return e.complexity.OffsetBasedPageInfo.TotalPage(childComplexity), true
+
 	case "Query.currentUser":
 		if e.complexity.Query.CurrentUser == nil {
 			break
@@ -407,17 +488,17 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Instructor(childComplexity, args["id"].(uint)), true
 
-	case "Query.instructors":
-		if e.complexity.Query.Instructors == nil {
+	case "Query.instructorsConnection":
+		if e.complexity.Query.InstructorsConnection == nil {
 			break
 		}
 
-		args, err := ec.field_Query_instructors_args(context.TODO(), rawArgs)
+		args, err := ec.field_Query_instructorsConnection_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Query.Instructors(childComplexity, args["offset"].(*uint), args["limit"].(*uint)), true
+		return e.complexity.Query.InstructorsConnection(childComplexity, args["offset"].(*uint), args["limit"].(*uint)), true
 
 	case "Query.room":
 		if e.complexity.Query.Room == nil {
@@ -793,12 +874,10 @@ extend type Mutation {
   updatedAt: Time!
 }
 
-# type InstructorsConnection {
-#   totalCount: Int!
-#   edges: [InstructorEdge!]
-#   instructors: [Instructor!]
-#   pageInfo: PageInfo!
-# }
+type InstructorsConnection {
+  nodes: [Instructor]!
+  pageInfo: OffsetBasedPageInfo!
+}
 #
 # type InstructorEdge {
 #   cursor: ID!
@@ -815,11 +894,24 @@ input CreateInstructorInput {
 
 extend type Query {
   instructor(id: ID!): Instructor!
-  instructors(offset: Int, limit: Int): [Instructor]!
+  instructorsConnection(offset: Int, limit: Int): InstructorsConnection!
 }
 
 extend type Mutation {
   createInstructor(input: CreateInstructorInput!): Instructor!
+}
+`, BuiltIn: false},
+	{Name: "graph/schema/pagination.graphql", Input: `type OffsetBasedPageInfo {
+  currentPage: Int!
+  totalPage: Int!
+  totalCount: Int!
+}
+
+type CursorBasedPageInfo {
+  startCursor: ID!
+  endCursor: ID!
+  hasNextPage: Boolean!
+  hasPreviciousPage: Boolean!
 }
 `, BuiltIn: false},
 	{Name: "graph/schema/room.graphql", Input: `# GraphQL schema example
@@ -859,6 +951,8 @@ extend type Mutation {
   updateRoom(input: UpdateRoomInput!): Room!
   deleteRoom(id: ID!): Room!
 }
+`, BuiltIn: false},
+	{Name: "graph/schema/scalar.graphql", Input: `scalar Time
 `, BuiltIn: false},
 	{Name: "graph/schema/schedule.graphql", Input: `type Schedule {
     id: ID!
@@ -960,14 +1054,6 @@ extend type Query {
 extend type Mutation {
   createUser(input: CreateUserInput!): User!
 }
-`, BuiltIn: false},
-	{Name: "graph/schema/util.graphql", Input: `scalar Time
-
-# type PageInfo {
-#   startCursor: ID!
-#   endCursor: ID!
-#   hasNextPage: Boolean!
-# }
 `, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
@@ -1186,7 +1272,7 @@ func (ec *executionContext) field_Query_instructor_args(ctx context.Context, raw
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_instructors_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_instructorsConnection_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 *uint
@@ -1307,6 +1393,146 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 // endregion ************************** directives.gotpl **************************
 
 // region    **************************** field.gotpl *****************************
+
+func (ec *executionContext) _CursorBasedPageInfo_startCursor(ctx context.Context, field graphql.CollectedField, obj *model.CursorBasedPageInfo) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "CursorBasedPageInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.StartCursor, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(uint)
+	fc.Result = res
+	return ec.marshalNID2uint(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _CursorBasedPageInfo_endCursor(ctx context.Context, field graphql.CollectedField, obj *model.CursorBasedPageInfo) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "CursorBasedPageInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.EndCursor, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(uint)
+	fc.Result = res
+	return ec.marshalNID2uint(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _CursorBasedPageInfo_hasNextPage(ctx context.Context, field graphql.CollectedField, obj *model.CursorBasedPageInfo) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "CursorBasedPageInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.HasNextPage, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _CursorBasedPageInfo_hasPreviciousPage(ctx context.Context, field graphql.CollectedField, obj *model.CursorBasedPageInfo) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "CursorBasedPageInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.HasPreviciousPage, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
 
 func (ec *executionContext) _Instructor_id(ctx context.Context, field graphql.CollectedField, obj *models.Instructor) (ret graphql.Marshaler) {
 	defer func() {
@@ -1577,6 +1803,76 @@ func (ec *executionContext) _Instructor_updatedAt(ctx context.Context, field gra
 	res := resTmp.(time.Time)
 	fc.Result = res
 	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _InstructorsConnection_nodes(ctx context.Context, field graphql.CollectedField, obj *model.InstructorsConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "InstructorsConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Nodes, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*models.Instructor)
+	fc.Result = res
+	return ec.marshalNInstructor2ᚕᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐInstructor(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _InstructorsConnection_pageInfo(ctx context.Context, field graphql.CollectedField, obj *model.InstructorsConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "InstructorsConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PageInfo, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.OffsetBasedPageInfo)
+	fc.Result = res
+	return ec.marshalNOffsetBasedPageInfo2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐOffsetBasedPageInfo(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_signUp(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -2083,6 +2379,111 @@ func (ec *executionContext) _Mutation_createUser(ctx context.Context, field grap
 	return ec.marshalNUser2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐUser(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _OffsetBasedPageInfo_currentPage(ctx context.Context, field graphql.CollectedField, obj *model.OffsetBasedPageInfo) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "OffsetBasedPageInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CurrentPage, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(uint)
+	fc.Result = res
+	return ec.marshalNInt2uint(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _OffsetBasedPageInfo_totalPage(ctx context.Context, field graphql.CollectedField, obj *model.OffsetBasedPageInfo) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "OffsetBasedPageInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TotalPage, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(uint)
+	fc.Result = res
+	return ec.marshalNInt2uint(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _OffsetBasedPageInfo_totalCount(ctx context.Context, field graphql.CollectedField, obj *model.OffsetBasedPageInfo) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "OffsetBasedPageInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TotalCount, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(uint)
+	fc.Result = res
+	return ec.marshalNInt2uint(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Query_currentUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -2160,7 +2561,7 @@ func (ec *executionContext) _Query_instructor(ctx context.Context, field graphql
 	return ec.marshalNInstructor2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐInstructor(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Query_instructors(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Query_instructorsConnection(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -2177,7 +2578,7 @@ func (ec *executionContext) _Query_instructors(ctx context.Context, field graphq
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Query_instructors_args(ctx, rawArgs)
+	args, err := ec.field_Query_instructorsConnection_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -2185,7 +2586,7 @@ func (ec *executionContext) _Query_instructors(ctx context.Context, field graphq
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Instructors(rctx, args["offset"].(*uint), args["limit"].(*uint))
+		return ec.resolvers.Query().InstructorsConnection(rctx, args["offset"].(*uint), args["limit"].(*uint))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2197,9 +2598,9 @@ func (ec *executionContext) _Query_instructors(ctx context.Context, field graphq
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*models.Instructor)
+	res := resTmp.(*model.InstructorsConnection)
 	fc.Result = res
-	return ec.marshalNInstructor2ᚕᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐInstructor(ctx, field.Selections, res)
+	return ec.marshalNInstructorsConnection2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐInstructorsConnection(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_room(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -5104,6 +5505,48 @@ func (ec *executionContext) unmarshalInputUpdateStudioInput(ctx context.Context,
 
 // region    **************************** object.gotpl ****************************
 
+var cursorBasedPageInfoImplementors = []string{"CursorBasedPageInfo"}
+
+func (ec *executionContext) _CursorBasedPageInfo(ctx context.Context, sel ast.SelectionSet, obj *model.CursorBasedPageInfo) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, cursorBasedPageInfoImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("CursorBasedPageInfo")
+		case "startCursor":
+			out.Values[i] = ec._CursorBasedPageInfo_startCursor(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "endCursor":
+			out.Values[i] = ec._CursorBasedPageInfo_endCursor(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "hasNextPage":
+			out.Values[i] = ec._CursorBasedPageInfo_hasNextPage(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "hasPreviciousPage":
+			out.Values[i] = ec._CursorBasedPageInfo_hasPreviciousPage(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var instructorImplementors = []string{"Instructor"}
 
 func (ec *executionContext) _Instructor(ctx context.Context, sel ast.SelectionSet, obj *models.Instructor) graphql.Marshaler {
@@ -5143,6 +5586,38 @@ func (ec *executionContext) _Instructor(ctx context.Context, sel ast.SelectionSe
 			}
 		case "updatedAt":
 			out.Values[i] = ec._Instructor_updatedAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var instructorsConnectionImplementors = []string{"InstructorsConnection"}
+
+func (ec *executionContext) _InstructorsConnection(ctx context.Context, sel ast.SelectionSet, obj *model.InstructorsConnection) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, instructorsConnectionImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("InstructorsConnection")
+		case "nodes":
+			out.Values[i] = ec._InstructorsConnection_nodes(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "pageInfo":
+			out.Values[i] = ec._InstructorsConnection_pageInfo(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -5243,6 +5718,43 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 	return out
 }
 
+var offsetBasedPageInfoImplementors = []string{"OffsetBasedPageInfo"}
+
+func (ec *executionContext) _OffsetBasedPageInfo(ctx context.Context, sel ast.SelectionSet, obj *model.OffsetBasedPageInfo) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, offsetBasedPageInfoImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("OffsetBasedPageInfo")
+		case "currentPage":
+			out.Values[i] = ec._OffsetBasedPageInfo_currentPage(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "totalPage":
+			out.Values[i] = ec._OffsetBasedPageInfo_totalPage(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "totalCount":
+			out.Values[i] = ec._OffsetBasedPageInfo_totalCount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var queryImplementors = []string{"Query"}
 
 func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) graphql.Marshaler {
@@ -5286,7 +5798,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				}
 				return res
 			})
-		case "instructors":
+		case "instructorsConnection":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
 				defer func() {
@@ -5294,7 +5806,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_instructors(ctx, field)
+				res = ec._Query_instructorsConnection(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -6089,6 +6601,20 @@ func (ec *executionContext) marshalNInstructor2ᚖgithubᚗcomᚋmatsuokashuhei�
 	return ec._Instructor(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNInstructorsConnection2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐInstructorsConnection(ctx context.Context, sel ast.SelectionSet, v model.InstructorsConnection) graphql.Marshaler {
+	return ec._InstructorsConnection(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNInstructorsConnection2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐInstructorsConnection(ctx context.Context, sel ast.SelectionSet, v *model.InstructorsConnection) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._InstructorsConnection(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalNInt2uint(ctx context.Context, v interface{}) (uint, error) {
 	res, err := graphql.UnmarshalUint(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -6102,6 +6628,16 @@ func (ec *executionContext) marshalNInt2uint(ctx context.Context, sel ast.Select
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) marshalNOffsetBasedPageInfo2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐOffsetBasedPageInfo(ctx context.Context, sel ast.SelectionSet, v *model.OffsetBasedPageInfo) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._OffsetBasedPageInfo(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNRoom2githubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐRoom(ctx context.Context, sel ast.SelectionSet, v models.Room) graphql.Marshaler {

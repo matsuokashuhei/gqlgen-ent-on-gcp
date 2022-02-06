@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"github.com/google/martian/v3/log"
 	"github.com/matsuokashuhei/landin/internal/models"
 	"gorm.io/gorm"
 )
@@ -26,11 +27,12 @@ func (r *InstructorRepository) Find(id uint) (*models.Instructor, error) {
 }
 
 func (r *InstructorRepository) CountAll() (*int64, error) {
-	var count *int64
-	if err := r.db.Model(&models.Instructor{}).Count(count).Error; err != nil {
+	var count int64
+	if err := r.db.Model(&models.Instructor{}).Count(&count).Error; err != nil {
+		log.Errorf("err: %v", err)
 		return nil, err
 	}
-	return count, nil
+	return &count, nil
 }
 
 func NewInstructorRepository(db *gorm.DB) *InstructorRepository {

@@ -9,12 +9,10 @@ type Instructor {
   updatedAt: Time!
 }
 
-# type InstructorsConnection {
-#   totalCount: Int!
-#   edges: [InstructorEdge!]
-#   instructors: [Instructor!]
-#   pageInfo: PageInfo!
-# }
+type InstructorsConnection {
+  nodes: [Instructor]!
+  pageInfo: OffsetBasedPageInfo!
+}
 #
 # type InstructorEdge {
 #   cursor: ID!
@@ -31,7 +29,7 @@ input CreateInstructorInput {
 
 extend type Query {
   instructor(id: ID!): Instructor!
-  instructors(offset: Int, limit: Int): [Instructor]!
+  instructorsConnection(offset: Int, limit: Int): InstructorsConnection!
 }
 
 extend type Mutation {
