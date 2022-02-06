@@ -1,0 +1,12 @@
+type OffsetBasedPageInfo {
+  currentPage: Int!
+  totalPage: Int!
+  totalCount: Int!
+}
+
+type CursorBasedPageInfo {
+  startCursor: ID!
+  endCursor: ID!
+  hasNextPage: Boolean!
+  hasPreviciousPage: Boolean!
+}

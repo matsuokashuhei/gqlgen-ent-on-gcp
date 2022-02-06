@@ -5,6 +5,7 @@
 type Studio {
   id: ID!
   name: String!
+  location: String!
   school: School!
   rooms: [Room]!
   createdAt: Time!
@@ -13,12 +14,14 @@ type Studio {
 
 input CreateStudioInput {
   name: String!
+  location: String!
   schoolID: ID!
 }
 
 input UpdateStudioInput {
   id: ID!
   name: String
+  location: String!
   schoolID: ID
 }
 

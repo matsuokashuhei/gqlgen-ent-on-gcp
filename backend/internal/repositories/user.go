@@ -9,55 +9,55 @@ type UserRepository struct {
 	db *gorm.DB
 }
 
-func (repository *UserRepository) FindAll() ([]*models.User, error) {
+func (r *UserRepository) FindAll() ([]*models.User, error) {
 	var users []*models.User
-	err := repository.db.Find(&users).Error
+	err := r.db.Find(&users).Error
 	if err != nil {
 		return nil, err
 	}
 	return users, nil
 }
 
-func (repository *UserRepository) Find(id uint) (*models.User, error) {
+func (r *UserRepository) Find(id uint) (*models.User, error) {
 	var user *models.User
-	err := repository.db.First(&user, id).Error
+	err := r.db.First(&user, id).Error
 	if err != nil {
 		return nil, err
 	}
 	return user, nil
 }
 
-func (repository *UserRepository) FindByAuth(UID string) (*models.User, error) {
+func (r *UserRepository) FindByAuth(UID string) (*models.User, error) {
 	var user *models.User
-	err := repository.db.Where("firebase_uid = ?", UID).First(&user).Error
+	err := r.db.Where("firebase_uid = ?", UID).First(&user).Error
 	if err != nil {
 		return nil, err
 	}
 	return user, nil
 }
 
-func (repository *UserRepository) Create(user *models.User) (*models.User, error) {
-	err := repository.db.Create(&user).Error
+func (r *UserRepository) Create(user *models.User) (*models.User, error) {
+	err := r.db.Create(&user).Error
 	if err != nil {
 		return nil, err
 	}
 	return user, nil
 }
 
-func (repository *UserRepository) Update(user *models.User) (*models.User, error) {
-	err := repository.db.Save(user).Error
+func (r *UserRepository) Update(user *models.User) (*models.User, error) {
+	err := r.db.Save(user).Error
 	if err != nil {
 		return nil, err
 	}
 	return user, nil
 }
 
-func (repository *UserRepository) Delete(id uint) (*models.User, error) {
-	var user, err = repository.Find(id)
+func (r *UserRepository) Delete(id uint) (*models.User, error) {
+	var user, err = r.Find(id)
 	if err != nil {
 		return nil, err
 	}
-	err = repository.db.Delete(&user, id).Error
+	err = r.db.Delete(&user, id).Error
 	if err != nil {
 		return nil, err
 	}

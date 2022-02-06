@@ -48,37 +48,80 @@ type DirectiveRoot struct {
 }
 
 type ComplexityRoot struct {
+	CursorBasedPageInfo struct {
+		EndCursor         func(childComplexity int) int
+		HasNextPage       func(childComplexity int) int
+		HasPreviciousPage func(childComplexity int) int
+		StartCursor       func(childComplexity int) int
+	}
+
+	Instructor struct {
+		Biography          func(childComplexity int) int
+		CreatedAt          func(childComplexity int) int
+		Email              func(childComplexity int) int
+		ID                 func(childComplexity int) int
+		Name               func(childComplexity int) int
+		PhoneNumber        func(childComplexity int) int
+		SyllabicCharacters func(childComplexity int) int
+		UpdatedAt          func(childComplexity int) int
+	}
+
+	InstructorsConnection struct {
+		Nodes    func(childComplexity int) int
+		PageInfo func(childComplexity int) int
+	}
+
 	Mutation struct {
-		CreateRoom   func(childComplexity int, input model.CreateRoomInput) int
-		CreateSchool func(childComplexity int, input model.CreateSchoolInput) int
-		CreateStudio func(childComplexity int, input model.CreateStudioInput) int
-		CreateUser   func(childComplexity int, input model.CreateUserInput) int
-		DeleteRoom   func(childComplexity int, id uint) int
-		DeleteSchool func(childComplexity int, id uint) int
-		DeleteStudio func(childComplexity int, id uint) int
-		SignUp       func(childComplexity int, input model.SignUpInput) int
-		UpdateRoom   func(childComplexity int, input model.UpdateRoomInput) int
-		UpdateSchool func(childComplexity int, input model.UpdateSchoolInput) int
-		UpdateStudio func(childComplexity int, input model.UpdateStudioInput) int
+		CreateInstructor func(childComplexity int, input model.CreateInstructorInput) int
+		CreateRoom       func(childComplexity int, input model.CreateRoomInput) int
+		CreateSchool     func(childComplexity int, input model.CreateSchoolInput) int
+		CreateStudio     func(childComplexity int, input model.CreateStudioInput) int
+		CreateUser       func(childComplexity int, input model.CreateUserInput) int
+		DeleteRoom       func(childComplexity int, id uint) int
+		DeleteSchool     func(childComplexity int, id uint) int
+		DeleteStudio     func(childComplexity int, id uint) int
+		SignUp           func(childComplexity int, input model.SignUpInput) int
+		UpdateRoom       func(childComplexity int, input model.UpdateRoomInput) int
+		UpdateSchool     func(childComplexity int, input model.UpdateSchoolInput) int
+		UpdateStudio     func(childComplexity int, input model.UpdateStudioInput) int
+	}
+
+	OffsetBasedPageInfo struct {
+		CurrentPage func(childComplexity int) int
+		TotalCount  func(childComplexity int) int
+		TotalPage   func(childComplexity int) int
 	}
 
 	Query struct {
-		CurrentUser func(childComplexity int) int
-		Room        func(childComplexity int, id uint) int
-		Rooms       func(childComplexity int) int
-		School      func(childComplexity int, id uint) int
-		Schools     func(childComplexity int) int
-		Studio      func(childComplexity int, id uint) int
-		Studios     func(childComplexity int) int
-		User        func(childComplexity int, id uint) int
-		Users       func(childComplexity int) int
+		CurrentUser           func(childComplexity int) int
+		Instructor            func(childComplexity int, id uint) int
+		InstructorsConnection func(childComplexity int, offset *uint, limit *uint) int
+		Room                  func(childComplexity int, id uint) int
+		Rooms                 func(childComplexity int) int
+		School                func(childComplexity int, id uint) int
+		Schools               func(childComplexity int) int
+		Studio                func(childComplexity int, id uint) int
+		Studios               func(childComplexity int) int
+		User                  func(childComplexity int, id uint) int
+		Users                 func(childComplexity int) int
 	}
 
 	Room struct {
+		Capacity  func(childComplexity int) int
 		CreatedAt func(childComplexity int) int
 		ID        func(childComplexity int) int
 		Name      func(childComplexity int) int
+		Schedules func(childComplexity int) int
 		Studio    func(childComplexity int) int
+		UpdatedAt func(childComplexity int) int
+	}
+
+	Schedule struct {
+		CreatedAt func(childComplexity int) int
+		DayOfWeek func(childComplexity int) int
+		EndTime   func(childComplexity int) int
+		ID        func(childComplexity int) int
+		StartTime func(childComplexity int) int
 		UpdatedAt func(childComplexity int) int
 	}
 
@@ -93,6 +136,7 @@ type ComplexityRoot struct {
 	Studio struct {
 		CreatedAt func(childComplexity int) int
 		ID        func(childComplexity int) int
+		Location  func(childComplexity int) int
 		Name      func(childComplexity int) int
 		Rooms     func(childComplexity int) int
 		School    func(childComplexity int) int
@@ -110,6 +154,7 @@ type ComplexityRoot struct {
 
 type MutationResolver interface {
 	SignUp(ctx context.Context, input model.SignUpInput) (*models.User, error)
+	CreateInstructor(ctx context.Context, input model.CreateInstructorInput) (*models.Instructor, error)
 	CreateRoom(ctx context.Context, input model.CreateRoomInput) (*models.Room, error)
 	UpdateRoom(ctx context.Context, input model.UpdateRoomInput) (*models.Room, error)
 	DeleteRoom(ctx context.Context, id uint) (*models.Room, error)
@@ -123,6 +168,8 @@ type MutationResolver interface {
 }
 type QueryResolver interface {
 	CurrentUser(ctx context.Context) (*models.User, error)
+	Instructor(ctx context.Context, id uint) (*models.Instructor, error)
+	InstructorsConnection(ctx context.Context, offset *uint, limit *uint) (*model.InstructorsConnection, error)
 	Room(ctx context.Context, id uint) (*models.Room, error)
 	Rooms(ctx context.Context) ([]*models.Room, error)
 	School(ctx context.Context, id uint) (*models.School, error)
@@ -134,6 +181,7 @@ type QueryResolver interface {
 }
 type RoomResolver interface {
 	Studio(ctx context.Context, obj *models.Room) (*models.Studio, error)
+	Schedules(ctx context.Context, obj *models.Room) ([]*models.Schedule, error)
 }
 type SchoolResolver interface {
 	Studios(ctx context.Context, obj *models.School) ([]*models.Studio, error)
@@ -157,6 +205,116 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	ec := executionContext{nil, e}
 	_ = ec
 	switch typeName + "." + field {
+
+	case "CursorBasedPageInfo.endCursor":
+		if e.complexity.CursorBasedPageInfo.EndCursor == nil {
+			break
+		}
+
+		return e.complexity.CursorBasedPageInfo.EndCursor(childComplexity), true
+
+	case "CursorBasedPageInfo.hasNextPage":
+		if e.complexity.CursorBasedPageInfo.HasNextPage == nil {
+			break
+		}
+
+		return e.complexity.CursorBasedPageInfo.HasNextPage(childComplexity), true
+
+	case "CursorBasedPageInfo.hasPreviciousPage":
+		if e.complexity.CursorBasedPageInfo.HasPreviciousPage == nil {
+			break
+		}
+
+		return e.complexity.CursorBasedPageInfo.HasPreviciousPage(childComplexity), true
+
+	case "CursorBasedPageInfo.startCursor":
+		if e.complexity.CursorBasedPageInfo.StartCursor == nil {
+			break
+		}
+
+		return e.complexity.CursorBasedPageInfo.StartCursor(childComplexity), true
+
+	case "Instructor.biography":
+		if e.complexity.Instructor.Biography == nil {
+			break
+		}
+
+		return e.complexity.Instructor.Biography(childComplexity), true
+
+	case "Instructor.createdAt":
+		if e.complexity.Instructor.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Instructor.CreatedAt(childComplexity), true
+
+	case "Instructor.email":
+		if e.complexity.Instructor.Email == nil {
+			break
+		}
+
+		return e.complexity.Instructor.Email(childComplexity), true
+
+	case "Instructor.id":
+		if e.complexity.Instructor.ID == nil {
+			break
+		}
+
+		return e.complexity.Instructor.ID(childComplexity), true
+
+	case "Instructor.name":
+		if e.complexity.Instructor.Name == nil {
+			break
+		}
+
+		return e.complexity.Instructor.Name(childComplexity), true
+
+	case "Instructor.phoneNumber":
+		if e.complexity.Instructor.PhoneNumber == nil {
+			break
+		}
+
+		return e.complexity.Instructor.PhoneNumber(childComplexity), true
+
+	case "Instructor.syllabicCharacters":
+		if e.complexity.Instructor.SyllabicCharacters == nil {
+			break
+		}
+
+		return e.complexity.Instructor.SyllabicCharacters(childComplexity), true
+
+	case "Instructor.updatedAt":
+		if e.complexity.Instructor.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.Instructor.UpdatedAt(childComplexity), true
+
+	case "InstructorsConnection.nodes":
+		if e.complexity.InstructorsConnection.Nodes == nil {
+			break
+		}
+
+		return e.complexity.InstructorsConnection.Nodes(childComplexity), true
+
+	case "InstructorsConnection.pageInfo":
+		if e.complexity.InstructorsConnection.PageInfo == nil {
+			break
+		}
+
+		return e.complexity.InstructorsConnection.PageInfo(childComplexity), true
+
+	case "Mutation.createInstructor":
+		if e.complexity.Mutation.CreateInstructor == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createInstructor_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateInstructor(childComplexity, args["input"].(model.CreateInstructorInput)), true
 
 	case "Mutation.createRoom":
 		if e.complexity.Mutation.CreateRoom == nil {
@@ -290,12 +448,57 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.UpdateStudio(childComplexity, args["input"].(model.UpdateStudioInput)), true
 
+	case "OffsetBasedPageInfo.currentPage":
+		if e.complexity.OffsetBasedPageInfo.CurrentPage == nil {
+			break
+		}
+
+		return e.complexity.OffsetBasedPageInfo.CurrentPage(childComplexity), true
+
+	case "OffsetBasedPageInfo.totalCount":
+		if e.complexity.OffsetBasedPageInfo.TotalCount == nil {
+			break
+		}
+
+		return e.complexity.OffsetBasedPageInfo.TotalCount(childComplexity), true
+
+	case "OffsetBasedPageInfo.totalPage":
+		if e.complexity.OffsetBasedPageInfo.TotalPage == nil {
+			break
+		}
+
+		return e.complexity.OffsetBasedPageInfo.TotalPage(childComplexity), true
+
 	case "Query.currentUser":
 		if e.complexity.Query.CurrentUser == nil {
 			break
 		}
 
 		return e.complexity.Query.CurrentUser(childComplexity), true
+
+	case "Query.instructor":
+		if e.complexity.Query.Instructor == nil {
+			break
+		}
+
+		args, err := ec.field_Query_instructor_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Instructor(childComplexity, args["id"].(uint)), true
+
+	case "Query.instructorsConnection":
+		if e.complexity.Query.InstructorsConnection == nil {
+			break
+		}
+
+		args, err := ec.field_Query_instructorsConnection_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.InstructorsConnection(childComplexity, args["offset"].(*uint), args["limit"].(*uint)), true
 
 	case "Query.room":
 		if e.complexity.Query.Room == nil {
@@ -373,6 +576,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Users(childComplexity), true
 
+	case "Room.capacity":
+		if e.complexity.Room.Capacity == nil {
+			break
+		}
+
+		return e.complexity.Room.Capacity(childComplexity), true
+
 	case "Room.createdAt":
 		if e.complexity.Room.CreatedAt == nil {
 			break
@@ -394,6 +604,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Room.Name(childComplexity), true
 
+	case "Room.schedules":
+		if e.complexity.Room.Schedules == nil {
+			break
+		}
+
+		return e.complexity.Room.Schedules(childComplexity), true
+
 	case "Room.studio":
 		if e.complexity.Room.Studio == nil {
 			break
@@ -407,6 +624,48 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Room.UpdatedAt(childComplexity), true
+
+	case "Schedule.createdAt":
+		if e.complexity.Schedule.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Schedule.CreatedAt(childComplexity), true
+
+	case "Schedule.dayOfWeek":
+		if e.complexity.Schedule.DayOfWeek == nil {
+			break
+		}
+
+		return e.complexity.Schedule.DayOfWeek(childComplexity), true
+
+	case "Schedule.endTime":
+		if e.complexity.Schedule.EndTime == nil {
+			break
+		}
+
+		return e.complexity.Schedule.EndTime(childComplexity), true
+
+	case "Schedule.id":
+		if e.complexity.Schedule.ID == nil {
+			break
+		}
+
+		return e.complexity.Schedule.ID(childComplexity), true
+
+	case "Schedule.startTime":
+		if e.complexity.Schedule.StartTime == nil {
+			break
+		}
+
+		return e.complexity.Schedule.StartTime(childComplexity), true
+
+	case "Schedule.updatedAt":
+		if e.complexity.Schedule.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.Schedule.UpdatedAt(childComplexity), true
 
 	case "School.createdAt":
 		if e.complexity.School.CreatedAt == nil {
@@ -456,6 +715,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Studio.ID(childComplexity), true
+
+	case "Studio.location":
+		if e.complexity.Studio.Location == nil {
+			break
+		}
+
+		return e.complexity.Studio.Location(childComplexity), true
 
 	case "Studio.name":
 		if e.complexity.Studio.Name == nil {
@@ -597,6 +863,57 @@ extend type Mutation {
     signUp(input: SignUpInput!): User!
 }
 `, BuiltIn: false},
+	{Name: "graph/schema/instructor.graphql", Input: `type Instructor {
+  id: ID!
+  name: String!
+  syllabicCharacters: String!
+  biography: String
+  phoneNumber: String
+  email: String
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+type InstructorsConnection {
+  nodes: [Instructor]!
+  pageInfo: OffsetBasedPageInfo!
+}
+#
+# type InstructorEdge {
+#   cursor: ID!
+#   node: Instructor
+# }
+
+input CreateInstructorInput {
+  name: String!
+  syllabicCharacters: String!
+  biography: String
+  phoneNumber: String
+  email: String
+}
+
+extend type Query {
+  instructor(id: ID!): Instructor!
+  instructorsConnection(offset: Int, limit: Int): InstructorsConnection!
+}
+
+extend type Mutation {
+  createInstructor(input: CreateInstructorInput!): Instructor!
+}
+`, BuiltIn: false},
+	{Name: "graph/schema/pagination.graphql", Input: `type OffsetBasedPageInfo {
+  currentPage: Int!
+  totalPage: Int!
+  totalCount: Int!
+}
+
+type CursorBasedPageInfo {
+  startCursor: ID!
+  endCursor: ID!
+  hasNextPage: Boolean!
+  hasPreviciousPage: Boolean!
+}
+`, BuiltIn: false},
 	{Name: "graph/schema/room.graphql", Input: `# GraphQL schema example
 #
 # https://gqlgen.com/getting-started/
@@ -604,19 +921,23 @@ extend type Mutation {
 type Room {
   id: ID!
   name: String!
+  capacity: Int!
   studio: Studio!
+  schedules: [Schedule]!
   createdAt: Time!
   updatedAt: Time!
 }
 
 input CreateRoomInput {
   name: String!
+  capacity: Int!
   studioID: ID!
 }
 
 input UpdateRoomInput {
   id: ID!
   name: String
+  capacity: Int!
   studioID: ID
 }
 
@@ -632,6 +953,15 @@ extend type Mutation {
 }
 `, BuiltIn: false},
 	{Name: "graph/schema/scalar.graphql", Input: `scalar Time
+`, BuiltIn: false},
+	{Name: "graph/schema/schedule.graphql", Input: `type Schedule {
+    id: ID!
+    dayOfWeek: Int!
+    startTime: String!
+    endTime: String!
+    createdAt: Time!
+    updatedAt: Time!
+}
 `, BuiltIn: false},
 	{Name: "graph/schema/school.graphql", Input: `# GraphQL schema example
 #
@@ -672,6 +1002,7 @@ extend type Mutation {
 type Studio {
   id: ID!
   name: String!
+  location: String!
   school: School!
   rooms: [Room]!
   createdAt: Time!
@@ -680,12 +1011,14 @@ type Studio {
 
 input CreateStudioInput {
   name: String!
+  location: String!
   schoolID: ID!
 }
 
 input UpdateStudioInput {
   id: ID!
   name: String
+  location: String!
   schoolID: ID
 }
 
@@ -728,6 +1061,21 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 // endregion ************************** generated!.gotpl **************************
 
 // region    ***************************** args.gotpl *****************************
+
+func (ec *executionContext) field_Mutation_createInstructor_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.CreateInstructorInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNCreateInstructorInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐCreateInstructorInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
 
 func (ec *executionContext) field_Mutation_createRoom_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
@@ -909,6 +1257,45 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 	return args, nil
 }
 
+func (ec *executionContext) field_Query_instructor_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 uint
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2uint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_instructorsConnection_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *uint
+	if tmp, ok := rawArgs["offset"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("offset"))
+		arg0, err = ec.unmarshalOInt2ᚖuint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["offset"] = arg0
+	var arg1 *uint
+	if tmp, ok := rawArgs["limit"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
+		arg1, err = ec.unmarshalOInt2ᚖuint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["limit"] = arg1
+	return args, nil
+}
+
 func (ec *executionContext) field_Query_room_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -1007,6 +1394,487 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 
 // region    **************************** field.gotpl *****************************
 
+func (ec *executionContext) _CursorBasedPageInfo_startCursor(ctx context.Context, field graphql.CollectedField, obj *model.CursorBasedPageInfo) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "CursorBasedPageInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.StartCursor, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(uint)
+	fc.Result = res
+	return ec.marshalNID2uint(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _CursorBasedPageInfo_endCursor(ctx context.Context, field graphql.CollectedField, obj *model.CursorBasedPageInfo) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "CursorBasedPageInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.EndCursor, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(uint)
+	fc.Result = res
+	return ec.marshalNID2uint(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _CursorBasedPageInfo_hasNextPage(ctx context.Context, field graphql.CollectedField, obj *model.CursorBasedPageInfo) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "CursorBasedPageInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.HasNextPage, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _CursorBasedPageInfo_hasPreviciousPage(ctx context.Context, field graphql.CollectedField, obj *model.CursorBasedPageInfo) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "CursorBasedPageInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.HasPreviciousPage, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Instructor_id(ctx context.Context, field graphql.CollectedField, obj *models.Instructor) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Instructor",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(uint)
+	fc.Result = res
+	return ec.marshalNID2uint(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Instructor_name(ctx context.Context, field graphql.CollectedField, obj *models.Instructor) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Instructor",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Name, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Instructor_syllabicCharacters(ctx context.Context, field graphql.CollectedField, obj *models.Instructor) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Instructor",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SyllabicCharacters, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Instructor_biography(ctx context.Context, field graphql.CollectedField, obj *models.Instructor) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Instructor",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Biography, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalOString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Instructor_phoneNumber(ctx context.Context, field graphql.CollectedField, obj *models.Instructor) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Instructor",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PhoneNumber, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalOString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Instructor_email(ctx context.Context, field graphql.CollectedField, obj *models.Instructor) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Instructor",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Email, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalOString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Instructor_createdAt(ctx context.Context, field graphql.CollectedField, obj *models.Instructor) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Instructor",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Instructor_updatedAt(ctx context.Context, field graphql.CollectedField, obj *models.Instructor) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Instructor",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UpdatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _InstructorsConnection_nodes(ctx context.Context, field graphql.CollectedField, obj *model.InstructorsConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "InstructorsConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Nodes, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*models.Instructor)
+	fc.Result = res
+	return ec.marshalNInstructor2ᚕᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐInstructor(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _InstructorsConnection_pageInfo(ctx context.Context, field graphql.CollectedField, obj *model.InstructorsConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "InstructorsConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PageInfo, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.OffsetBasedPageInfo)
+	fc.Result = res
+	return ec.marshalNOffsetBasedPageInfo2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐOffsetBasedPageInfo(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Mutation_signUp(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -1047,6 +1915,48 @@ func (ec *executionContext) _Mutation_signUp(ctx context.Context, field graphql.
 	res := resTmp.(*models.User)
 	fc.Result = res
 	return ec.marshalNUser2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐUser(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_createInstructor(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_createInstructor_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateInstructor(rctx, args["input"].(model.CreateInstructorInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.Instructor)
+	fc.Result = res
+	return ec.marshalNInstructor2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐInstructor(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_createRoom(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -1469,6 +2379,111 @@ func (ec *executionContext) _Mutation_createUser(ctx context.Context, field grap
 	return ec.marshalNUser2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐUser(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _OffsetBasedPageInfo_currentPage(ctx context.Context, field graphql.CollectedField, obj *model.OffsetBasedPageInfo) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "OffsetBasedPageInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CurrentPage, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(uint)
+	fc.Result = res
+	return ec.marshalNInt2uint(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _OffsetBasedPageInfo_totalPage(ctx context.Context, field graphql.CollectedField, obj *model.OffsetBasedPageInfo) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "OffsetBasedPageInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TotalPage, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(uint)
+	fc.Result = res
+	return ec.marshalNInt2uint(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _OffsetBasedPageInfo_totalCount(ctx context.Context, field graphql.CollectedField, obj *model.OffsetBasedPageInfo) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "OffsetBasedPageInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TotalCount, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(uint)
+	fc.Result = res
+	return ec.marshalNInt2uint(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Query_currentUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -1502,6 +2517,90 @@ func (ec *executionContext) _Query_currentUser(ctx context.Context, field graphq
 	res := resTmp.(*models.User)
 	fc.Result = res
 	return ec.marshalNUser2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐUser(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_instructor(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_instructor_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Instructor(rctx, args["id"].(uint))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.Instructor)
+	fc.Result = res
+	return ec.marshalNInstructor2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐInstructor(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_instructorsConnection(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_instructorsConnection_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().InstructorsConnection(rctx, args["offset"].(*uint), args["limit"].(*uint))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.InstructorsConnection)
+	fc.Result = res
+	return ec.marshalNInstructorsConnection2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐInstructorsConnection(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_room(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -1953,6 +3052,41 @@ func (ec *executionContext) _Room_name(ctx context.Context, field graphql.Collec
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Room_capacity(ctx context.Context, field graphql.CollectedField, obj *models.Room) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Room",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Capacity, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(uint)
+	fc.Result = res
+	return ec.marshalNInt2uint(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Room_studio(ctx context.Context, field graphql.CollectedField, obj *models.Room) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -1986,6 +3120,41 @@ func (ec *executionContext) _Room_studio(ctx context.Context, field graphql.Coll
 	res := resTmp.(*models.Studio)
 	fc.Result = res
 	return ec.marshalNStudio2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐStudio(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Room_schedules(ctx context.Context, field graphql.CollectedField, obj *models.Room) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Room",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Room().Schedules(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*models.Schedule)
+	fc.Result = res
+	return ec.marshalNSchedule2ᚕᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐSchedule(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Room_createdAt(ctx context.Context, field graphql.CollectedField, obj *models.Room) (ret graphql.Marshaler) {
@@ -2032,6 +3201,216 @@ func (ec *executionContext) _Room_updatedAt(ctx context.Context, field graphql.C
 	}()
 	fc := &graphql.FieldContext{
 		Object:     "Room",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UpdatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Schedule_id(ctx context.Context, field graphql.CollectedField, obj *models.Schedule) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Schedule",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(uint)
+	fc.Result = res
+	return ec.marshalNID2uint(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Schedule_dayOfWeek(ctx context.Context, field graphql.CollectedField, obj *models.Schedule) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Schedule",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DayOfWeek, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(uint)
+	fc.Result = res
+	return ec.marshalNInt2uint(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Schedule_startTime(ctx context.Context, field graphql.CollectedField, obj *models.Schedule) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Schedule",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.StartTime, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Schedule_endTime(ctx context.Context, field graphql.CollectedField, obj *models.Schedule) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Schedule",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.EndTime, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Schedule_createdAt(ctx context.Context, field graphql.CollectedField, obj *models.Schedule) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Schedule",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Schedule_updatedAt(ctx context.Context, field graphql.CollectedField, obj *models.Schedule) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Schedule",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -2287,6 +3666,41 @@ func (ec *executionContext) _Studio_name(ctx context.Context, field graphql.Coll
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Name, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Studio_location(ctx context.Context, field graphql.CollectedField, obj *models.Studio) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Studio",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Location, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3740,6 +5154,61 @@ func (ec *executionContext) ___Type_ofType(ctx context.Context, field graphql.Co
 
 // region    **************************** input.gotpl *****************************
 
+func (ec *executionContext) unmarshalInputCreateInstructorInput(ctx context.Context, obj interface{}) (model.CreateInstructorInput, error) {
+	var it model.CreateInstructorInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "syllabicCharacters":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("syllabicCharacters"))
+			it.SyllabicCharacters, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "biography":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("biography"))
+			it.Biography, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "phoneNumber":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("phoneNumber"))
+			it.PhoneNumber, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "email":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("email"))
+			it.Email, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputCreateRoomInput(ctx context.Context, obj interface{}) (model.CreateRoomInput, error) {
 	var it model.CreateRoomInput
 	asMap := map[string]interface{}{}
@@ -3754,6 +5223,14 @@ func (ec *executionContext) unmarshalInputCreateRoomInput(ctx context.Context, o
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
 			it.Name, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "capacity":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("capacity"))
+			it.Capacity, err = ec.unmarshalNInt2uint(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3808,6 +5285,14 @@ func (ec *executionContext) unmarshalInputCreateStudioInput(ctx context.Context,
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
 			it.Name, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "location":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("location"))
+			it.Location, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3912,6 +5397,14 @@ func (ec *executionContext) unmarshalInputUpdateRoomInput(ctx context.Context, o
 			if err != nil {
 				return it, err
 			}
+		case "capacity":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("capacity"))
+			it.Capacity, err = ec.unmarshalNInt2uint(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		case "studioID":
 			var err error
 
@@ -3982,6 +5475,14 @@ func (ec *executionContext) unmarshalInputUpdateStudioInput(ctx context.Context,
 			if err != nil {
 				return it, err
 			}
+		case "location":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("location"))
+			it.Location, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		case "schoolID":
 			var err error
 
@@ -4004,6 +5505,133 @@ func (ec *executionContext) unmarshalInputUpdateStudioInput(ctx context.Context,
 
 // region    **************************** object.gotpl ****************************
 
+var cursorBasedPageInfoImplementors = []string{"CursorBasedPageInfo"}
+
+func (ec *executionContext) _CursorBasedPageInfo(ctx context.Context, sel ast.SelectionSet, obj *model.CursorBasedPageInfo) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, cursorBasedPageInfoImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("CursorBasedPageInfo")
+		case "startCursor":
+			out.Values[i] = ec._CursorBasedPageInfo_startCursor(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "endCursor":
+			out.Values[i] = ec._CursorBasedPageInfo_endCursor(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "hasNextPage":
+			out.Values[i] = ec._CursorBasedPageInfo_hasNextPage(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "hasPreviciousPage":
+			out.Values[i] = ec._CursorBasedPageInfo_hasPreviciousPage(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var instructorImplementors = []string{"Instructor"}
+
+func (ec *executionContext) _Instructor(ctx context.Context, sel ast.SelectionSet, obj *models.Instructor) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, instructorImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Instructor")
+		case "id":
+			out.Values[i] = ec._Instructor_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "name":
+			out.Values[i] = ec._Instructor_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "syllabicCharacters":
+			out.Values[i] = ec._Instructor_syllabicCharacters(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "biography":
+			out.Values[i] = ec._Instructor_biography(ctx, field, obj)
+		case "phoneNumber":
+			out.Values[i] = ec._Instructor_phoneNumber(ctx, field, obj)
+		case "email":
+			out.Values[i] = ec._Instructor_email(ctx, field, obj)
+		case "createdAt":
+			out.Values[i] = ec._Instructor_createdAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "updatedAt":
+			out.Values[i] = ec._Instructor_updatedAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var instructorsConnectionImplementors = []string{"InstructorsConnection"}
+
+func (ec *executionContext) _InstructorsConnection(ctx context.Context, sel ast.SelectionSet, obj *model.InstructorsConnection) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, instructorsConnectionImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("InstructorsConnection")
+		case "nodes":
+			out.Values[i] = ec._InstructorsConnection_nodes(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "pageInfo":
+			out.Values[i] = ec._InstructorsConnection_pageInfo(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var mutationImplementors = []string{"Mutation"}
 
 func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet) graphql.Marshaler {
@@ -4021,6 +5649,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			out.Values[i] = graphql.MarshalString("Mutation")
 		case "signUp":
 			out.Values[i] = ec._Mutation_signUp(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "createInstructor":
+			out.Values[i] = ec._Mutation_createInstructor(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -4085,6 +5718,43 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 	return out
 }
 
+var offsetBasedPageInfoImplementors = []string{"OffsetBasedPageInfo"}
+
+func (ec *executionContext) _OffsetBasedPageInfo(ctx context.Context, sel ast.SelectionSet, obj *model.OffsetBasedPageInfo) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, offsetBasedPageInfoImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("OffsetBasedPageInfo")
+		case "currentPage":
+			out.Values[i] = ec._OffsetBasedPageInfo_currentPage(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "totalPage":
+			out.Values[i] = ec._OffsetBasedPageInfo_totalPage(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "totalCount":
+			out.Values[i] = ec._OffsetBasedPageInfo_totalCount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var queryImplementors = []string{"Query"}
 
 func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) graphql.Marshaler {
@@ -4109,6 +5779,34 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_currentUser(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "instructor":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_instructor(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "instructorsConnection":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_instructorsConnection(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -4262,6 +5960,11 @@ func (ec *executionContext) _Room(ctx context.Context, sel ast.SelectionSet, obj
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
+		case "capacity":
+			out.Values[i] = ec._Room_capacity(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
 		case "studio":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
@@ -4276,6 +5979,20 @@ func (ec *executionContext) _Room(ctx context.Context, sel ast.SelectionSet, obj
 				}
 				return res
 			})
+		case "schedules":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Room_schedules(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		case "createdAt":
 			out.Values[i] = ec._Room_createdAt(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -4285,6 +6002,58 @@ func (ec *executionContext) _Room(ctx context.Context, sel ast.SelectionSet, obj
 			out.Values[i] = ec._Room_updatedAt(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var scheduleImplementors = []string{"Schedule"}
+
+func (ec *executionContext) _Schedule(ctx context.Context, sel ast.SelectionSet, obj *models.Schedule) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, scheduleImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Schedule")
+		case "id":
+			out.Values[i] = ec._Schedule_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "dayOfWeek":
+			out.Values[i] = ec._Schedule_dayOfWeek(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "startTime":
+			out.Values[i] = ec._Schedule_startTime(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "endTime":
+			out.Values[i] = ec._Schedule_endTime(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "createdAt":
+			out.Values[i] = ec._Schedule_createdAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "updatedAt":
+			out.Values[i] = ec._Schedule_updatedAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
@@ -4371,6 +6140,11 @@ func (ec *executionContext) _Studio(ctx context.Context, sel ast.SelectionSet, o
 			}
 		case "name":
 			out.Values[i] = ec._Studio_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "location":
+			out.Values[i] = ec._Studio_location(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
@@ -4735,6 +6509,11 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
+func (ec *executionContext) unmarshalNCreateInstructorInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐCreateInstructorInput(ctx context.Context, v interface{}) (model.CreateInstructorInput, error) {
+	res, err := ec.unmarshalInputCreateInstructorInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNCreateRoomInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐCreateRoomInput(ctx context.Context, v interface{}) (model.CreateRoomInput, error) {
 	res, err := ec.unmarshalInputCreateRoomInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -4768,6 +6547,97 @@ func (ec *executionContext) marshalNID2uint(ctx context.Context, sel ast.Selecti
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) marshalNInstructor2githubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐInstructor(ctx context.Context, sel ast.SelectionSet, v models.Instructor) graphql.Marshaler {
+	return ec._Instructor(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNInstructor2ᚕᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐInstructor(ctx context.Context, sel ast.SelectionSet, v []*models.Instructor) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOInstructor2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐInstructor(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalNInstructor2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐInstructor(ctx context.Context, sel ast.SelectionSet, v *models.Instructor) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Instructor(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNInstructorsConnection2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐInstructorsConnection(ctx context.Context, sel ast.SelectionSet, v model.InstructorsConnection) graphql.Marshaler {
+	return ec._InstructorsConnection(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNInstructorsConnection2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐInstructorsConnection(ctx context.Context, sel ast.SelectionSet, v *model.InstructorsConnection) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._InstructorsConnection(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNInt2uint(ctx context.Context, v interface{}) (uint, error) {
+	res, err := graphql.UnmarshalUint(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNInt2uint(ctx context.Context, sel ast.SelectionSet, v uint) graphql.Marshaler {
+	res := graphql.MarshalUint(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) marshalNOffsetBasedPageInfo2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐOffsetBasedPageInfo(ctx context.Context, sel ast.SelectionSet, v *model.OffsetBasedPageInfo) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._OffsetBasedPageInfo(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNRoom2githubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐRoom(ctx context.Context, sel ast.SelectionSet, v models.Room) graphql.Marshaler {
@@ -4820,6 +6690,44 @@ func (ec *executionContext) marshalNRoom2ᚖgithubᚗcomᚋmatsuokashuheiᚋland
 		return graphql.Null
 	}
 	return ec._Room(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNSchedule2ᚕᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐSchedule(ctx context.Context, sel ast.SelectionSet, v []*models.Schedule) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOSchedule2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐSchedule(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
 }
 
 func (ec *executionContext) marshalNSchool2githubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐSchool(ctx context.Context, sel ast.SelectionSet, v models.School) graphql.Marshaler {
@@ -5324,11 +7232,40 @@ func (ec *executionContext) marshalOID2ᚖuint(ctx context.Context, sel ast.Sele
 	return graphql.MarshalUint(*v)
 }
 
+func (ec *executionContext) marshalOInstructor2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐInstructor(ctx context.Context, sel ast.SelectionSet, v *models.Instructor) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Instructor(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOInt2ᚖuint(ctx context.Context, v interface{}) (*uint, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := graphql.UnmarshalUint(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOInt2ᚖuint(ctx context.Context, sel ast.SelectionSet, v *uint) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return graphql.MarshalUint(*v)
+}
+
 func (ec *executionContext) marshalORoom2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐRoom(ctx context.Context, sel ast.SelectionSet, v *models.Room) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return ec._Room(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOSchedule2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐSchedule(ctx context.Context, sel ast.SelectionSet, v *models.Schedule) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Schedule(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOSchool2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋinternalᚋmodelsᚐSchool(ctx context.Context, sel ast.SelectionSet, v *models.School) graphql.Marshaler {

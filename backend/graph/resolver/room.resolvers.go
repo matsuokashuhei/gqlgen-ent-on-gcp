@@ -74,6 +74,15 @@ func (r *roomResolver) Studio(ctx context.Context, obj *models.Room) (*models.St
 	return studio, nil
 }
 
+func (r *roomResolver) Schedules(ctx context.Context, obj *models.Room) ([]*models.Schedule, error) {
+	repository := repositories.NewScheduleRepository(r.DB)
+	schedules, err := repository.FindAll(obj.ID)
+	if err != nil {
+		return nil, err
+	}
+	return schedules, nil
+}
+
 // Room returns generated.RoomResolver implementation.
 func (r *Resolver) Room() generated.RoomResolver { return &roomResolver{r} }
 

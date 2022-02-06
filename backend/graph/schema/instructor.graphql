@@ -1,0 +1,37 @@
+type Instructor {
+  id: ID!
+  name: String!
+  syllabicCharacters: String!
+  biography: String
+  phoneNumber: String
+  email: String
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+type InstructorsConnection {
+  nodes: [Instructor]!
+  pageInfo: OffsetBasedPageInfo!
+}
+#
+# type InstructorEdge {
+#   cursor: ID!
+#   node: Instructor
+# }
+
+input CreateInstructorInput {
+  name: String!
+  syllabicCharacters: String!
+  biography: String
+  phoneNumber: String
+  email: String
+}
+
+extend type Query {
+  instructor(id: ID!): Instructor!
+  instructorsConnection(offset: Int, limit: Int): InstructorsConnection!
+}
+
+extend type Mutation {
+  createInstructor(input: CreateInstructorInput!): Instructor!
+}

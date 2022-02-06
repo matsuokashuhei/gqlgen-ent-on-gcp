@@ -5,19 +5,23 @@
 type Room {
   id: ID!
   name: String!
+  capacity: Int!
   studio: Studio!
+  schedules: [Schedule]!
   createdAt: Time!
   updatedAt: Time!
 }
 
 input CreateRoomInput {
   name: String!
+  capacity: Int!
   studioID: ID!
 }
 
 input UpdateRoomInput {
   id: ID!
   name: String
+  capacity: Int!
   studioID: ID
 }
 
