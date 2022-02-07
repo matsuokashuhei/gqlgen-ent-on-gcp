@@ -1,13 +1,14 @@
 package middleware
 
 import (
+	"fmt"
 	"log"
 	"strings"
 
 	firebase "firebase.google.com/go"
 	"github.com/gin-gonic/gin"
 	"github.com/matsuokashuhei/landin/ent"
-	"github.com/matsuokashuhei/landin/ent/user"
+	"github.com/matsuokashuhei/landin/internal/repositories"
 )
 
 func Auth(client *ent.Client) gin.HandlerFunc {
@@ -38,7 +39,8 @@ func Auth(client *ent.Client) gin.HandlerFunc {
 			log.Printf("VerifyIDToken returned the error: %v\n", err)
 			return
 		}
-		user, err := client.User.Query().Where(user.FirebaseUID(token.UID)).First(c)
+		repository := repositories.NewUserRepository(client)
+		user, err := repository.FindByAuth(c, token.UID)
 		if err != nil {
 			log.Printf("err: %v\n", err)
 			return
@@ -47,4 +49,8 @@ func Auth(client *ent.Client) gin.HandlerFunc {
 		c.Set("user", user)
 		c.Next()
 	}
+}
+
+func AuthError() error {
+	return fmt.Errorf("access defnied")
 }

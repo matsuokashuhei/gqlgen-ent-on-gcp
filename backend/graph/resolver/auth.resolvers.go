@@ -5,27 +5,24 @@ package resolver
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"strings"
 
+	firebase "firebase.google.com/go"
+	"firebase.google.com/go/auth"
 	"github.com/matsuokashuhei/landin/ent"
 	"github.com/matsuokashuhei/landin/graph/generated"
 	"github.com/matsuokashuhei/landin/graph/model"
-	"github.com/matsuokashuhei/landin/internal/auth"
+	"github.com/matsuokashuhei/landin/internal/repositories"
 )
 
 func (r *mutationResolver) SignUp(ctx context.Context, input model.SignUpInput) (*ent.User, error) {
-	firebaseUser, err := auth.CreateFirebaseUser(ctx, input.Email, input.Password)
+	user, err := r.resolveAuth(ctx, input)
 	if err != nil {
 		return nil, err
 	}
-	user, err := r.client.
-		User.
-		Create().
-		SetName(strings.Split(firebaseUser.Email, "@")[0]).
-		SetFirebaseUID(firebaseUser.UID).
-		Save(ctx)
-	return user, nil
+	return r.resolveUser(ctx, user)
 }
 
 func (r *queryResolver) CurrentUser(ctx context.Context) (*ent.User, error) {
@@ -33,10 +30,10 @@ func (r *queryResolver) CurrentUser(ctx context.Context) (*ent.User, error) {
 	if err != nil {
 		return nil, err
 	}
-	user, exists := gc.Get(auth.USER_KEY)
+	user, exists := gc.Get("user")
 	log.Printf("user: %v, exists: %t", user, exists)
 	if exists == false {
-		return nil, auth.Error()
+		return nil, fmt.Errorf("access defnied")
 	}
 	return user.(*ent.User), nil
 }
@@ -49,3 +46,28 @@ func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//    it when you're done.
+//  - You have helper methods in this file. Move them out to keep these resolver files clean.
+func (r *mutationResolver) resolveAuth(ctx context.Context, input model.SignUpInput) (*auth.UserRecord, error) {
+	app, err := firebase.NewApp(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	auth, err := app.Auth(ctx)
+	if err != nil {
+		return nil, err
+	}
+	repository := repositories.NewAuthRepository(auth)
+	return repository.Create(ctx, input)
+}
+func (r *mutationResolver) resolveUser(ctx context.Context, input *auth.UserRecord) (*ent.User, error) {
+	return r.client.User.Create().
+		SetName(strings.Split(input.Email, "@")[0]).
+		SetFirebaseUID(input.UID).
+		Save(ctx)
+}

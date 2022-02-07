@@ -1,26 +1,19 @@
 package repositories
 
 import (
-	"github.com/matsuokashuhei/landin/internal/models"
-	"gorm.io/gorm"
+	"context"
+
+	"github.com/matsuokashuhei/landin/ent"
 )
 
 type ScheduleRepository struct {
-	db *gorm.DB
+	client *ent.Client
 }
 
-func (r *ScheduleRepository) FindAll(roomID uint) ([]*models.Schedule, error) {
-	var schedules []*models.Schedule
-	if err := r.db.
-		Order("day_of_week").
-		Order("start_time").
-		Where("room_id = ?", roomID).
-		Find(&schedules).Error; err != nil {
-		return nil, err
-	}
-	return schedules, nil
+func (r *ScheduleRepository) Find(ctx context.Context, id int) (*ent.Schedule, error) {
+	return r.client.Schedule.Get(ctx, id)
 }
 
-func NewScheduleRepository(db *gorm.DB) *ScheduleRepository {
-	return &ScheduleRepository{db: db}
+func NewScheduleRepository(client *ent.Client) *ScheduleRepository {
+	return &ScheduleRepository{client: client}
 }

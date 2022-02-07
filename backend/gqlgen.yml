@@ -60,6 +60,9 @@ models:
   Time:
     model:
       - github.com/99designs/gqlgen/graphql.Time
+  Node:
+    model:
+      - github.com/matsuokashuhei/landin/ent.Noder
   # School:
   #   model: github.com/matsuokashuhei/landin/internal/models.School
   # Studio:

@@ -5,6 +5,7 @@ package resolver
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/matsuokashuhei/landin/ent"
@@ -26,6 +27,10 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.CreateUse
 		return nil, err
 	}
 	return user, nil
+}
+
+func (r *mutationResolver) UpdateUser(ctx context.Context, input model.UpdateUserInput) (*ent.User, error) {
+	panic(fmt.Errorf("not implemented"))
 }
 
 func (r *queryResolver) User(ctx context.Context, id int) (*ent.User, error) {

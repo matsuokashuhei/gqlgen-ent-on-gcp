@@ -5,35 +5,22 @@ package resolver
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/matsuokashuhei/landin/ent"
-	"github.com/matsuokashuhei/landin/ent/instructor"
 	"github.com/matsuokashuhei/landin/graph/model"
+	"github.com/matsuokashuhei/landin/internal/repositories"
 )
 
 func (r *mutationResolver) CreateInstructor(ctx context.Context, input model.CreateInstructorInput) (*ent.Instructor, error) {
-	instructor, err := r.client.Instructor.Create().
-		SetName(input.Name).
-		SetSyllabicCharacters(input.SyllabicCharacters).
-		SetBiography(*input.Biography).
-		SetPhoneNumber(*input.PhoneNumber).
-		SetEmail(*input.Email).
-		Save(ctx)
-	if err != nil {
-		return nil, err
-	}
-	return instructor, nil
+	repository := repositories.NewInstructorRepository(r.client)
+	return repository.Create(ctx, input)
 }
 
 func (r *queryResolver) Instructor(ctx context.Context, id int) (*ent.Instructor, error) {
-	instructor, err := r.client.Instructor.Query().Where(instructor.ID(id)).First(ctx)
-	if err != nil {
-		return nil, err
-	}
-	return instructor, nil
+	repository := repositories.NewInstructorRepository(r.client)
+	return repository.Find(ctx, id)
 }
 
-func (r *queryResolver) InstructorsConnection(ctx context.Context, offset *int, limit *int) (*model.InstructorsConnection, error) {
-	panic(fmt.Errorf("not implemented"))
+func (r *queryResolver) Instructors(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int) (*ent.InstructorConnection, error) {
+	return r.client.Instructor.Query().Paginate(ctx, after, first, before, last)
 }

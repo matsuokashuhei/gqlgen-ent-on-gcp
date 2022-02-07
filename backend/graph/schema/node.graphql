@@ -1,0 +1,8 @@
+interface Node {
+  id: ID!
+}
+
+extend type Query {
+  node(id: ID!): Node
+  nodes(ids: [ID!]!): [Node]!
+}

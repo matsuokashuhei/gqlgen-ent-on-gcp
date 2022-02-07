@@ -2,7 +2,7 @@
 #
 # https://gqlgen.com/getting-started/
 
-type School {
+type School implements Node {
   id: ID!
   name: String!
   studios: [Studio]!

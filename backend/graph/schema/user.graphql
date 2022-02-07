@@ -1,4 +1,4 @@
-type User {
+type User implements Node {
   id: ID!
   name: String!
   firebaseUid: String!
@@ -11,6 +11,11 @@ input CreateUserInput {
   password: String!
 }
 
+input UpdateUserInput {
+  id: ID!
+  name: String!
+}
+
 extend type Query {
   user(id: ID!): User!
   users: [User]!
@@ -18,4 +23,5 @@ extend type Query {
 
 extend type Mutation {
   createUser(input: CreateUserInput!): User!
+  updateUser(input: UpdateUserInput!): User!
 }

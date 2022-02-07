@@ -2,10 +2,6 @@
 
 package model
 
-import (
-	"github.com/matsuokashuhei/landin/ent"
-)
-
 type CreateInstructorInput struct {
 	Name               string  `json:"name"`
 	SyllabicCharacters string  `json:"syllabicCharacters"`
@@ -35,24 +31,6 @@ type CreateUserInput struct {
 	Password string `json:"password"`
 }
 
-type CursorBasedPageInfo struct {
-	StartCursor       int  `json:"startCursor"`
-	EndCursor         int  `json:"endCursor"`
-	HasNextPage       bool `json:"hasNextPage"`
-	HasPreviciousPage bool `json:"hasPreviciousPage"`
-}
-
-type InstructorsConnection struct {
-	Nodes    []*ent.Instructor    `json:"nodes"`
-	PageInfo *OffsetBasedPageInfo `json:"pageInfo"`
-}
-
-type OffsetBasedPageInfo struct {
-	CurrentPage int `json:"currentPage"`
-	TotalPage   int `json:"totalPage"`
-	TotalCount  int `json:"totalCount"`
-}
-
 type SignUpInput struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
@@ -75,4 +53,9 @@ type UpdateStudioInput struct {
 	Name     *string `json:"name"`
 	Location *string `json:"location"`
 	SchoolID *int    `json:"schoolID"`
+}
+
+type UpdateUserInput struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
 }

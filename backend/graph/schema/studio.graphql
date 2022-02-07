@@ -2,7 +2,7 @@
 #
 # https://gqlgen.com/getting-started/
 
-type Studio {
+type Studio implements Node {
   id: ID!
   name: String!
   location: String!
@@ -27,7 +27,6 @@ input UpdateStudioInput {
 
 extend type Query {
   studio(id: ID!): Studio!
-  studios: [Studio]!
 }
 
 extend type Mutation {

@@ -2,7 +2,7 @@
 #
 # https://gqlgen.com/getting-started/
 
-type Room {
+type Room implements Node {
   id: ID!
   name: String!
   capacity: Int!
