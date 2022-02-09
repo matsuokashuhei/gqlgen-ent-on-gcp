@@ -2,12 +2,12 @@
 #
 # https://gqlgen.com/getting-started/
 
-type School {
+type School implements Node {
   id: ID!
   name: String!
   studios: [Studio]!
-  createdAt: Time!
-  updatedAt: Time!
+  createTime: Time!
+  updateTime: Time!
 }
 
 input CreateSchoolInput {

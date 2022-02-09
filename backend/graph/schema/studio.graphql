@@ -2,14 +2,14 @@
 #
 # https://gqlgen.com/getting-started/
 
-type Studio {
+type Studio implements Node {
   id: ID!
   name: String!
   location: String!
   school: School!
   rooms: [Room]!
-  createdAt: Time!
-  updatedAt: Time!
+  createTime: Time!
+  updateTime: Time!
 }
 
 input CreateStudioInput {
@@ -21,13 +21,12 @@ input CreateStudioInput {
 input UpdateStudioInput {
   id: ID!
   name: String
-  location: String!
+  location: String
   schoolID: ID
 }
 
 extend type Query {
   studio(id: ID!): Studio!
-  studios: [Studio]!
 }
 
 extend type Mutation {

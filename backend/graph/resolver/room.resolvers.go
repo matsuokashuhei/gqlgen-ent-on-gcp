@@ -5,85 +5,66 @@ package resolver
 
 import (
 	"context"
-	"fmt"
 
-	"github.com/matsuokashuhei/landin/graph/generated"
+	"github.com/matsuokashuhei/landin/ent"
+	"github.com/matsuokashuhei/landin/ent/room"
 	"github.com/matsuokashuhei/landin/graph/model"
-	"github.com/matsuokashuhei/landin/internal/models"
-	"github.com/matsuokashuhei/landin/internal/repositories"
 )
 
-func (r *mutationResolver) CreateRoom(ctx context.Context, input model.CreateRoomInput) (*models.Room, error) {
-	repository := repositories.NewRoomRepository(r.DB)
-	room := &models.Room{
-		Name:     input.Name,
-		StudioID: input.StudioID,
-	}
-	_, err := repository.Create(room)
+func (r *mutationResolver) CreateRoom(ctx context.Context, input model.CreateRoomInput) (*ent.Room, error) {
+	room, err := r.client.Room.Create().
+		SetName(input.Name).
+		SetCapacity(input.Capacity).
+		SetStudioID(input.StudioID).
+		Save(ctx)
 	if err != nil {
 		return nil, err
 	}
 	return room, nil
 }
 
-func (r *mutationResolver) UpdateRoom(ctx context.Context, input model.UpdateRoomInput) (*models.Room, error) {
-	repository := repositories.NewRoomRepository(r.DB)
-	var room, err = repository.Find(input.ID)
+func (r *mutationResolver) UpdateRoom(ctx context.Context, input model.UpdateRoomInput) (*ent.Room, error) {
+	room, err := r.client.Room.Query().Where(room.ID(input.ID)).First(ctx)
 	if err != nil {
 		return nil, err
 	}
-	if input.Name == nil && input.StudioID == nil {
-		return room, nil
-	}
+	update := room.Update()
 	if input.Name != nil {
-		room.Name = *input.Name
+		update = update.SetName(*input.Name)
 	}
-	if input.StudioID != nil {
-		room.StudioID = *input.StudioID
+	if input.Capacity != nil {
+		update = update.SetCapacity(*input.Capacity)
 	}
-	_, err = repository.Update(room)
+	room, err = update.Save(ctx)
 	if err != nil {
 		return nil, err
 	}
 	return room, nil
 }
 
-func (r *mutationResolver) DeleteRoom(ctx context.Context, id uint) (*models.Room, error) {
-	repository := repositories.NewRoomRepository(r.DB)
-	room, err := repository.Delete(id)
+func (r *mutationResolver) DeleteRoom(ctx context.Context, id int) (*ent.Room, error) {
+	room, err := r.client.Room.Query().Where(room.ID(id)).First(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if err := r.client.Room.DeleteOne(room).Exec(ctx); err != nil {
+		return nil, err
+	}
+	return room, nil
+}
+
+func (r *queryResolver) Room(ctx context.Context, id int) (*ent.Room, error) {
+	room, err := r.client.Room.Query().Where(room.ID(id)).First(ctx)
 	if err != nil {
 		return nil, err
 	}
 	return room, nil
 }
 
-func (r *queryResolver) Room(ctx context.Context, id uint) (*models.Room, error) {
-	panic(fmt.Errorf("Room was not implemented"))
-}
-
-func (r *queryResolver) Rooms(ctx context.Context) ([]*models.Room, error) {
-	panic(fmt.Errorf("Rooms was not implemented"))
-}
-
-func (r *roomResolver) Studio(ctx context.Context, obj *models.Room) (*models.Studio, error) {
-	repository := repositories.NewStudioRepository(r.DB)
-	studio, err := repository.Find(obj.StudioID)
+func (r *queryResolver) Rooms(ctx context.Context) ([]*ent.Room, error) {
+	rooms, err := r.client.Room.Query().All(ctx)
 	if err != nil {
 		return nil, err
 	}
-	return studio, nil
+	return rooms, nil
 }
-
-func (r *roomResolver) Schedules(ctx context.Context, obj *models.Room) ([]*models.Schedule, error) {
-	repository := repositories.NewScheduleRepository(r.DB)
-	schedules, err := repository.FindAll(obj.ID)
-	if err != nil {
-		return nil, err
-	}
-	return schedules, nil
-}
-
-// Room returns generated.RoomResolver implementation.
-func (r *Resolver) Room() generated.RoomResolver { return &roomResolver{r} }
-
-type roomResolver struct{ *Resolver }

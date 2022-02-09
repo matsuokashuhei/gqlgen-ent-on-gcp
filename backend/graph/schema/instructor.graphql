@@ -1,23 +1,24 @@
-type Instructor {
+type Instructor implements Node {
   id: ID!
   name: String!
   syllabicCharacters: String!
   biography: String
   phoneNumber: String
   email: String
-  createdAt: Time!
-  updatedAt: Time!
+  createTime: Time!
+  updateTime: Time!
 }
 
-type InstructorsConnection {
-  nodes: [Instructor]!
-  pageInfo: OffsetBasedPageInfo!
+type InstructorConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  edges: [InstructorEdge]
 }
-#
-# type InstructorEdge {
-#   cursor: ID!
-#   node: Instructor
-# }
+
+type InstructorEdge {
+  node: Instructor
+  cursor: Cursor!
+}
 
 input CreateInstructorInput {
   name: String!
@@ -29,7 +30,7 @@ input CreateInstructorInput {
 
 extend type Query {
   instructor(id: ID!): Instructor!
-  instructorsConnection(offset: Int, limit: Int): InstructorsConnection!
+  instructors(after: Cursor, first: Int, before: Cursor, last: Int): InstructorConnection
 }
 
 extend type Mutation {

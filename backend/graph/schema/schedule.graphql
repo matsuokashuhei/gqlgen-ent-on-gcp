@@ -1,4 +1,4 @@
-type Schedule {
+type Schedule implements Node {
     id: ID!
     dayOfWeek: Int!
     startTime: String!

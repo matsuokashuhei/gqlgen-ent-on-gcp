@@ -1,60 +1,47 @@
 package repositories
 
 import (
-	"github.com/matsuokashuhei/landin/internal/models"
-	"gorm.io/gorm"
+	"context"
+
+	"github.com/matsuokashuhei/landin/ent"
+	"github.com/matsuokashuhei/landin/graph/model"
 )
 
 type SchoolRepository struct {
-	db *gorm.DB
+	client *ent.Client
 }
 
-func (r *SchoolRepository) FindAll() ([]*models.School, error) {
-	var schools []*models.School
-	err := r.db.Find(&schools).Error
+func (r *SchoolRepository) All(ctx context.Context) ([]*ent.School, error) {
+	return r.client.School.Query().All(ctx)
+}
+
+func (r *SchoolRepository) Find(ctx context.Context, id int) (*ent.School, error) {
+	return r.client.School.Get(ctx, id)
+}
+
+func (r *SchoolRepository) Create(ctx context.Context, input model.CreateSchoolInput) (*ent.School, error) {
+	return r.client.School.Create().
+		SetName(input.Name).
+		Save(ctx)
+}
+
+func (r *SchoolRepository) Update(ctx context.Context, input model.UpdateSchoolInput) (*ent.School, error) {
+	return r.client.School.UpdateOneID(input.ID).
+		SetName(input.Name).
+		Save(ctx)
+}
+
+func (r *SchoolRepository) Delete(ctx context.Context, id int) (*ent.School, error) {
+	school, err := r.Find(ctx, id)
 	if err != nil {
 		return nil, err
 	}
-	return schools, nil
-}
-
-func (r *SchoolRepository) Find(id uint) (*models.School, error) {
-	var school *models.School
-	err := r.db.First(&school, id).Error
-	if err != nil {
-		return nil, err
-	}
-	return school, nil
-}
-
-func (r *SchoolRepository) Create(school *models.School) (*models.School, error) {
-	err := r.db.Create(&school).Error
-	if err != nil {
-		return nil, err
-	}
-	return school, nil
-}
-
-func (r *SchoolRepository) Update(school *models.School) (*models.School, error) {
-	err := r.db.Save(school).Error
-	if err != nil {
+	if err := r.client.School.DeleteOne(school).Exec(ctx); err != nil {
 		return nil, err
 	}
 	return school, nil
 }
 
-func (r *SchoolRepository) Delete(id uint) (*models.School, error) {
-	var school, err = r.Find(id)
-	if err != nil {
-		return nil, err
-	}
-	err = r.db.Delete(&school, id).Error
-	if err != nil {
-		return nil, err
-	}
-	return school, nil
-}
-
-func NewSchoolRepository(db *gorm.DB) *SchoolRepository {
-	return &SchoolRepository{db: db}
+func NewSchoolRepository(client *ent.Client) *SchoolRepository {
+	return &SchoolRepository{client: client}
 }

@@ -1,40 +1,30 @@
 package repositories
 
 import (
-	"github.com/google/martian/v3/log"
-	"github.com/matsuokashuhei/landin/internal/models"
-	"gorm.io/gorm"
+	"context"
+
+	"github.com/matsuokashuhei/landin/ent"
+	"github.com/matsuokashuhei/landin/graph/model"
 )
 
 type InstructorRepository struct {
-	db *gorm.DB
+	client *ent.Client
 }
 
-func (r *InstructorRepository) FindAll(offset int, limit int) ([]*models.Instructor, error) {
-	var instructors []*models.Instructor
-	if err := r.db.Offset(offset).Limit(limit).Find(&instructors).Error; err != nil {
-		return nil, err
-	}
-	return instructors, nil
+func (r *InstructorRepository) Create(ctx context.Context, input model.CreateInstructorInput) (*ent.Instructor, error) {
+	return r.client.Instructor.Create().
+		SetName(input.Name).
+		SetSyllabicCharacters(input.SyllabicCharacters).
+		SetBiography(*input.Biography).
+		SetPhoneNumber(*input.PhoneNumber).
+		SetEmail(*input.Email).
+		Save(ctx)
 }
 
-func (r *InstructorRepository) Find(id uint) (*models.Instructor, error) {
-	var instructor *models.Instructor
-	if err := r.db.First(&instructor, id).Error; err != nil {
-		return nil, err
-	}
-	return instructor, nil
+func (r *InstructorRepository) Find(ctx context.Context, id int) (*ent.Instructor, error) {
+	return r.client.Instructor.Get(ctx, id)
 }
 
-func (r *InstructorRepository) CountAll() (*int64, error) {
-	var count int64
-	if err := r.db.Model(&models.Instructor{}).Count(&count).Error; err != nil {
-		log.Errorf("err: %v", err)
-		return nil, err
-	}
-	return &count, nil
-}
-
-func NewInstructorRepository(db *gorm.DB) *InstructorRepository {
-	return &InstructorRepository{db: db}
+func NewInstructorRepository(client *ent.Client) *InstructorRepository {
+	return &InstructorRepository{client: client}
 }

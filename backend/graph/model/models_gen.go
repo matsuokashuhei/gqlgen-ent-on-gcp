@@ -2,10 +2,6 @@
 
 package model
 
-import (
-	"github.com/matsuokashuhei/landin/internal/models"
-)
-
 type CreateInstructorInput struct {
 	Name               string  `json:"name"`
 	SyllabicCharacters string  `json:"syllabicCharacters"`
@@ -16,8 +12,8 @@ type CreateInstructorInput struct {
 
 type CreateRoomInput struct {
 	Name     string `json:"name"`
-	Capacity uint   `json:"capacity"`
-	StudioID uint   `json:"studioID"`
+	Capacity int    `json:"capacity"`
+	StudioID int    `json:"studioID"`
 }
 
 type CreateSchoolInput struct {
@@ -27,30 +23,12 @@ type CreateSchoolInput struct {
 type CreateStudioInput struct {
 	Name     string `json:"name"`
 	Location string `json:"location"`
-	SchoolID uint   `json:"schoolID"`
+	SchoolID int    `json:"schoolID"`
 }
 
 type CreateUserInput struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
-}
-
-type CursorBasedPageInfo struct {
-	StartCursor       uint `json:"startCursor"`
-	EndCursor         uint `json:"endCursor"`
-	HasNextPage       bool `json:"hasNextPage"`
-	HasPreviciousPage bool `json:"hasPreviciousPage"`
-}
-
-type InstructorsConnection struct {
-	Nodes    []*models.Instructor `json:"nodes"`
-	PageInfo *OffsetBasedPageInfo `json:"pageInfo"`
-}
-
-type OffsetBasedPageInfo struct {
-	CurrentPage uint `json:"currentPage"`
-	TotalPage   uint `json:"totalPage"`
-	TotalCount  uint `json:"totalCount"`
 }
 
 type SignUpInput struct {
@@ -59,20 +37,25 @@ type SignUpInput struct {
 }
 
 type UpdateRoomInput struct {
-	ID       uint    `json:"id"`
+	ID       int     `json:"id"`
 	Name     *string `json:"name"`
-	Capacity uint    `json:"capacity"`
-	StudioID *uint   `json:"studioID"`
+	Capacity *int    `json:"capacity"`
+	StudioID *int    `json:"studioID"`
 }
 
 type UpdateSchoolInput struct {
-	ID   uint   `json:"id"`
+	ID   int    `json:"id"`
 	Name string `json:"name"`
 }
 
 type UpdateStudioInput struct {
-	ID       uint    `json:"id"`
+	ID       int     `json:"id"`
 	Name     *string `json:"name"`
-	Location string  `json:"location"`
-	SchoolID *uint   `json:"schoolID"`
+	Location *string `json:"location"`
+	SchoolID *int    `json:"schoolID"`
+}
+
+type UpdateUserInput struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
 }
