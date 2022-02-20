@@ -2,6 +2,7 @@ import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import { Home } from "./pages/home";
+import { InstructorsPage } from "./pages/instructors";
 import { SignIn } from "./pages/sign-in";
 import { SignUp } from "./pages/sign-up";
 import { Public, Private } from "./routes";
@@ -38,6 +39,14 @@ function App() {
               element={
                 <Private>
                   <Home />
+                </Private>
+              }
+            />
+            <Route
+              path="/instructors"
+              element={
+                <Private>
+                  <InstructorsPage />
                 </Private>
               }
             />

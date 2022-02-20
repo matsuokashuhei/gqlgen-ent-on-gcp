@@ -43,6 +43,7 @@ services:
       - backend-extensions:/root/.vscode-server/extensions
     ports:
       - "8080:8080"
+      - "2345:2345"
   mysql:
     platform: linux/x86_64
     image: mysql:8
