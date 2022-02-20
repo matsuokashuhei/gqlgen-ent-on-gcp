@@ -3,4 +3,6 @@ tmp_dir = "tmp"
 
 [build]
 cmd = "go build -o ./tmp/main ./cmd/app"
-bin = "tmp/main"
+# bin = "tmp/main"
+full_bin = "dlv exec ./tmp/main --accept-multiclient --log --headless --continue --listen :2345 --api-version 2"
+#full_bin = "APP_ENV=dev APP_USER=air dlv exec ./tmp/main --accept-multiclient --log --headless --continue --listen :2345 --api-version 2"

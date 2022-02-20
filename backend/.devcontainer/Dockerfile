@@ -61,12 +61,13 @@ WORKDIR $workdir
 ENV GO111MODULE="on"
 ENV GOOS="linux"
 ENV CGO_ENABLED=0
+
 RUN go get golang.org/x/tools/gopls@latest
 RUN go get -u github.com/BurntSushi/toml
-RUN go get -u github.com/cosmtrek/air
+RUN go get -u github.com/cosmtrek/air@latest
+RUN go get -u github.com/go-delve/delve/cmd/dlv@latest
 
 
 COPY $sourcedir/go.mod $sourcedir/go.sum $workdir
 RUN go mod download
 COPY . .
-
