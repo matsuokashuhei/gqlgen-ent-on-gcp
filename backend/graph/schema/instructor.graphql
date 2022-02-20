@@ -12,11 +12,11 @@ type Instructor implements Node {
 type InstructorConnection {
   totalCount: Int!
   pageInfo: PageInfo!
-  edges: [InstructorEdge]
+  edges: [InstructorEdge]!
 }
 
 type InstructorEdge {
-  node: Instructor
+  node: Instructor!
   cursor: Cursor!
 }
 

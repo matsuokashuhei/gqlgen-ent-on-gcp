@@ -902,11 +902,11 @@ extend type Mutation {
 type InstructorConnection {
   totalCount: Int!
   pageInfo: PageInfo!
-  edges: [InstructorEdge]
+  edges: [InstructorEdge]!
 }
 
 type InstructorEdge {
-  node: Instructor
+  node: Instructor!
   cursor: Cursor!
 }
 
@@ -1858,11 +1858,14 @@ func (ec *executionContext) _InstructorConnection_edges(ctx context.Context, fie
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
 	res := resTmp.([]*ent.InstructorEdge)
 	fc.Result = res
-	return ec.marshalOInstructorEdge2ᚕᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋentᚐInstructorEdge(ctx, field.Selections, res)
+	return ec.marshalNInstructorEdge2ᚕᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋentᚐInstructorEdge(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _InstructorEdge_node(ctx context.Context, field graphql.CollectedField, obj *ent.InstructorEdge) (ret graphql.Marshaler) {
@@ -1890,11 +1893,14 @@ func (ec *executionContext) _InstructorEdge_node(ctx context.Context, field grap
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
 	res := resTmp.(*ent.Instructor)
 	fc.Result = res
-	return ec.marshalOInstructor2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋentᚐInstructor(ctx, field.Selections, res)
+	return ec.marshalNInstructor2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋentᚐInstructor(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _InstructorEdge_cursor(ctx context.Context, field graphql.CollectedField, obj *ent.InstructorEdge) (ret graphql.Marshaler) {
@@ -5822,6 +5828,9 @@ func (ec *executionContext) _InstructorConnection(ctx context.Context, sel ast.S
 			}
 		case "edges":
 			out.Values[i] = ec._InstructorConnection_edges(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -5846,6 +5855,9 @@ func (ec *executionContext) _InstructorEdge(ctx context.Context, sel ast.Selecti
 			out.Values[i] = graphql.MarshalString("InstructorEdge")
 		case "node":
 			out.Values[i] = ec._InstructorEdge_node(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "cursor":
 			out.Values[i] = ec._InstructorEdge_cursor(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -6869,6 +6881,44 @@ func (ec *executionContext) marshalNInstructor2ᚖgithubᚗcomᚋmatsuokashuhei�
 	return ec._Instructor(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNInstructorEdge2ᚕᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋentᚐInstructorEdge(ctx context.Context, sel ast.SelectionSet, v []*ent.InstructorEdge) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOInstructorEdge2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋentᚐInstructorEdge(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
 func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v interface{}) (int, error) {
 	res, err := graphql.UnmarshalInt(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -7560,59 +7610,11 @@ func (ec *executionContext) marshalOID2ᚖint(ctx context.Context, sel ast.Selec
 	return graphql.MarshalIntID(*v)
 }
 
-func (ec *executionContext) marshalOInstructor2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋentᚐInstructor(ctx context.Context, sel ast.SelectionSet, v *ent.Instructor) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._Instructor(ctx, sel, v)
-}
-
 func (ec *executionContext) marshalOInstructorConnection2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋentᚐInstructorConnection(ctx context.Context, sel ast.SelectionSet, v *ent.InstructorConnection) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return ec._InstructorConnection(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalOInstructorEdge2ᚕᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋentᚐInstructorEdge(ctx context.Context, sel ast.SelectionSet, v []*ent.InstructorEdge) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalOInstructorEdge2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋentᚐInstructorEdge(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-
-	return ret
 }
 
 func (ec *executionContext) marshalOInstructorEdge2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋentᚐInstructorEdge(ctx context.Context, sel ast.SelectionSet, v *ent.InstructorEdge) graphql.Marshaler {
