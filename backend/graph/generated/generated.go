@@ -95,7 +95,7 @@ type ComplexityRoot struct {
 	Query struct {
 		CurrentUser func(childComplexity int) int
 		Instructor  func(childComplexity int, id int) int
-		Instructors func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int) int
+		Instructors func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.InstructorOrder) int
 		Node        func(childComplexity int, id int) int
 		Nodes       func(childComplexity int, ids []int) int
 		Room        func(childComplexity int, id int) int
@@ -171,7 +171,7 @@ type MutationResolver interface {
 type QueryResolver interface {
 	CurrentUser(ctx context.Context) (*ent.User, error)
 	Instructor(ctx context.Context, id int) (*ent.Instructor, error)
-	Instructors(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int) (*ent.InstructorConnection, error)
+	Instructors(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.InstructorOrder) (*ent.InstructorConnection, error)
 	Node(ctx context.Context, id int) (ent.Noder, error)
 	Nodes(ctx context.Context, ids []int) ([]ent.Noder, error)
 	Room(ctx context.Context, id int) (*ent.Room, error)
@@ -506,7 +506,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Instructors(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int)), true
+		return e.complexity.Query.Instructors(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.InstructorOrder)), true
 
 	case "Query.node":
 		if e.complexity.Query.Node == nil {
@@ -910,6 +910,20 @@ type InstructorEdge {
   cursor: Cursor!
 }
 
+enum OrderDirection {
+  ASC
+  DESC
+}
+
+enum InstructorOrderField {
+  SYLLABIC_CHARACTERS
+}
+
+input InstructorOrder {
+  direction: OrderDirection!
+  field: InstructorOrderField
+}
+
 input CreateInstructorInput {
   name: String!
   syllabicCharacters: String!
@@ -920,7 +934,7 @@ input CreateInstructorInput {
 
 extend type Query {
   instructor(id: ID!): Instructor!
-  instructors(after: Cursor, first: Int, before: Cursor, last: Int): InstructorConnection
+  instructors(after: Cursor, first: Int, before: Cursor, last: Int, orderBy: InstructorOrder): InstructorConnection
 }
 
 extend type Mutation {
@@ -1361,6 +1375,15 @@ func (ec *executionContext) field_Query_instructors_args(ctx context.Context, ra
 		}
 	}
 	args["last"] = arg3
+	var arg4 *ent.InstructorOrder
+	if tmp, ok := rawArgs["orderBy"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
+		arg4, err = ec.unmarshalOInstructorOrder2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋentᚐInstructorOrder(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["orderBy"] = arg4
 	return args, nil
 }
 
@@ -2720,7 +2743,7 @@ func (ec *executionContext) _Query_instructors(ctx context.Context, field graphq
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Instructors(rctx, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int))
+		return ec.resolvers.Query().Instructors(rctx, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.InstructorOrder))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5518,6 +5541,37 @@ func (ec *executionContext) unmarshalInputCreateUserInput(ctx context.Context, o
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputInstructorOrder(ctx context.Context, obj interface{}) (ent.InstructorOrder, error) {
+	var it ent.InstructorOrder
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "direction":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("direction"))
+			it.Direction, err = ec.unmarshalNOrderDirection2githubᚗcomᚋmatsuokashuheiᚋlandinᚋentᚐOrderDirection(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "field":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("field"))
+			it.Field, err = ec.unmarshalOInstructorOrderField2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋentᚐInstructorOrderField(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputSignUpInput(ctx context.Context, obj interface{}) (model.SignUpInput, error) {
 	var it model.SignUpInput
 	asMap := map[string]interface{}{}
@@ -6972,6 +7026,16 @@ func (ec *executionContext) marshalNNode2ᚕgithubᚗcomᚋmatsuokashuheiᚋland
 	return ret
 }
 
+func (ec *executionContext) unmarshalNOrderDirection2githubᚗcomᚋmatsuokashuheiᚋlandinᚋentᚐOrderDirection(ctx context.Context, v interface{}) (ent.OrderDirection, error) {
+	var res ent.OrderDirection
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNOrderDirection2githubᚗcomᚋmatsuokashuheiᚋlandinᚋentᚐOrderDirection(ctx context.Context, sel ast.SelectionSet, v ent.OrderDirection) graphql.Marshaler {
+	return v
+}
+
 func (ec *executionContext) marshalNPageInfo2githubᚗcomᚋmatsuokashuheiᚋlandinᚋentᚐPageInfo(ctx context.Context, sel ast.SelectionSet, v ent.PageInfo) graphql.Marshaler {
 	return ec._PageInfo(ctx, sel, &v)
 }
@@ -7622,6 +7686,30 @@ func (ec *executionContext) marshalOInstructorEdge2ᚖgithubᚗcomᚋmatsuokashu
 		return graphql.Null
 	}
 	return ec._InstructorEdge(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOInstructorOrder2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋentᚐInstructorOrder(ctx context.Context, v interface{}) (*ent.InstructorOrder, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputInstructorOrder(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalOInstructorOrderField2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋentᚐInstructorOrderField(ctx context.Context, v interface{}) (*ent.InstructorOrderField, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var res = new(ent.InstructorOrderField)
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOInstructorOrderField2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋentᚐInstructorOrderField(ctx context.Context, sel ast.SelectionSet, v *ent.InstructorOrderField) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return v
 }
 
 func (ec *executionContext) unmarshalOInt2ᚖint(ctx context.Context, v interface{}) (*int, error) {

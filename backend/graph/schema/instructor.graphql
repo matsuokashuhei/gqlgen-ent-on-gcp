@@ -20,6 +20,15 @@ type InstructorEdge {
   cursor: Cursor!
 }
 
+enum InstructorOrderField {
+  SYLLABIC_CHARACTERS
+}
+
+input InstructorOrder {
+  direction: OrderDirection!
+  field: InstructorOrderField
+}
+
 input CreateInstructorInput {
   name: String!
   syllabicCharacters: String!
@@ -30,7 +39,7 @@ input CreateInstructorInput {
 
 extend type Query {
   instructor(id: ID!): Instructor!
-  instructors(after: Cursor, first: Int, before: Cursor, last: Int): InstructorConnection
+  instructors(after: Cursor, first: Int, before: Cursor, last: Int, orderBy: InstructorOrder): InstructorConnection
 }
 
 extend type Mutation {

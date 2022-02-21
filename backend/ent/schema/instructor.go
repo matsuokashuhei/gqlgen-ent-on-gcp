@@ -1,6 +1,7 @@
 package schema
 
 import (
+	"entgo.io/contrib/entgql"
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
@@ -22,7 +23,10 @@ func (Instructor) Mixin() []ent.Mixin {
 func (Instructor) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("name"),
-		field.String("syllabic_characters"),
+		field.String("syllabic_characters").
+			Annotations(
+				entgql.OrderField("SYLLABIC_CHARACTERS"),
+			),
 		field.String("biography").Optional(),
 		field.String("phone_number").Optional(),
 		field.String("email").Optional(),

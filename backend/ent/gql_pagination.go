@@ -658,6 +658,49 @@ func (i *InstructorQuery) Paginate(
 	return conn, nil
 }
 
+var (
+	// InstructorOrderFieldSyllabicCharacters orders Instructor by syllabic_characters.
+	InstructorOrderFieldSyllabicCharacters = &InstructorOrderField{
+		field: instructor.FieldSyllabicCharacters,
+		toCursor: func(i *Instructor) Cursor {
+			return Cursor{
+				ID:    i.ID,
+				Value: i.SyllabicCharacters,
+			}
+		},
+	}
+)
+
+// String implement fmt.Stringer interface.
+func (f InstructorOrderField) String() string {
+	var str string
+	switch f.field {
+	case instructor.FieldSyllabicCharacters:
+		str = "SYLLABIC_CHARACTERS"
+	}
+	return str
+}
+
+// MarshalGQL implements graphql.Marshaler interface.
+func (f InstructorOrderField) MarshalGQL(w io.Writer) {
+	io.WriteString(w, strconv.Quote(f.String()))
+}
+
+// UnmarshalGQL implements graphql.Unmarshaler interface.
+func (f *InstructorOrderField) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("InstructorOrderField %T must be a string", v)
+	}
+	switch str {
+	case "SYLLABIC_CHARACTERS":
+		*f = *InstructorOrderFieldSyllabicCharacters
+	default:
+		return fmt.Errorf("%s is not a valid InstructorOrderField", str)
+	}
+	return nil
+}
+
 // InstructorOrderField defines the ordering field of Instructor.
 type InstructorOrderField struct {
 	field    string
