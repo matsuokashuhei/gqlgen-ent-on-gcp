@@ -75,10 +75,12 @@ type ComplexityRoot struct {
 		CreateSchool     func(childComplexity int, input model.CreateSchoolInput) int
 		CreateStudio     func(childComplexity int, input model.CreateStudioInput) int
 		CreateUser       func(childComplexity int, input model.CreateUserInput) int
+		DeleteInstructor func(childComplexity int, input model.DeleteInstructorInput) int
 		DeleteRoom       func(childComplexity int, id int) int
 		DeleteSchool     func(childComplexity int, id int) int
 		DeleteStudio     func(childComplexity int, id int) int
 		SignUp           func(childComplexity int, input model.SignUpInput) int
+		UpdateInstructor func(childComplexity int, input model.UpdateInstructorInput) int
 		UpdateRoom       func(childComplexity int, input model.UpdateRoomInput) int
 		UpdateSchool     func(childComplexity int, input model.UpdateSchoolInput) int
 		UpdateStudio     func(childComplexity int, input model.UpdateStudioInput) int
@@ -156,6 +158,8 @@ type ComplexityRoot struct {
 type MutationResolver interface {
 	SignUp(ctx context.Context, input model.SignUpInput) (*ent.User, error)
 	CreateInstructor(ctx context.Context, input model.CreateInstructorInput) (*ent.Instructor, error)
+	UpdateInstructor(ctx context.Context, input model.UpdateInstructorInput) (*ent.Instructor, error)
+	DeleteInstructor(ctx context.Context, input model.DeleteInstructorInput) (*ent.Instructor, error)
 	CreateRoom(ctx context.Context, input model.CreateRoomInput) (*ent.Room, error)
 	UpdateRoom(ctx context.Context, input model.UpdateRoomInput) (*ent.Room, error)
 	DeleteRoom(ctx context.Context, id int) (*ent.Room, error)
@@ -353,6 +357,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CreateUser(childComplexity, args["input"].(model.CreateUserInput)), true
 
+	case "Mutation.deleteInstructor":
+		if e.complexity.Mutation.DeleteInstructor == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteInstructor_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteInstructor(childComplexity, args["input"].(model.DeleteInstructorInput)), true
+
 	case "Mutation.deleteRoom":
 		if e.complexity.Mutation.DeleteRoom == nil {
 			break
@@ -400,6 +416,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.SignUp(childComplexity, args["input"].(model.SignUpInput)), true
+
+	case "Mutation.updateInstructor":
+		if e.complexity.Mutation.UpdateInstructor == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateInstructor_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateInstructor(childComplexity, args["input"].(model.UpdateInstructorInput)), true
 
 	case "Mutation.updateRoom":
 		if e.complexity.Mutation.UpdateRoom == nil {
@@ -910,11 +938,6 @@ type InstructorEdge {
   cursor: Cursor!
 }
 
-enum OrderDirection {
-  ASC
-  DESC
-}
-
 enum InstructorOrderField {
   SYLLABIC_CHARACTERS
 }
@@ -932,6 +955,19 @@ input CreateInstructorInput {
   email: String
 }
 
+input UpdateInstructorInput {
+  id: ID!
+  name: String
+  syllabicCharacters: String
+  biography: String
+  phoneNumber: String
+  email: String
+}
+
+input DeleteInstructorInput {
+  id: ID!
+}
+
 extend type Query {
   instructor(id: ID!): Instructor!
   instructors(after: Cursor, first: Int, before: Cursor, last: Int, orderBy: InstructorOrder): InstructorConnection
@@ -939,6 +975,8 @@ extend type Query {
 
 extend type Mutation {
   createInstructor(input: CreateInstructorInput!): Instructor!
+  updateInstructor(input: UpdateInstructorInput!): Instructor!
+  deleteInstructor(input: DeleteInstructorInput!): Instructor!
 }
 `, BuiltIn: false},
 	{Name: "graph/schema/node.graphql", Input: `interface Node {
@@ -1037,6 +1075,11 @@ extend type Mutation {
   createSchool(input: CreateSchoolInput!): School!
   updateSchool(input: UpdateSchoolInput!): School!
   deleteSchool(id: ID!): School!
+}
+`, BuiltIn: false},
+	{Name: "graph/schema/shared.graphql", Input: `enum OrderDirection {
+  ASC
+  DESC
 }
 `, BuiltIn: false},
 	{Name: "graph/schema/studio.graphql", Input: `# GraphQL schema example
@@ -1186,6 +1229,21 @@ func (ec *executionContext) field_Mutation_createUser_args(ctx context.Context, 
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_deleteInstructor_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.DeleteInstructorInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNDeleteInstructorInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐDeleteInstructorInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_deleteRoom_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -1238,6 +1296,21 @@ func (ec *executionContext) field_Mutation_signUp_args(ctx context.Context, rawA
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNSignUpInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐSignUpInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateInstructor_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.UpdateInstructorInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNUpdateInstructorInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐUpdateInstructorInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2029,6 +2102,90 @@ func (ec *executionContext) _Mutation_createInstructor(ctx context.Context, fiel
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Mutation().CreateInstructor(rctx, args["input"].(model.CreateInstructorInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.Instructor)
+	fc.Result = res
+	return ec.marshalNInstructor2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋentᚐInstructor(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_updateInstructor(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_updateInstructor_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateInstructor(rctx, args["input"].(model.UpdateInstructorInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.Instructor)
+	fc.Result = res
+	return ec.marshalNInstructor2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋentᚐInstructor(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_deleteInstructor(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_deleteInstructor_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteInstructor(rctx, args["input"].(model.DeleteInstructorInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5541,6 +5698,29 @@ func (ec *executionContext) unmarshalInputCreateUserInput(ctx context.Context, o
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputDeleteInstructorInput(ctx context.Context, obj interface{}) (model.DeleteInstructorInput, error) {
+	var it model.DeleteInstructorInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalNID2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputInstructorOrder(ctx context.Context, obj interface{}) (ent.InstructorOrder, error) {
 	var it ent.InstructorOrder
 	asMap := map[string]interface{}{}
@@ -5594,6 +5774,69 @@ func (ec *executionContext) unmarshalInputSignUpInput(ctx context.Context, obj i
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("password"))
 			it.Password, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputUpdateInstructorInput(ctx context.Context, obj interface{}) (model.UpdateInstructorInput, error) {
+	var it model.UpdateInstructorInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalNID2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "syllabicCharacters":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("syllabicCharacters"))
+			it.SyllabicCharacters, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "biography":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("biography"))
+			it.Biography, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "phoneNumber":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("phoneNumber"))
+			it.PhoneNumber, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "email":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("email"))
+			it.Email, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -5950,6 +6193,16 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			}
 		case "createInstructor":
 			out.Values[i] = ec._Mutation_createInstructor(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "updateInstructor":
+			out.Values[i] = ec._Mutation_updateInstructor(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "deleteInstructor":
+			out.Values[i] = ec._Mutation_deleteInstructor(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -6870,6 +7123,11 @@ func (ec *executionContext) marshalNCursor2githubᚗcomᚋmatsuokashuheiᚋlandi
 	return v
 }
 
+func (ec *executionContext) unmarshalNDeleteInstructorInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐDeleteInstructorInput(ctx context.Context, v interface{}) (model.DeleteInstructorInput, error) {
+	res, err := ec.unmarshalInputDeleteInstructorInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNID2int(ctx context.Context, v interface{}) (int, error) {
 	res, err := graphql.UnmarshalIntID(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -7288,6 +7546,11 @@ func (ec *executionContext) marshalNTime2ᚖtimeᚐTime(ctx context.Context, sel
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) unmarshalNUpdateInstructorInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐUpdateInstructorInput(ctx context.Context, v interface{}) (model.UpdateInstructorInput, error) {
+	res, err := ec.unmarshalInputUpdateInstructorInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNUpdateRoomInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐUpdateRoomInput(ctx context.Context, v interface{}) (model.UpdateRoomInput, error) {

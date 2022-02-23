@@ -31,9 +31,22 @@ type CreateUserInput struct {
 	Password string `json:"password"`
 }
 
+type DeleteInstructorInput struct {
+	ID int `json:"id"`
+}
+
 type SignUpInput struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
+}
+
+type UpdateInstructorInput struct {
+	ID                 int     `json:"id"`
+	Name               *string `json:"name"`
+	SyllabicCharacters *string `json:"syllabicCharacters"`
+	Biography          *string `json:"biography"`
+	PhoneNumber        *string `json:"phoneNumber"`
+	Email              *string `json:"email"`
 }
 
 type UpdateRoomInput struct {

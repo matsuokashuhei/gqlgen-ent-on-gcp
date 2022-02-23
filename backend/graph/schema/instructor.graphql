@@ -37,6 +37,19 @@ input CreateInstructorInput {
   email: String
 }
 
+input UpdateInstructorInput {
+  id: ID!
+  name: String
+  syllabicCharacters: String
+  biography: String
+  phoneNumber: String
+  email: String
+}
+
+input DeleteInstructorInput {
+  id: ID!
+}
+
 extend type Query {
   instructor(id: ID!): Instructor!
   instructors(after: Cursor, first: Int, before: Cursor, last: Int, orderBy: InstructorOrder): InstructorConnection
@@ -44,4 +57,6 @@ extend type Query {
 
 extend type Mutation {
   createInstructor(input: CreateInstructorInput!): Instructor!
+  updateInstructor(input: UpdateInstructorInput!): Instructor!
+  deleteInstructor(input: DeleteInstructorInput!): Instructor!
 }

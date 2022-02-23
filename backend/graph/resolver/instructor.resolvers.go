@@ -16,6 +16,16 @@ func (r *mutationResolver) CreateInstructor(ctx context.Context, input model.Cre
 	return repository.Create(ctx, input)
 }
 
+func (r *mutationResolver) UpdateInstructor(ctx context.Context, input model.UpdateInstructorInput) (*ent.Instructor, error) {
+	repository := repositories.NewInstructorRepository(r.client)
+	return repository.Update(ctx, input)
+}
+
+func (r *mutationResolver) DeleteInstructor(ctx context.Context, input model.DeleteInstructorInput) (*ent.Instructor, error) {
+	repository := repositories.NewInstructorRepository(r.client)
+	return repository.Delete(ctx, input)
+}
+
 func (r *queryResolver) Instructor(ctx context.Context, id int) (*ent.Instructor, error) {
 	repository := repositories.NewInstructorRepository(r.client)
 	return repository.Find(ctx, id)

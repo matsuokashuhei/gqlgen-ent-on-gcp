@@ -46,6 +46,10 @@ export type CreateUserInput = {
   password: Scalars['String'];
 };
 
+export type DeleteInstructorInput = {
+  id: Scalars['ID'];
+};
+
 export type Instructor = Node & {
   __typename?: 'Instructor';
   biography?: Maybe<Scalars['String']>;
@@ -71,6 +75,15 @@ export type InstructorEdge = {
   node: Instructor;
 };
 
+export type InstructorOrder = {
+  direction: OrderDirection;
+  field?: InputMaybe<InstructorOrderField>;
+};
+
+export enum InstructorOrderField {
+  SyllabicCharacters = 'SYLLABIC_CHARACTERS'
+}
+
 export type Mutation = {
   __typename?: 'Mutation';
   createInstructor: Instructor;
@@ -78,10 +91,12 @@ export type Mutation = {
   createSchool: School;
   createStudio: Studio;
   createUser: User;
+  deleteInstructor: Instructor;
   deleteRoom: Room;
   deleteSchool: School;
   deleteStudio: Studio;
   signUp: User;
+  updateInstructor: Instructor;
   updateRoom: Room;
   updateSchool: School;
   updateStudio: Studio;
@@ -114,6 +129,11 @@ export type MutationCreateUserArgs = {
 };
 
 
+export type MutationDeleteInstructorArgs = {
+  input: DeleteInstructorInput;
+};
+
+
 export type MutationDeleteRoomArgs = {
   id: Scalars['ID'];
 };
@@ -131,6 +151,11 @@ export type MutationDeleteStudioArgs = {
 
 export type MutationSignUpArgs = {
   input: SignUpInput;
+};
+
+
+export type MutationUpdateInstructorArgs = {
+  input: UpdateInstructorInput;
 };
 
 
@@ -156,6 +181,11 @@ export type MutationUpdateUserArgs = {
 export type Node = {
   id: Scalars['ID'];
 };
+
+export enum OrderDirection {
+  Asc = 'ASC',
+  Desc = 'DESC'
+}
 
 export type PageInfo = {
   __typename?: 'PageInfo';
@@ -192,6 +222,7 @@ export type QueryInstructorsArgs = {
   before?: InputMaybe<Scalars['Cursor']>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<InstructorOrder>;
 };
 
 
@@ -270,6 +301,15 @@ export type Studio = Node & {
   updateTime: Scalars['Time'];
 };
 
+export type UpdateInstructorInput = {
+  biography?: InputMaybe<Scalars['String']>;
+  email?: InputMaybe<Scalars['String']>;
+  id: Scalars['ID'];
+  name?: InputMaybe<Scalars['String']>;
+  phoneNumber?: InputMaybe<Scalars['String']>;
+  syllabicCharacters?: InputMaybe<Scalars['String']>;
+};
+
 export type UpdateRoomInput = {
   capacity?: InputMaybe<Scalars['Int']>;
   id: Scalars['ID'];
@@ -303,6 +343,27 @@ export type User = Node & {
   updateTime: Scalars['Time'];
 };
 
+export type CreateInstructorMutationVariables = Exact<{
+  input: CreateInstructorInput;
+}>;
+
+
+export type CreateInstructorMutation = { __typename?: 'Mutation', createInstructor: { __typename?: 'Instructor', id: string, name: string, syllabicCharacters: string, biography?: string | null, phoneNumber?: string | null, email?: string | null } };
+
+export type UpdateInstructorMutationVariables = Exact<{
+  input: UpdateInstructorInput;
+}>;
+
+
+export type UpdateInstructorMutation = { __typename?: 'Mutation', updateInstructor: { __typename?: 'Instructor', id: string, name: string, syllabicCharacters: string, biography?: string | null, phoneNumber?: string | null, email?: string | null } };
+
+export type DeleteInstructorMutationVariables = Exact<{
+  input: DeleteInstructorInput;
+}>;
+
+
+export type DeleteInstructorMutation = { __typename?: 'Mutation', deleteInstructor: { __typename?: 'Instructor', id: string, name: string, syllabicCharacters: string, biography?: string | null, phoneNumber?: string | null, email?: string | null } };
+
 export type GetInstructorsQueryVariables = Exact<{
   first?: InputMaybe<Scalars['Int']>;
   after?: InputMaybe<Scalars['Cursor']>;
@@ -314,6 +375,120 @@ export type GetInstructorsQueryVariables = Exact<{
 export type GetInstructorsQuery = { __typename?: 'Query', instructors?: { __typename?: 'InstructorConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', startCursor?: any | null, endCursor?: any | null, hasNextPage: boolean, hasPreviousPage: boolean }, edges: Array<{ __typename?: 'InstructorEdge', cursor: any, node: { __typename?: 'Instructor', id: string, name: string, syllabicCharacters: string, biography?: string | null, phoneNumber?: string | null, email?: string | null } } | null> } | null };
 
 
+export const CreateInstructorDocument = gql`
+    mutation CreateInstructor($input: CreateInstructorInput!) {
+  createInstructor(input: $input) {
+    id
+    name
+    syllabicCharacters
+    biography
+    phoneNumber
+    email
+  }
+}
+    `;
+export type CreateInstructorMutationFn = Apollo.MutationFunction<CreateInstructorMutation, CreateInstructorMutationVariables>;
+
+/**
+ * __useCreateInstructorMutation__
+ *
+ * To run a mutation, you first call `useCreateInstructorMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateInstructorMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createInstructorMutation, { data, loading, error }] = useCreateInstructorMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateInstructorMutation(baseOptions?: Apollo.MutationHookOptions<CreateInstructorMutation, CreateInstructorMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateInstructorMutation, CreateInstructorMutationVariables>(CreateInstructorDocument, options);
+      }
+export type CreateInstructorMutationHookResult = ReturnType<typeof useCreateInstructorMutation>;
+export type CreateInstructorMutationResult = Apollo.MutationResult<CreateInstructorMutation>;
+export type CreateInstructorMutationOptions = Apollo.BaseMutationOptions<CreateInstructorMutation, CreateInstructorMutationVariables>;
+export const UpdateInstructorDocument = gql`
+    mutation UpdateInstructor($input: UpdateInstructorInput!) {
+  updateInstructor(input: $input) {
+    id
+    name
+    syllabicCharacters
+    biography
+    phoneNumber
+    email
+  }
+}
+    `;
+export type UpdateInstructorMutationFn = Apollo.MutationFunction<UpdateInstructorMutation, UpdateInstructorMutationVariables>;
+
+/**
+ * __useUpdateInstructorMutation__
+ *
+ * To run a mutation, you first call `useUpdateInstructorMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateInstructorMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateInstructorMutation, { data, loading, error }] = useUpdateInstructorMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateInstructorMutation(baseOptions?: Apollo.MutationHookOptions<UpdateInstructorMutation, UpdateInstructorMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateInstructorMutation, UpdateInstructorMutationVariables>(UpdateInstructorDocument, options);
+      }
+export type UpdateInstructorMutationHookResult = ReturnType<typeof useUpdateInstructorMutation>;
+export type UpdateInstructorMutationResult = Apollo.MutationResult<UpdateInstructorMutation>;
+export type UpdateInstructorMutationOptions = Apollo.BaseMutationOptions<UpdateInstructorMutation, UpdateInstructorMutationVariables>;
+export const DeleteInstructorDocument = gql`
+    mutation DeleteInstructor($input: DeleteInstructorInput!) {
+  deleteInstructor(input: $input) {
+    id
+    name
+    syllabicCharacters
+    biography
+    phoneNumber
+    email
+  }
+}
+    `;
+export type DeleteInstructorMutationFn = Apollo.MutationFunction<DeleteInstructorMutation, DeleteInstructorMutationVariables>;
+
+/**
+ * __useDeleteInstructorMutation__
+ *
+ * To run a mutation, you first call `useDeleteInstructorMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteInstructorMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteInstructorMutation, { data, loading, error }] = useDeleteInstructorMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useDeleteInstructorMutation(baseOptions?: Apollo.MutationHookOptions<DeleteInstructorMutation, DeleteInstructorMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteInstructorMutation, DeleteInstructorMutationVariables>(DeleteInstructorDocument, options);
+      }
+export type DeleteInstructorMutationHookResult = ReturnType<typeof useDeleteInstructorMutation>;
+export type DeleteInstructorMutationResult = Apollo.MutationResult<DeleteInstructorMutation>;
+export type DeleteInstructorMutationOptions = Apollo.BaseMutationOptions<DeleteInstructorMutation, DeleteInstructorMutationVariables>;
 export const GetInstructorsDocument = gql`
     query GetInstructors($first: Int, $after: Cursor, $last: Int, $before: Cursor) {
   instructors(first: $first, after: $after, last: $last, before: $before) {
