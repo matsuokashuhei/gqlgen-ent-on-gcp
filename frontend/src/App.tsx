@@ -44,7 +44,7 @@ function App() {
               }
             />
             <Route
-              path="instructors/:instructorId"
+              path="instructors/:id"
               element={
                 <Private>
                   <InstructorPage />

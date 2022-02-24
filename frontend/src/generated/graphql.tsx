@@ -374,6 +374,13 @@ export type GetInstructorsQueryVariables = Exact<{
 
 export type GetInstructorsQuery = { __typename?: 'Query', instructors?: { __typename?: 'InstructorConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', startCursor?: any | null, endCursor?: any | null, hasNextPage: boolean, hasPreviousPage: boolean }, edges: Array<{ __typename?: 'InstructorEdge', cursor: any, node: { __typename?: 'Instructor', id: string, name: string, syllabicCharacters: string, biography?: string | null, phoneNumber?: string | null, email?: string | null } } | null> } | null };
 
+export type GetInstructorQueryVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type GetInstructorQuery = { __typename?: 'Query', instructor: { __typename?: 'Instructor', id: string, name: string, syllabicCharacters: string, biography?: string | null, phoneNumber?: string | null, email?: string | null, createTime: any, updateTime: any } };
+
 
 export const CreateInstructorDocument = gql`
     mutation CreateInstructor($input: CreateInstructorInput!) {
@@ -490,7 +497,7 @@ export type DeleteInstructorMutationHookResult = ReturnType<typeof useDeleteInst
 export type DeleteInstructorMutationResult = Apollo.MutationResult<DeleteInstructorMutation>;
 export type DeleteInstructorMutationOptions = Apollo.BaseMutationOptions<DeleteInstructorMutation, DeleteInstructorMutationVariables>;
 export const GetInstructorsDocument = gql`
-    query GetInstructors($first: Int, $after: Cursor, $last: Int, $before: Cursor) {
+    query getInstructors($first: Int, $after: Cursor, $last: Int, $before: Cursor) {
   instructors(first: $first, after: $after, last: $last, before: $before) {
     totalCount
     pageInfo {
@@ -544,3 +551,45 @@ export function useGetInstructorsLazyQuery(baseOptions?: Apollo.LazyQueryHookOpt
 export type GetInstructorsQueryHookResult = ReturnType<typeof useGetInstructorsQuery>;
 export type GetInstructorsLazyQueryHookResult = ReturnType<typeof useGetInstructorsLazyQuery>;
 export type GetInstructorsQueryResult = Apollo.QueryResult<GetInstructorsQuery, GetInstructorsQueryVariables>;
+export const GetInstructorDocument = gql`
+    query getInstructor($id: ID!) {
+  instructor(id: $id) {
+    id
+    name
+    syllabicCharacters
+    biography
+    phoneNumber
+    email
+    createTime
+    updateTime
+  }
+}
+    `;
+
+/**
+ * __useGetInstructorQuery__
+ *
+ * To run a query within a React component, call `useGetInstructorQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetInstructorQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetInstructorQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetInstructorQuery(baseOptions: Apollo.QueryHookOptions<GetInstructorQuery, GetInstructorQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetInstructorQuery, GetInstructorQueryVariables>(GetInstructorDocument, options);
+      }
+export function useGetInstructorLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetInstructorQuery, GetInstructorQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetInstructorQuery, GetInstructorQueryVariables>(GetInstructorDocument, options);
+        }
+export type GetInstructorQueryHookResult = ReturnType<typeof useGetInstructorQuery>;
+export type GetInstructorLazyQueryHookResult = ReturnType<typeof useGetInstructorLazyQuery>;
+export type GetInstructorQueryResult = Apollo.QueryResult<GetInstructorQuery, GetInstructorQueryVariables>;

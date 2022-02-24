@@ -1,7 +1,7 @@
 import { gql } from "@apollo/client";
 
 gql`
-  query GetInstructors(
+  query getInstructors(
     $first: Int
     $after: Cursor
     $last: Int
@@ -24,8 +24,25 @@ gql`
           biography
           phoneNumber
           email
+          createTime
+          updateTime
         }
       }
+    }
+  }
+`;
+
+gql`
+  query getInstructor($id: ID!) {
+    instructor(id: $id) {
+      id
+      name
+      syllabicCharacters
+      biography
+      phoneNumber
+      email
+      createTime
+      updateTime
     }
   }
 `;
