@@ -17,6 +17,7 @@ type Inputs = {
   phoneNumber: string;
   email: string;
 };
+
 export const InstructorPage: VFC = () => {
   const { id } = useParams();
   const [editable, setEditable] = useState<Boolean>(false);

@@ -1,13 +1,9 @@
-import { filter, compact } from "lodash-es";
-import { useEffect, useMemo, VFC } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { useEffect, VFC } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Layout, PaginationLinks } from "../../components";
 import {
   GetInstructorsQuery,
-  Instructor,
-  InstructorEdge,
   useGetInstructorsLazyQuery,
-  useGetInstructorsQuery,
 } from "../../generated/graphql";
 
 export const InstructorsPage: VFC = () => {
@@ -15,10 +11,6 @@ export const InstructorsPage: VFC = () => {
   const navigate = useNavigate();
   const [getInstructors, { data, loading, error }] =
     useGetInstructorsLazyQuery();
-  //   const { data, loading, error } = useGetInstructorsQuery({
-  //     variables: { first: 10 },
-  //   });
-  // const {data, loading, error } = useGetInstructorsQuery()
 
   useEffect(() => {
     const after = searchParams.get("after");
@@ -43,44 +35,26 @@ export const InstructorsPage: VFC = () => {
       </tr>
     ));
   };
-  // const renderInstructors = (instructors: Instructor[]) => {
-  //   return instructors.map((instructor) => (
-  //     <tr
-  //       key={instructor.id}
-  //       onClick={() => navigate(`/instructors/${instructor.id}`)}
-  //     >
-  //       <td>{instructor.id}</td>
-  //       <td>{instructor.name}</td>
-  //     </tr>
-  //   ));
-  // };
-
-  // const instructors: Instructor[] = compact(
-  //   data?.instructors?.edges?.map((edge) => edge?.node) ?? []
-  // );
-  // const instructors: Instructor | undefined =
-  //   return data?.instructors?.edges.map((edge) => edge?.node);
 
   return (
     <Layout>
-      <div>
-        <h1>インストラクター</h1>
-        <table>
-          <thead>
-            <tr>
-              <td>ID</td>
-              <td>Name</td>
-            </tr>
-          </thead>
-          <tbody>{renderInstructors(data)}</tbody>
-        </table>
-        {data?.instructors?.pageInfo && (
-          <PaginationLinks
-            path="/instructors"
-            pageInfo={data?.instructors?.pageInfo}
-          />
-        )}
-      </div>
+      <h1>インストラクター</h1>
+      <button onClick={() => navigate("/instructors/new")}>登録</button>
+      <table>
+        <thead>
+          <tr>
+            <td>ID</td>
+            <td>Name</td>
+          </tr>
+        </thead>
+        <tbody>{renderInstructors(data)}</tbody>
+      </table>
+      {data?.instructors?.pageInfo && (
+        <PaginationLinks
+          path="/instructors"
+          pageInfo={data?.instructors?.pageInfo}
+        />
+      )}
     </Layout>
   );
 };
