@@ -67,6 +67,18 @@ export const PaginationLinks: VFC<Props> = ({ path, pageInfo }) => {
         return <></>;
       }
     }
+    if (
+      searchParams.get("first") === null &&
+      searchParams.get("last") === null
+    ) {
+      return (
+        <div>
+          <Link to={`${path}?first=10&after=${pageInfo.endCursor}`}>
+            <ChevronRightIcon className="h-8 w-8 text-gray-500" />
+          </Link>
+        </div>
+      );
+    }
   };
   return (
     <div className="flex flex-row justify-between">

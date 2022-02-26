@@ -1,10 +1,12 @@
 import { useEffect, useState, VFC } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Layout } from "../../../components";
 import {
+  DeleteInstructorInput,
   Instructor,
   UpdateInstructorInput,
+  useDeleteInstructorMutation,
   useGetInstructorLazyQuery,
   useUpdateInstructorMutation,
 } from "../../../generated/graphql";
@@ -20,10 +22,11 @@ type Inputs = {
 
 export const InstructorPage: VFC = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [editable, setEditable] = useState<Boolean>(false);
   const [getInstructor, { data, loading, error }] = useGetInstructorLazyQuery();
-  const [updateInstructor, { data: data2 }] = useUpdateInstructorMutation();
-  //   const [instructor, setInstructor] = useState<Instructor | null>(null);
+  const [updateInstructor] = useUpdateInstructorMutation();
+  const [deleteInstructor] = useDeleteInstructorMutation();
 
   const { register, handleSubmit } = useForm<Inputs>();
 
@@ -43,9 +46,7 @@ export const InstructorPage: VFC = () => {
       email: data.email,
     };
     updateInstructor({ variables: { input } })
-      .then((instrutor) =>
-        getInstructor({ variables: { id: data.id.toString() } })
-      )
+      .then(() => getInstructor({ variables: { id: data.id.toString() } }))
       .then(() => setEditable(false));
   };
 
@@ -105,6 +106,27 @@ export const InstructorPage: VFC = () => {
     }
   };
 
+  const renderDeleteButton = () => {
+    if (editable) return <></>;
+    if (!data) return <></>;
+    const { id }: Instructor = data?.instructor;
+
+    return (
+      <button
+        onClick={() => {
+          const input: DeleteInstructorInput = {
+            id: id,
+          };
+          deleteInstructor({ variables: { input } }).then(() =>
+            navigate("/instructors")
+          );
+        }}
+      >
+        削除
+      </button>
+    );
+  };
+
   const instructor = data?.instructor;
   if (!instructor) return <></>;
 
@@ -112,6 +134,7 @@ export const InstructorPage: VFC = () => {
     <Layout>
       {renderInstructor(instructor)}
       {renderEditButton()}
+      {renderDeleteButton()}
     </Layout>
   );
 };
