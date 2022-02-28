@@ -1,6 +1,7 @@
 package schema
 
 import (
+	"entgo.io/contrib/entgql"
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
@@ -21,8 +22,10 @@ func (Schedule) Mixin() []ent.Mixin {
 // Fields of the Schedule.
 func (Schedule) Fields() []ent.Field {
 	return []ent.Field{
-		field.Int("day_of_week"),
-		field.String("start_time"),
+		field.Int("day_of_week").
+			Annotations(entgql.OrderField("DAY_OF_WEEK")),
+		field.String("start_time").
+			Annotations(entgql.OrderField("START_TIME")),
 		field.String("end_time"),
 	}
 }

@@ -2,6 +2,12 @@
 
 package model
 
+import (
+	"fmt"
+	"io"
+	"strconv"
+)
+
 type CreateInstructorInput struct {
 	Name               string  `json:"name"`
 	SyllabicCharacters string  `json:"syllabicCharacters"`
@@ -71,4 +77,45 @@ type UpdateStudioInput struct {
 type UpdateUserInput struct {
 	ID   int    `json:"id"`
 	Name string `json:"name"`
+}
+
+type ScheduleField string
+
+const (
+	ScheduleFieldDayOfWeek ScheduleField = "DAY_OF_WEEK"
+	ScheduleFieldStartTime ScheduleField = "START_TIME"
+)
+
+var AllScheduleField = []ScheduleField{
+	ScheduleFieldDayOfWeek,
+	ScheduleFieldStartTime,
+}
+
+func (e ScheduleField) IsValid() bool {
+	switch e {
+	case ScheduleFieldDayOfWeek, ScheduleFieldStartTime:
+		return true
+	}
+	return false
+}
+
+func (e ScheduleField) String() string {
+	return string(e)
+}
+
+func (e *ScheduleField) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ScheduleField(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ScheduleField", str)
+	}
+	return nil
+}
+
+func (e ScheduleField) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
 }

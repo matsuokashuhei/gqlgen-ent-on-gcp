@@ -40,6 +40,7 @@ type Config struct {
 type ResolverRoot interface {
 	Mutation() MutationResolver
 	Query() QueryResolver
+	Room() RoomResolver
 	Schedule() ScheduleResolver
 }
 
@@ -185,6 +186,9 @@ type QueryResolver interface {
 	Studio(ctx context.Context, id int) (*ent.Studio, error)
 	User(ctx context.Context, id int) (*ent.User, error)
 	Users(ctx context.Context) ([]*ent.User, error)
+}
+type RoomResolver interface {
+	Schedules(ctx context.Context, obj *ent.Room) ([]*ent.Schedule, error)
 }
 type ScheduleResolver interface {
 	CreatedAt(ctx context.Context, obj *ent.Schedule) (*time.Time, error)
@@ -1004,7 +1008,7 @@ type Room implements Node {
   name: String!
   capacity: Int!
   studio: Studio!
-  schedules: [Schedule]!
+  schedules: [Schedule]! @goField(forceResolver: true)
   createTime: Time!
   updateTime: Time!
 }
@@ -1037,12 +1041,17 @@ extend type Mutation {
 scalar Cursor
 `, BuiltIn: false},
 	{Name: "graph/schema/schedule.graphql", Input: `type Schedule implements Node {
-    id: ID!
-    dayOfWeek: Int!
-    startTime: String!
-    endTime: String!
-    createdAt: Time!
-    updatedAt: Time!
+  id: ID!
+  dayOfWeek: Int!
+  startTime: String!
+  endTime: String!
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+enum ScheduleField {
+  DAY_OF_WEEK
+  START_TIME
 }
 `, BuiltIn: false},
 	{Name: "graph/schema/school.graphql", Input: `# GraphQL schema example
@@ -1077,7 +1086,9 @@ extend type Mutation {
   deleteSchool(id: ID!): School!
 }
 `, BuiltIn: false},
-	{Name: "graph/schema/shared.graphql", Input: `enum OrderDirection {
+	{Name: "graph/schema/shared.graphql", Input: `directive @goField(forceResolver: Boolean, name: String) on INPUT_FIELD_DEFINITION | FIELD_DEFINITION
+
+enum OrderDirection {
   ASC
   DESC
 }
@@ -3491,13 +3502,13 @@ func (ec *executionContext) _Room_schedules(ctx context.Context, field graphql.C
 		Field:      field,
 		Args:       nil,
 		IsMethod:   true,
-		IsResolver: false,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Schedules(ctx)
+		return ec.resolvers.Room().Schedules(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)

@@ -8,6 +8,8 @@ import (
 
 	"github.com/matsuokashuhei/landin/ent"
 	"github.com/matsuokashuhei/landin/ent/room"
+	"github.com/matsuokashuhei/landin/ent/schedule"
+	"github.com/matsuokashuhei/landin/graph/generated"
 	"github.com/matsuokashuhei/landin/graph/model"
 )
 
@@ -68,3 +70,16 @@ func (r *queryResolver) Rooms(ctx context.Context) ([]*ent.Room, error) {
 	}
 	return rooms, nil
 }
+
+func (r *roomResolver) Schedules(ctx context.Context, obj *ent.Room) ([]*ent.Schedule, error) {
+	return obj.
+		QuerySchedules().
+		Order(ent.Asc(schedule.FieldDayOfWeek)).
+		Order(ent.Asc(schedule.FieldStartTime)).
+		All(ctx)
+}
+
+// Room returns generated.RoomResolver implementation.
+func (r *Resolver) Room() generated.RoomResolver { return &roomResolver{r} }
+
+type roomResolver struct{ *Resolver }

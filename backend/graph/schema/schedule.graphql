@@ -1,8 +1,13 @@
 type Schedule implements Node {
-    id: ID!
-    dayOfWeek: Int!
-    startTime: String!
-    endTime: String!
-    createdAt: Time!
-    updatedAt: Time!
+  id: ID!
+  dayOfWeek: Int!
+  startTime: String!
+  endTime: String!
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+enum ScheduleField {
+  DAY_OF_WEEK
+  START_TIME
 }

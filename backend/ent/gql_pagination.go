@@ -1155,6 +1155,63 @@ func (s *ScheduleQuery) Paginate(
 	return conn, nil
 }
 
+var (
+	// ScheduleOrderFieldDayOfWeek orders Schedule by day_of_week.
+	ScheduleOrderFieldDayOfWeek = &ScheduleOrderField{
+		field: schedule.FieldDayOfWeek,
+		toCursor: func(s *Schedule) Cursor {
+			return Cursor{
+				ID:    s.ID,
+				Value: s.DayOfWeek,
+			}
+		},
+	}
+	// ScheduleOrderFieldStartTime orders Schedule by start_time.
+	ScheduleOrderFieldStartTime = &ScheduleOrderField{
+		field: schedule.FieldStartTime,
+		toCursor: func(s *Schedule) Cursor {
+			return Cursor{
+				ID:    s.ID,
+				Value: s.StartTime,
+			}
+		},
+	}
+)
+
+// String implement fmt.Stringer interface.
+func (f ScheduleOrderField) String() string {
+	var str string
+	switch f.field {
+	case schedule.FieldDayOfWeek:
+		str = "DAY_OF_WEEK"
+	case schedule.FieldStartTime:
+		str = "START_TIME"
+	}
+	return str
+}
+
+// MarshalGQL implements graphql.Marshaler interface.
+func (f ScheduleOrderField) MarshalGQL(w io.Writer) {
+	io.WriteString(w, strconv.Quote(f.String()))
+}
+
+// UnmarshalGQL implements graphql.Unmarshaler interface.
+func (f *ScheduleOrderField) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("ScheduleOrderField %T must be a string", v)
+	}
+	switch str {
+	case "DAY_OF_WEEK":
+		*f = *ScheduleOrderFieldDayOfWeek
+	case "START_TIME":
+		*f = *ScheduleOrderFieldStartTime
+	default:
+		return fmt.Errorf("%s is not a valid ScheduleOrderField", str)
+	}
+	return nil
+}
+
 // ScheduleOrderField defines the ordering field of Schedule.
 type ScheduleOrderField struct {
 	field    string
