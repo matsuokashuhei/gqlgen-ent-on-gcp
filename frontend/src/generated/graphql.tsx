@@ -1,16 +1,10 @@
-import { gql } from "@apollo/client";
-import * as Apollo from "@apollo/client";
+import { gql } from '@apollo/client';
+import * as Apollo from '@apollo/client';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
-export type Exact<T extends { [key: string]: unknown }> = {
-  [K in keyof T]: T[K];
-};
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]?: Maybe<T[SubKey]>;
-};
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]: Maybe<T[SubKey]>;
-};
+export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 const defaultOptions = {} as const;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -24,60 +18,60 @@ export type Scalars = {
 };
 
 export type CreateInstructorInput = {
-  biography?: InputMaybe<Scalars["String"]>;
-  email?: InputMaybe<Scalars["String"]>;
-  name: Scalars["String"];
-  phoneNumber?: InputMaybe<Scalars["String"]>;
-  syllabicCharacters: Scalars["String"];
+  biography?: InputMaybe<Scalars['String']>;
+  email?: InputMaybe<Scalars['String']>;
+  name: Scalars['String'];
+  phoneNumber?: InputMaybe<Scalars['String']>;
+  syllabicCharacters: Scalars['String'];
 };
 
 export type CreateRoomInput = {
-  capacity: Scalars["Int"];
-  name: Scalars["String"];
-  studioID: Scalars["ID"];
+  capacity: Scalars['Int'];
+  name: Scalars['String'];
+  studioID: Scalars['ID'];
 };
 
 export type CreateSchoolInput = {
-  name: Scalars["String"];
+  name: Scalars['String'];
 };
 
 export type CreateStudioInput = {
-  location: Scalars["String"];
-  name: Scalars["String"];
-  schoolID: Scalars["ID"];
+  location: Scalars['String'];
+  name: Scalars['String'];
+  schoolID: Scalars['ID'];
 };
 
 export type CreateUserInput = {
-  email: Scalars["String"];
-  password: Scalars["String"];
+  email: Scalars['String'];
+  password: Scalars['String'];
 };
 
 export type DeleteInstructorInput = {
-  id: Scalars["ID"];
+  id: Scalars['ID'];
 };
 
 export type Instructor = Node & {
-  __typename?: "Instructor";
-  biography?: Maybe<Scalars["String"]>;
-  createTime: Scalars["Time"];
-  email?: Maybe<Scalars["String"]>;
-  id: Scalars["ID"];
-  name: Scalars["String"];
-  phoneNumber?: Maybe<Scalars["String"]>;
-  syllabicCharacters: Scalars["String"];
-  updateTime: Scalars["Time"];
+  __typename?: 'Instructor';
+  biography?: Maybe<Scalars['String']>;
+  createTime: Scalars['Time'];
+  email?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  phoneNumber?: Maybe<Scalars['String']>;
+  syllabicCharacters: Scalars['String'];
+  updateTime: Scalars['Time'];
 };
 
 export type InstructorConnection = {
-  __typename?: "InstructorConnection";
+  __typename?: 'InstructorConnection';
   edges: Array<Maybe<InstructorEdge>>;
   pageInfo: PageInfo;
-  totalCount: Scalars["Int"];
+  totalCount: Scalars['Int'];
 };
 
 export type InstructorEdge = {
-  __typename?: "InstructorEdge";
-  cursor: Scalars["Cursor"];
+  __typename?: 'InstructorEdge';
+  cursor: Scalars['Cursor'];
   node: Instructor;
 };
 
@@ -87,11 +81,11 @@ export type InstructorOrder = {
 };
 
 export enum InstructorOrderField {
-  SyllabicCharacters = "SYLLABIC_CHARACTERS",
+  SyllabicCharacters = 'SYLLABIC_CHARACTERS'
 }
 
 export type Mutation = {
-  __typename?: "Mutation";
+  __typename?: 'Mutation';
   createInstructor: Instructor;
   createRoom: Room;
   createSchool: School;
@@ -109,85 +103,100 @@ export type Mutation = {
   updateUser: User;
 };
 
+
 export type MutationCreateInstructorArgs = {
   input: CreateInstructorInput;
 };
+
 
 export type MutationCreateRoomArgs = {
   input: CreateRoomInput;
 };
 
+
 export type MutationCreateSchoolArgs = {
   input: CreateSchoolInput;
 };
+
 
 export type MutationCreateStudioArgs = {
   input: CreateStudioInput;
 };
 
+
 export type MutationCreateUserArgs = {
   input: CreateUserInput;
 };
+
 
 export type MutationDeleteInstructorArgs = {
   input: DeleteInstructorInput;
 };
 
+
 export type MutationDeleteRoomArgs = {
-  id: Scalars["ID"];
+  id: Scalars['ID'];
 };
+
 
 export type MutationDeleteSchoolArgs = {
-  id: Scalars["ID"];
+  id: Scalars['ID'];
 };
 
+
 export type MutationDeleteStudioArgs = {
-  id: Scalars["ID"];
+  id: Scalars['ID'];
 };
+
 
 export type MutationSignUpArgs = {
   input: SignUpInput;
 };
 
+
 export type MutationUpdateInstructorArgs = {
   input: UpdateInstructorInput;
 };
+
 
 export type MutationUpdateRoomArgs = {
   input: UpdateRoomInput;
 };
 
+
 export type MutationUpdateSchoolArgs = {
   input: UpdateSchoolInput;
 };
 
+
 export type MutationUpdateStudioArgs = {
   input: UpdateStudioInput;
 };
+
 
 export type MutationUpdateUserArgs = {
   input: UpdateUserInput;
 };
 
 export type Node = {
-  id: Scalars["ID"];
+  id: Scalars['ID'];
 };
 
 export enum OrderDirection {
-  Asc = "ASC",
-  Desc = "DESC",
+  Asc = 'ASC',
+  Desc = 'DESC'
 }
 
 export type PageInfo = {
-  __typename?: "PageInfo";
-  endCursor?: Maybe<Scalars["Cursor"]>;
-  hasNextPage: Scalars["Boolean"];
-  hasPreviousPage: Scalars["Boolean"];
-  startCursor?: Maybe<Scalars["Cursor"]>;
+  __typename?: 'PageInfo';
+  endCursor?: Maybe<Scalars['Cursor']>;
+  hasNextPage: Scalars['Boolean'];
+  hasPreviousPage: Scalars['Boolean'];
+  startCursor?: Maybe<Scalars['Cursor']>;
 };
 
 export type Query = {
-  __typename?: "Query";
+  __typename?: 'Query';
   currentUser: User;
   instructor: Instructor;
   instructors?: Maybe<InstructorConnection>;
@@ -202,251 +211,202 @@ export type Query = {
   users: Array<Maybe<User>>;
 };
 
+
 export type QueryInstructorArgs = {
-  id: Scalars["ID"];
+  id: Scalars['ID'];
 };
 
+
 export type QueryInstructorsArgs = {
-  after?: InputMaybe<Scalars["Cursor"]>;
-  before?: InputMaybe<Scalars["Cursor"]>;
-  first?: InputMaybe<Scalars["Int"]>;
-  last?: InputMaybe<Scalars["Int"]>;
+  after?: InputMaybe<Scalars['Cursor']>;
+  before?: InputMaybe<Scalars['Cursor']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
   orderBy?: InputMaybe<InstructorOrder>;
 };
 
+
 export type QueryNodeArgs = {
-  id: Scalars["ID"];
+  id: Scalars['ID'];
 };
+
 
 export type QueryNodesArgs = {
-  ids: Array<Scalars["ID"]>;
+  ids: Array<Scalars['ID']>;
 };
+
 
 export type QueryRoomArgs = {
-  id: Scalars["ID"];
+  id: Scalars['ID'];
 };
+
 
 export type QuerySchoolArgs = {
-  id: Scalars["ID"];
+  id: Scalars['ID'];
 };
+
 
 export type QueryStudioArgs = {
-  id: Scalars["ID"];
+  id: Scalars['ID'];
 };
 
+
 export type QueryUserArgs = {
-  id: Scalars["ID"];
+  id: Scalars['ID'];
 };
 
 export type Room = Node & {
-  __typename?: "Room";
-  capacity: Scalars["Int"];
-  createTime: Scalars["Time"];
-  id: Scalars["ID"];
-  name: Scalars["String"];
+  __typename?: 'Room';
+  capacity: Scalars['Int'];
+  createTime: Scalars['Time'];
+  id: Scalars['ID'];
+  name: Scalars['String'];
   schedules: Array<Maybe<Schedule>>;
   studio: Studio;
-  updateTime: Scalars["Time"];
+  updateTime: Scalars['Time'];
 };
 
 export type Schedule = Node & {
-  __typename?: "Schedule";
-  createdAt: Scalars["Time"];
-  dayOfWeek: Scalars["Int"];
-  endTime: Scalars["String"];
-  id: Scalars["ID"];
-  startTime: Scalars["String"];
-  updatedAt: Scalars["Time"];
+  __typename?: 'Schedule';
+  createTime: Scalars['Time'];
+  dayOfWeek: Scalars['Int'];
+  endTime: Scalars['String'];
+  id: Scalars['ID'];
+  startTime: Scalars['String'];
+  updateTime: Scalars['Time'];
 };
 
+export enum ScheduleField {
+  DayOfWeek = 'DAY_OF_WEEK',
+  StartTime = 'START_TIME'
+}
+
 export type School = Node & {
-  __typename?: "School";
-  createTime: Scalars["Time"];
-  id: Scalars["ID"];
-  name: Scalars["String"];
+  __typename?: 'School';
+  createTime: Scalars['Time'];
+  id: Scalars['ID'];
+  name: Scalars['String'];
   studios: Array<Maybe<Studio>>;
-  updateTime: Scalars["Time"];
+  updateTime: Scalars['Time'];
 };
 
 export type SignUpInput = {
-  email: Scalars["String"];
-  password: Scalars["String"];
+  email: Scalars['String'];
+  password: Scalars['String'];
 };
 
 export type Studio = Node & {
-  __typename?: "Studio";
-  createTime: Scalars["Time"];
-  id: Scalars["ID"];
-  location: Scalars["String"];
-  name: Scalars["String"];
+  __typename?: 'Studio';
+  createTime: Scalars['Time'];
+  id: Scalars['ID'];
+  location: Scalars['String'];
+  name: Scalars['String'];
   rooms: Array<Maybe<Room>>;
   school: School;
-  updateTime: Scalars["Time"];
+  updateTime: Scalars['Time'];
 };
 
 export type UpdateInstructorInput = {
-  biography?: InputMaybe<Scalars["String"]>;
-  email?: InputMaybe<Scalars["String"]>;
-  id: Scalars["ID"];
-  name?: InputMaybe<Scalars["String"]>;
-  phoneNumber?: InputMaybe<Scalars["String"]>;
-  syllabicCharacters?: InputMaybe<Scalars["String"]>;
+  biography?: InputMaybe<Scalars['String']>;
+  email?: InputMaybe<Scalars['String']>;
+  id: Scalars['ID'];
+  name?: InputMaybe<Scalars['String']>;
+  phoneNumber?: InputMaybe<Scalars['String']>;
+  syllabicCharacters?: InputMaybe<Scalars['String']>;
 };
 
 export type UpdateRoomInput = {
-  capacity?: InputMaybe<Scalars["Int"]>;
-  id: Scalars["ID"];
-  name?: InputMaybe<Scalars["String"]>;
-  studioID?: InputMaybe<Scalars["ID"]>;
+  capacity?: InputMaybe<Scalars['Int']>;
+  id: Scalars['ID'];
+  name?: InputMaybe<Scalars['String']>;
+  studioID?: InputMaybe<Scalars['ID']>;
 };
 
 export type UpdateSchoolInput = {
-  id: Scalars["ID"];
-  name: Scalars["String"];
+  id: Scalars['ID'];
+  name: Scalars['String'];
 };
 
 export type UpdateStudioInput = {
-  id: Scalars["ID"];
-  location?: InputMaybe<Scalars["String"]>;
-  name?: InputMaybe<Scalars["String"]>;
-  schoolID?: InputMaybe<Scalars["ID"]>;
+  id: Scalars['ID'];
+  location?: InputMaybe<Scalars['String']>;
+  name?: InputMaybe<Scalars['String']>;
+  schoolID?: InputMaybe<Scalars['ID']>;
 };
 
 export type UpdateUserInput = {
-  id: Scalars["ID"];
-  name: Scalars["String"];
+  id: Scalars['ID'];
+  name: Scalars['String'];
 };
 
 export type User = Node & {
-  __typename?: "User";
-  createTime: Scalars["Time"];
-  firebaseUid: Scalars["String"];
-  id: Scalars["ID"];
-  name: Scalars["String"];
-  updateTime: Scalars["Time"];
+  __typename?: 'User';
+  createTime: Scalars['Time'];
+  firebaseUid: Scalars['String'];
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  updateTime: Scalars['Time'];
 };
 
 export type CreateInstructorMutationVariables = Exact<{
   input: CreateInstructorInput;
 }>;
 
-export type CreateInstructorMutation = {
-  __typename?: "Mutation";
-  createInstructor: {
-    __typename?: "Instructor";
-    id: string;
-    name: string;
-    syllabicCharacters: string;
-    biography?: string | null;
-    phoneNumber?: string | null;
-    email?: string | null;
-  };
-};
+
+export type CreateInstructorMutation = { __typename?: 'Mutation', createInstructor: { __typename?: 'Instructor', id: string, name: string, syllabicCharacters: string, biography?: string | null, phoneNumber?: string | null, email?: string | null } };
 
 export type UpdateInstructorMutationVariables = Exact<{
   input: UpdateInstructorInput;
 }>;
 
-export type UpdateInstructorMutation = {
-  __typename?: "Mutation";
-  updateInstructor: {
-    __typename?: "Instructor";
-    id: string;
-    name: string;
-    syllabicCharacters: string;
-    biography?: string | null;
-    phoneNumber?: string | null;
-    email?: string | null;
-  };
-};
+
+export type UpdateInstructorMutation = { __typename?: 'Mutation', updateInstructor: { __typename?: 'Instructor', id: string, name: string, syllabicCharacters: string, biography?: string | null, phoneNumber?: string | null, email?: string | null } };
 
 export type DeleteInstructorMutationVariables = Exact<{
   input: DeleteInstructorInput;
 }>;
 
-export type DeleteInstructorMutation = {
-  __typename?: "Mutation";
-  deleteInstructor: {
-    __typename?: "Instructor";
-    id: string;
-    name: string;
-    syllabicCharacters: string;
-    biography?: string | null;
-    phoneNumber?: string | null;
-    email?: string | null;
-  };
-};
+
+export type DeleteInstructorMutation = { __typename?: 'Mutation', deleteInstructor: { __typename?: 'Instructor', id: string, name: string, syllabicCharacters: string, biography?: string | null, phoneNumber?: string | null, email?: string | null } };
 
 export type GetInstructorsQueryVariables = Exact<{
-  first?: InputMaybe<Scalars["Int"]>;
-  after?: InputMaybe<Scalars["Cursor"]>;
-  last?: InputMaybe<Scalars["Int"]>;
-  before?: InputMaybe<Scalars["Cursor"]>;
+  first?: InputMaybe<Scalars['Int']>;
+  after?: InputMaybe<Scalars['Cursor']>;
+  last?: InputMaybe<Scalars['Int']>;
+  before?: InputMaybe<Scalars['Cursor']>;
 }>;
 
-export type GetInstructorsQuery = {
-  __typename?: "Query";
-  instructors?: {
-    __typename?: "InstructorConnection";
-    totalCount: number;
-    pageInfo: {
-      __typename?: "PageInfo";
-      startCursor?: any | null;
-      endCursor?: any | null;
-      hasNextPage: boolean;
-      hasPreviousPage: boolean;
-    };
-    edges: Array<{
-      __typename?: "InstructorEdge";
-      cursor: any;
-      node: {
-        __typename?: "Instructor";
-        id: string;
-        name: string;
-        syllabicCharacters: string;
-        biography?: string | null;
-        phoneNumber?: string | null;
-        email?: string | null;
-      };
-    } | null>;
-  } | null;
-};
+
+export type GetInstructorsQuery = { __typename?: 'Query', instructors?: { __typename?: 'InstructorConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', startCursor?: any | null, endCursor?: any | null, hasNextPage: boolean, hasPreviousPage: boolean }, edges: Array<{ __typename?: 'InstructorEdge', cursor: any, node: { __typename?: 'Instructor', id: string, name: string, syllabicCharacters: string, biography?: string | null, phoneNumber?: string | null, email?: string | null, createTime: any, updateTime: any } } | null> } | null };
 
 export type GetInstructorQueryVariables = Exact<{
-  id: Scalars["ID"];
+  id: Scalars['ID'];
 }>;
 
-export type GetInstructorQuery = {
-  __typename?: "Query";
-  instructor: {
-    __typename?: "Instructor";
-    id: string;
-    name: string;
-    syllabicCharacters: string;
-    biography?: string | null;
-    phoneNumber?: string | null;
-    email?: string | null;
-    createTime: any;
-    updateTime: any;
-  };
-};
+
+export type GetInstructorQuery = { __typename?: 'Query', instructor: { __typename?: 'Instructor', id: string, name: string, syllabicCharacters: string, biography?: string | null, phoneNumber?: string | null, email?: string | null, createTime: any, updateTime: any } };
+
+export type GetSchedulesQueryVariables = Exact<{
+  schoolID: Scalars['ID'];
+}>;
+
+
+export type GetSchedulesQuery = { __typename?: 'Query', school: { __typename?: 'School', id: string, name: string, createTime: any, updateTime: any, studios: Array<{ __typename?: 'Studio', id: string, name: string, location: string, createTime: any, updateTime: any, rooms: Array<{ __typename?: 'Room', id: string, name: string, capacity: number, createTime: any, updateTime: any, schedules: Array<{ __typename?: 'Schedule', id: string, dayOfWeek: number, startTime: string, endTime: string, createTime: any, updateTime: any } | null> } | null> } | null> } };
+
 
 export const CreateInstructorDocument = gql`
-  mutation CreateInstructor($input: CreateInstructorInput!) {
-    createInstructor(input: $input) {
-      id
-      name
-      syllabicCharacters
-      biography
-      phoneNumber
-      email
-    }
+    mutation CreateInstructor($input: CreateInstructorInput!) {
+  createInstructor(input: $input) {
+    id
+    name
+    syllabicCharacters
+    biography
+    phoneNumber
+    email
   }
-`;
-export type CreateInstructorMutationFn = Apollo.MutationFunction<
-  CreateInstructorMutation,
-  CreateInstructorMutationVariables
->;
+}
+    `;
+export type CreateInstructorMutationFn = Apollo.MutationFunction<CreateInstructorMutation, CreateInstructorMutationVariables>;
 
 /**
  * __useCreateInstructorMutation__
@@ -465,43 +425,26 @@ export type CreateInstructorMutationFn = Apollo.MutationFunction<
  *   },
  * });
  */
-export function useCreateInstructorMutation(
-  baseOptions?: Apollo.MutationHookOptions<
-    CreateInstructorMutation,
-    CreateInstructorMutationVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<
-    CreateInstructorMutation,
-    CreateInstructorMutationVariables
-  >(CreateInstructorDocument, options);
-}
-export type CreateInstructorMutationHookResult = ReturnType<
-  typeof useCreateInstructorMutation
->;
-export type CreateInstructorMutationResult =
-  Apollo.MutationResult<CreateInstructorMutation>;
-export type CreateInstructorMutationOptions = Apollo.BaseMutationOptions<
-  CreateInstructorMutation,
-  CreateInstructorMutationVariables
->;
+export function useCreateInstructorMutation(baseOptions?: Apollo.MutationHookOptions<CreateInstructorMutation, CreateInstructorMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateInstructorMutation, CreateInstructorMutationVariables>(CreateInstructorDocument, options);
+      }
+export type CreateInstructorMutationHookResult = ReturnType<typeof useCreateInstructorMutation>;
+export type CreateInstructorMutationResult = Apollo.MutationResult<CreateInstructorMutation>;
+export type CreateInstructorMutationOptions = Apollo.BaseMutationOptions<CreateInstructorMutation, CreateInstructorMutationVariables>;
 export const UpdateInstructorDocument = gql`
-  mutation UpdateInstructor($input: UpdateInstructorInput!) {
-    updateInstructor(input: $input) {
-      id
-      name
-      syllabicCharacters
-      biography
-      phoneNumber
-      email
-    }
+    mutation UpdateInstructor($input: UpdateInstructorInput!) {
+  updateInstructor(input: $input) {
+    id
+    name
+    syllabicCharacters
+    biography
+    phoneNumber
+    email
   }
-`;
-export type UpdateInstructorMutationFn = Apollo.MutationFunction<
-  UpdateInstructorMutation,
-  UpdateInstructorMutationVariables
->;
+}
+    `;
+export type UpdateInstructorMutationFn = Apollo.MutationFunction<UpdateInstructorMutation, UpdateInstructorMutationVariables>;
 
 /**
  * __useUpdateInstructorMutation__
@@ -520,43 +463,26 @@ export type UpdateInstructorMutationFn = Apollo.MutationFunction<
  *   },
  * });
  */
-export function useUpdateInstructorMutation(
-  baseOptions?: Apollo.MutationHookOptions<
-    UpdateInstructorMutation,
-    UpdateInstructorMutationVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<
-    UpdateInstructorMutation,
-    UpdateInstructorMutationVariables
-  >(UpdateInstructorDocument, options);
-}
-export type UpdateInstructorMutationHookResult = ReturnType<
-  typeof useUpdateInstructorMutation
->;
-export type UpdateInstructorMutationResult =
-  Apollo.MutationResult<UpdateInstructorMutation>;
-export type UpdateInstructorMutationOptions = Apollo.BaseMutationOptions<
-  UpdateInstructorMutation,
-  UpdateInstructorMutationVariables
->;
+export function useUpdateInstructorMutation(baseOptions?: Apollo.MutationHookOptions<UpdateInstructorMutation, UpdateInstructorMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateInstructorMutation, UpdateInstructorMutationVariables>(UpdateInstructorDocument, options);
+      }
+export type UpdateInstructorMutationHookResult = ReturnType<typeof useUpdateInstructorMutation>;
+export type UpdateInstructorMutationResult = Apollo.MutationResult<UpdateInstructorMutation>;
+export type UpdateInstructorMutationOptions = Apollo.BaseMutationOptions<UpdateInstructorMutation, UpdateInstructorMutationVariables>;
 export const DeleteInstructorDocument = gql`
-  mutation DeleteInstructor($input: DeleteInstructorInput!) {
-    deleteInstructor(input: $input) {
-      id
-      name
-      syllabicCharacters
-      biography
-      phoneNumber
-      email
-    }
+    mutation DeleteInstructor($input: DeleteInstructorInput!) {
+  deleteInstructor(input: $input) {
+    id
+    name
+    syllabicCharacters
+    biography
+    phoneNumber
+    email
   }
-`;
-export type DeleteInstructorMutationFn = Apollo.MutationFunction<
-  DeleteInstructorMutation,
-  DeleteInstructorMutationVariables
->;
+}
+    `;
+export type DeleteInstructorMutationFn = Apollo.MutationFunction<DeleteInstructorMutation, DeleteInstructorMutationVariables>;
 
 /**
  * __useDeleteInstructorMutation__
@@ -575,56 +501,39 @@ export type DeleteInstructorMutationFn = Apollo.MutationFunction<
  *   },
  * });
  */
-export function useDeleteInstructorMutation(
-  baseOptions?: Apollo.MutationHookOptions<
-    DeleteInstructorMutation,
-    DeleteInstructorMutationVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<
-    DeleteInstructorMutation,
-    DeleteInstructorMutationVariables
-  >(DeleteInstructorDocument, options);
-}
-export type DeleteInstructorMutationHookResult = ReturnType<
-  typeof useDeleteInstructorMutation
->;
-export type DeleteInstructorMutationResult =
-  Apollo.MutationResult<DeleteInstructorMutation>;
-export type DeleteInstructorMutationOptions = Apollo.BaseMutationOptions<
-  DeleteInstructorMutation,
-  DeleteInstructorMutationVariables
->;
-export const GetInstructorsDocument = gql`
-  query getInstructors(
-    $first: Int
-    $after: Cursor
-    $last: Int
-    $before: Cursor
-  ) {
-    instructors(first: $first, after: $after, last: $last, before: $before) {
-      totalCount
-      pageInfo {
-        startCursor
-        endCursor
-        hasNextPage
-        hasPreviousPage
+export function useDeleteInstructorMutation(baseOptions?: Apollo.MutationHookOptions<DeleteInstructorMutation, DeleteInstructorMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteInstructorMutation, DeleteInstructorMutationVariables>(DeleteInstructorDocument, options);
       }
-      edges {
-        cursor
-        node {
-          id
-          name
-          syllabicCharacters
-          biography
-          phoneNumber
-          email
-        }
+export type DeleteInstructorMutationHookResult = ReturnType<typeof useDeleteInstructorMutation>;
+export type DeleteInstructorMutationResult = Apollo.MutationResult<DeleteInstructorMutation>;
+export type DeleteInstructorMutationOptions = Apollo.BaseMutationOptions<DeleteInstructorMutation, DeleteInstructorMutationVariables>;
+export const GetInstructorsDocument = gql`
+    query getInstructors($first: Int, $after: Cursor, $last: Int, $before: Cursor) {
+  instructors(first: $first, after: $after, last: $last, before: $before) {
+    totalCount
+    pageInfo {
+      startCursor
+      endCursor
+      hasNextPage
+      hasPreviousPage
+    }
+    edges {
+      cursor
+      node {
+        id
+        name
+        syllabicCharacters
+        biography
+        phoneNumber
+        email
+        createTime
+        updateTime
       }
     }
   }
-`;
+}
+    `;
 
 /**
  * __useGetInstructorsQuery__
@@ -645,54 +554,31 @@ export const GetInstructorsDocument = gql`
  *   },
  * });
  */
-export function useGetInstructorsQuery(
-  baseOptions?: Apollo.QueryHookOptions<
-    GetInstructorsQuery,
-    GetInstructorsQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<GetInstructorsQuery, GetInstructorsQueryVariables>(
-    GetInstructorsDocument,
-    options
-  );
-}
-export function useGetInstructorsLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    GetInstructorsQuery,
-    GetInstructorsQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<GetInstructorsQuery, GetInstructorsQueryVariables>(
-    GetInstructorsDocument,
-    options
-  );
-}
-export type GetInstructorsQueryHookResult = ReturnType<
-  typeof useGetInstructorsQuery
->;
-export type GetInstructorsLazyQueryHookResult = ReturnType<
-  typeof useGetInstructorsLazyQuery
->;
-export type GetInstructorsQueryResult = Apollo.QueryResult<
-  GetInstructorsQuery,
-  GetInstructorsQueryVariables
->;
+export function useGetInstructorsQuery(baseOptions?: Apollo.QueryHookOptions<GetInstructorsQuery, GetInstructorsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetInstructorsQuery, GetInstructorsQueryVariables>(GetInstructorsDocument, options);
+      }
+export function useGetInstructorsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetInstructorsQuery, GetInstructorsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetInstructorsQuery, GetInstructorsQueryVariables>(GetInstructorsDocument, options);
+        }
+export type GetInstructorsQueryHookResult = ReturnType<typeof useGetInstructorsQuery>;
+export type GetInstructorsLazyQueryHookResult = ReturnType<typeof useGetInstructorsLazyQuery>;
+export type GetInstructorsQueryResult = Apollo.QueryResult<GetInstructorsQuery, GetInstructorsQueryVariables>;
 export const GetInstructorDocument = gql`
-  query getInstructor($id: ID!) {
-    instructor(id: $id) {
-      id
-      name
-      syllabicCharacters
-      biography
-      phoneNumber
-      email
-      createTime
-      updateTime
-    }
+    query getInstructor($id: ID!) {
+  instructor(id: $id) {
+    id
+    name
+    syllabicCharacters
+    biography
+    phoneNumber
+    email
+    createTime
+    updateTime
   }
-`;
+}
+    `;
 
 /**
  * __useGetInstructorQuery__
@@ -710,37 +596,74 @@ export const GetInstructorDocument = gql`
  *   },
  * });
  */
-export function useGetInstructorQuery(
-  baseOptions: Apollo.QueryHookOptions<
-    GetInstructorQuery,
-    GetInstructorQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<GetInstructorQuery, GetInstructorQueryVariables>(
-    GetInstructorDocument,
-    options
-  );
+export function useGetInstructorQuery(baseOptions: Apollo.QueryHookOptions<GetInstructorQuery, GetInstructorQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetInstructorQuery, GetInstructorQueryVariables>(GetInstructorDocument, options);
+      }
+export function useGetInstructorLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetInstructorQuery, GetInstructorQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetInstructorQuery, GetInstructorQueryVariables>(GetInstructorDocument, options);
+        }
+export type GetInstructorQueryHookResult = ReturnType<typeof useGetInstructorQuery>;
+export type GetInstructorLazyQueryHookResult = ReturnType<typeof useGetInstructorLazyQuery>;
+export type GetInstructorQueryResult = Apollo.QueryResult<GetInstructorQuery, GetInstructorQueryVariables>;
+export const GetSchedulesDocument = gql`
+    query getSchedules($schoolID: ID!) {
+  school(id: $schoolID) {
+    id
+    name
+    createTime
+    updateTime
+    studios {
+      id
+      name
+      location
+      createTime
+      updateTime
+      rooms {
+        id
+        name
+        capacity
+        createTime
+        updateTime
+        schedules {
+          id
+          dayOfWeek
+          startTime
+          endTime
+          createTime
+          updateTime
+        }
+      }
+    }
+  }
 }
-export function useGetInstructorLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    GetInstructorQuery,
-    GetInstructorQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<GetInstructorQuery, GetInstructorQueryVariables>(
-    GetInstructorDocument,
-    options
-  );
-}
-export type GetInstructorQueryHookResult = ReturnType<
-  typeof useGetInstructorQuery
->;
-export type GetInstructorLazyQueryHookResult = ReturnType<
-  typeof useGetInstructorLazyQuery
->;
-export type GetInstructorQueryResult = Apollo.QueryResult<
-  GetInstructorQuery,
-  GetInstructorQueryVariables
->;
+    `;
+
+/**
+ * __useGetSchedulesQuery__
+ *
+ * To run a query within a React component, call `useGetSchedulesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetSchedulesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetSchedulesQuery({
+ *   variables: {
+ *      schoolID: // value for 'schoolID'
+ *   },
+ * });
+ */
+export function useGetSchedulesQuery(baseOptions: Apollo.QueryHookOptions<GetSchedulesQuery, GetSchedulesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetSchedulesQuery, GetSchedulesQueryVariables>(GetSchedulesDocument, options);
+      }
+export function useGetSchedulesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetSchedulesQuery, GetSchedulesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetSchedulesQuery, GetSchedulesQueryVariables>(GetSchedulesDocument, options);
+        }
+export type GetSchedulesQueryHookResult = ReturnType<typeof useGetSchedulesQuery>;
+export type GetSchedulesLazyQueryHookResult = ReturnType<typeof useGetSchedulesLazyQuery>;
+export type GetSchedulesQueryResult = Apollo.QueryResult<GetSchedulesQuery, GetSchedulesQueryVariables>;

@@ -37,10 +37,15 @@ export const NewInstructorPage: VFC = () => {
   return (
     <Layout>
       <form className="flex flex-col">
+        <label htmlFor="name">名前</label>
         <input {...register("name", { required: true })} />
+        <label htmlFor="syllabicCharacters">よみがな</label>
         <input {...register("syllabicCharacters", { required: true })} />
+        <label htmlFor="biography">紹介文</label>
         <input {...register("biography")} />
+        <label htmlFor="phoneNumber">電話番号</label>
         <input {...register("phoneNumber")} />
+        <label htmlFor="email">メール</label>
         <input {...register("email")} />
       </form>
       <button type="submit" onClick={handleSubmit(onSubmit)}>

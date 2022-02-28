@@ -46,3 +46,36 @@ gql`
     }
   }
 `;
+
+gql`
+  query getSchedules($schoolID: ID!) {
+    school(id: $schoolID) {
+      id
+      name
+      createTime
+      updateTime
+      studios {
+        id
+        name
+        location
+        createTime
+        updateTime
+        rooms {
+          id
+          name
+          capacity
+          createTime
+          updateTime
+          schedules {
+            id
+            dayOfWeek
+            startTime
+            endTime
+            createTime
+            updateTime
+          }
+        }
+      }
+    }
+  }
+`;

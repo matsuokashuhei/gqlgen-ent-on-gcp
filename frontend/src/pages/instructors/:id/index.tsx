@@ -59,22 +59,27 @@ export const InstructorPage: VFC = () => {
             {...register("id", { required: true })}
             defaultValue={instructor.id}
           />
+          <label htmlFor="name">名前</label>
           <input
             {...register("name", { required: true })}
             defaultValue={instructor.name}
           />
+          <label htmlFor="syllabicCharacters">よみがな</label>
           <input
             {...register("syllabicCharacters", { required: true })}
             defaultValue={instructor.syllabicCharacters}
           />
+          <label htmlFor="biography">紹介文</label>
           <input
             {...register("biography")}
             defaultValue={instructor.biography ?? ""}
           />
+          <label htmlFor="phoneNumber">電話番号</label>
           <input
             {...register("phoneNumber")}
             defaultValue={instructor.phoneNumber ?? ""}
           />
+          <label htmlFor="email">メール</label>
           <input {...register("email")} defaultValue={instructor.email ?? ""} />
         </form>
       );
@@ -97,9 +102,14 @@ export const InstructorPage: VFC = () => {
   const renderEditButton = () => {
     if (editable) {
       return (
-        <button type="submit" onClick={handleSubmit(onSubmit)}>
-          保存
-        </button>
+        <>
+          <button type="button" onClick={() => setEditable(false)}>
+            取消
+          </button>
+          <button type="submit" onClick={handleSubmit(onSubmit)}>
+            保存
+          </button>
+        </>
       );
     } else {
       return <button onClick={() => setEditable(true)}>編集</button>;
