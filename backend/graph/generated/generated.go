@@ -41,7 +41,6 @@ type ResolverRoot interface {
 	Mutation() MutationResolver
 	Query() QueryResolver
 	Room() RoomResolver
-	Schedule() ScheduleResolver
 }
 
 type DirectiveRoot struct {
@@ -121,12 +120,12 @@ type ComplexityRoot struct {
 	}
 
 	Schedule struct {
-		CreatedAt func(childComplexity int) int
-		DayOfWeek func(childComplexity int) int
-		EndTime   func(childComplexity int) int
-		ID        func(childComplexity int) int
-		StartTime func(childComplexity int) int
-		UpdatedAt func(childComplexity int) int
+		CreateTime func(childComplexity int) int
+		DayOfWeek  func(childComplexity int) int
+		EndTime    func(childComplexity int) int
+		ID         func(childComplexity int) int
+		StartTime  func(childComplexity int) int
+		UpdateTime func(childComplexity int) int
 	}
 
 	School struct {
@@ -189,10 +188,6 @@ type QueryResolver interface {
 }
 type RoomResolver interface {
 	Schedules(ctx context.Context, obj *ent.Room) ([]*ent.Schedule, error)
-}
-type ScheduleResolver interface {
-	CreatedAt(ctx context.Context, obj *ent.Schedule) (*time.Time, error)
-	UpdatedAt(ctx context.Context, obj *ent.Schedule) (*time.Time, error)
 }
 
 type executableSchema struct {
@@ -682,12 +677,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Room.UpdateTime(childComplexity), true
 
-	case "Schedule.createdAt":
-		if e.complexity.Schedule.CreatedAt == nil {
+	case "Schedule.createTime":
+		if e.complexity.Schedule.CreateTime == nil {
 			break
 		}
 
-		return e.complexity.Schedule.CreatedAt(childComplexity), true
+		return e.complexity.Schedule.CreateTime(childComplexity), true
 
 	case "Schedule.dayOfWeek":
 		if e.complexity.Schedule.DayOfWeek == nil {
@@ -717,12 +712,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Schedule.StartTime(childComplexity), true
 
-	case "Schedule.updatedAt":
-		if e.complexity.Schedule.UpdatedAt == nil {
+	case "Schedule.updateTime":
+		if e.complexity.Schedule.UpdateTime == nil {
 			break
 		}
 
-		return e.complexity.Schedule.UpdatedAt(childComplexity), true
+		return e.complexity.Schedule.UpdateTime(childComplexity), true
 
 	case "School.createTime":
 		if e.complexity.School.CreateTime == nil {
@@ -1045,8 +1040,8 @@ scalar Cursor
   dayOfWeek: Int!
   startTime: String!
   endTime: String!
-  createdAt: Time!
-  updatedAt: Time!
+  createTime: Time!
+  updateTime: Time!
 }
 
 enum ScheduleField {
@@ -3735,7 +3730,7 @@ func (ec *executionContext) _Schedule_endTime(ctx context.Context, field graphql
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Schedule_createdAt(ctx context.Context, field graphql.CollectedField, obj *ent.Schedule) (ret graphql.Marshaler) {
+func (ec *executionContext) _Schedule_createTime(ctx context.Context, field graphql.CollectedField, obj *ent.Schedule) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -3746,14 +3741,14 @@ func (ec *executionContext) _Schedule_createdAt(ctx context.Context, field graph
 		Object:     "Schedule",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Schedule().CreatedAt(rctx, obj)
+		return obj.CreateTime, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3765,12 +3760,12 @@ func (ec *executionContext) _Schedule_createdAt(ctx context.Context, field graph
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*time.Time)
+	res := resTmp.(time.Time)
 	fc.Result = res
-	return ec.marshalNTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Schedule_updatedAt(ctx context.Context, field graphql.CollectedField, obj *ent.Schedule) (ret graphql.Marshaler) {
+func (ec *executionContext) _Schedule_updateTime(ctx context.Context, field graphql.CollectedField, obj *ent.Schedule) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -3781,14 +3776,14 @@ func (ec *executionContext) _Schedule_updatedAt(ctx context.Context, field graph
 		Object:     "Schedule",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Schedule().UpdatedAt(rctx, obj)
+		return obj.UpdateTime, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3800,9 +3795,9 @@ func (ec *executionContext) _Schedule_updatedAt(ctx context.Context, field graph
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*time.Time)
+	res := resTmp.(time.Time)
 	fc.Result = res
-	return ec.marshalNTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _School_id(ctx context.Context, field graphql.CollectedField, obj *ent.School) (ret graphql.Marshaler) {
@@ -6600,51 +6595,33 @@ func (ec *executionContext) _Schedule(ctx context.Context, sel ast.SelectionSet,
 		case "id":
 			out.Values[i] = ec._Schedule_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				invalids++
 			}
 		case "dayOfWeek":
 			out.Values[i] = ec._Schedule_dayOfWeek(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				invalids++
 			}
 		case "startTime":
 			out.Values[i] = ec._Schedule_startTime(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				invalids++
 			}
 		case "endTime":
 			out.Values[i] = ec._Schedule_endTime(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				invalids++
 			}
-		case "createdAt":
-			field := field
-			out.Concurrently(i, func() (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Schedule_createdAt(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
-				}
-				return res
-			})
-		case "updatedAt":
-			field := field
-			out.Concurrently(i, func() (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Schedule_updatedAt(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
-				}
-				return res
-			})
+		case "createTime":
+			out.Values[i] = ec._Schedule_createTime(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "updateTime":
+			out.Values[i] = ec._Schedule_updateTime(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -7530,27 +7507,6 @@ func (ec *executionContext) unmarshalNTime2timeᚐTime(ctx context.Context, v in
 
 func (ec *executionContext) marshalNTime2timeᚐTime(ctx context.Context, sel ast.SelectionSet, v time.Time) graphql.Marshaler {
 	res := graphql.MarshalTime(v)
-	if res == graphql.Null {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-	}
-	return res
-}
-
-func (ec *executionContext) unmarshalNTime2ᚖtimeᚐTime(ctx context.Context, v interface{}) (*time.Time, error) {
-	res, err := graphql.UnmarshalTime(v)
-	return &res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalNTime2ᚖtimeᚐTime(ctx context.Context, sel ast.SelectionSet, v *time.Time) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := graphql.MarshalTime(*v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")

@@ -3,8 +3,8 @@ type Schedule implements Node {
   dayOfWeek: Int!
   startTime: String!
   endTime: String!
-  createdAt: Time!
-  updatedAt: Time!
+  createTime: Time!
+  updateTime: Time!
 }
 
 enum ScheduleField {
