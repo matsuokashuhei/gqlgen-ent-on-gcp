@@ -35,5 +35,6 @@ func (Schedule) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("room", Room.Type).Ref("schedules").Unique(),
 		edge.To("classes", Class.Type),
+		edge.To("class", Class.Type).Unique(),
 	}
 }

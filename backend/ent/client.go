@@ -634,6 +634,22 @@ func (c *ScheduleClient) QueryClasses(s *Schedule) *ClassQuery {
 	return query
 }
 
+// QueryClass queries the class edge of a Schedule.
+func (c *ScheduleClient) QueryClass(s *Schedule) *ClassQuery {
+	query := &ClassQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(schedule.Table, schedule.FieldID, id),
+			sqlgraph.To(class.Table, class.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, schedule.ClassTable, schedule.ClassColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *ScheduleClient) Hooks() []Hook {
 	return c.hooks.Schedule

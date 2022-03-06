@@ -31,7 +31,7 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "school" package.
 	SchoolInverseTable = "schools"
 	// SchoolColumn is the table column denoting the school relation/edge.
-	SchoolColumn = "school_studios"
+	SchoolColumn = "school_id"
 	// RoomsTable is the table that holds the rooms relation/edge.
 	RoomsTable = "rooms"
 	// RoomsInverseTable is the table name for the Room entity.
@@ -53,7 +53,7 @@ var Columns = []string{
 // ForeignKeys holds the SQL foreign-keys that are owned by the "studios"
 // table and are not defined as standalone fields in the schema.
 var ForeignKeys = []string{
-	"school_studios",
+	"school_id",
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

@@ -41,12 +41,17 @@ type ResolverRoot interface {
 	Mutation() MutationResolver
 	Query() QueryResolver
 	Room() RoomResolver
+	Schedule() ScheduleResolver
 }
 
 type DirectiveRoot struct {
 }
 
 type ComplexityRoot struct {
+	Class struct {
+		ID func(childComplexity int) int
+	}
+
 	Instructor struct {
 		Biography          func(childComplexity int) int
 		CreateTime         func(childComplexity int) int
@@ -120,6 +125,7 @@ type ComplexityRoot struct {
 	}
 
 	Schedule struct {
+		Class      func(childComplexity int, time time.Time) int
 		CreateTime func(childComplexity int) int
 		DayOfWeek  func(childComplexity int) int
 		EndTime    func(childComplexity int) int
@@ -189,6 +195,9 @@ type QueryResolver interface {
 type RoomResolver interface {
 	Schedules(ctx context.Context, obj *ent.Room) ([]*ent.Schedule, error)
 }
+type ScheduleResolver interface {
+	Class(ctx context.Context, obj *ent.Schedule, time time.Time) (*ent.Class, error)
+}
 
 type executableSchema struct {
 	resolvers  ResolverRoot
@@ -204,6 +213,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	ec := executionContext{nil, e}
 	_ = ec
 	switch typeName + "." + field {
+
+	case "Class.id":
+		if e.complexity.Class.ID == nil {
+			break
+		}
+
+		return e.complexity.Class.ID(childComplexity), true
 
 	case "Instructor.biography":
 		if e.complexity.Instructor.Biography == nil {
@@ -677,6 +693,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Room.UpdateTime(childComplexity), true
 
+	case "Schedule.class":
+		if e.complexity.Schedule.Class == nil {
+			break
+		}
+
+		args, err := ec.field_Schedule_class_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Schedule.Class(childComplexity, args["time"].(time.Time)), true
+
 	case "Schedule.createTime":
 		if e.complexity.Schedule.CreateTime == nil {
 			break
@@ -915,6 +943,10 @@ extend type Mutation {
     signUp(input: SignUpInput!): User!
 }
 `, BuiltIn: false},
+	{Name: "graph/schema/class.graphql", Input: `type Class implements Node {
+    id: ID!
+    }
+`, BuiltIn: false},
 	{Name: "graph/schema/instructor.graphql", Input: `type Instructor implements Node {
   id: ID!
   name: String!
@@ -1040,6 +1072,7 @@ scalar Cursor
   dayOfWeek: Int!
   startTime: String!
   endTime: String!
+  class(time: Time!): Class @goField(forceResolver: true)
   createTime: Time!
   updateTime: Time!
 }
@@ -1556,6 +1589,21 @@ func (ec *executionContext) field_Query_user_args(ctx context.Context, rawArgs m
 	return args, nil
 }
 
+func (ec *executionContext) field_Schedule_class_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 time.Time
+	if tmp, ok := rawArgs["time"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("time"))
+		arg0, err = ec.unmarshalNTime2timeᚐTime(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["time"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field___Type_enumValues_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -1593,6 +1641,41 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 // endregion ************************** directives.gotpl **************************
 
 // region    **************************** field.gotpl *****************************
+
+func (ec *executionContext) _Class_id(ctx context.Context, field graphql.CollectedField, obj *ent.Class) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Class",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNID2int(ctx, field.Selections, res)
+}
 
 func (ec *executionContext) _Instructor_id(ctx context.Context, field graphql.CollectedField, obj *ent.Instructor) (ret graphql.Marshaler) {
 	defer func() {
@@ -3728,6 +3811,45 @@ func (ec *executionContext) _Schedule_endTime(ctx context.Context, field graphql
 	res := resTmp.(string)
 	fc.Result = res
 	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Schedule_class(ctx context.Context, field graphql.CollectedField, obj *ent.Schedule) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Schedule",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Schedule_class_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Schedule().Class(rctx, obj, args["time"].(time.Time))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.Class)
+	fc.Result = res
+	return ec.marshalOClass2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋentᚐClass(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Schedule_createTime(ctx context.Context, field graphql.CollectedField, obj *ent.Schedule) (ret graphql.Marshaler) {
@@ -6016,6 +6138,11 @@ func (ec *executionContext) _Node(ctx context.Context, sel ast.SelectionSet, obj
 	switch obj := (obj).(type) {
 	case nil:
 		return graphql.Null
+	case *ent.Class:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._Class(ctx, sel, obj)
 	case *ent.Instructor:
 		if obj == nil {
 			return graphql.Null
@@ -6054,6 +6181,33 @@ func (ec *executionContext) _Node(ctx context.Context, sel ast.SelectionSet, obj
 // endregion ************************** interface.gotpl ***************************
 
 // region    **************************** object.gotpl ****************************
+
+var classImplementors = []string{"Class", "Node"}
+
+func (ec *executionContext) _Class(ctx context.Context, sel ast.SelectionSet, obj *ent.Class) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, classImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Class")
+		case "id":
+			out.Values[i] = ec._Class_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
 
 var instructorImplementors = []string{"Instructor", "Node"}
 
@@ -6595,32 +6749,43 @@ func (ec *executionContext) _Schedule(ctx context.Context, sel ast.SelectionSet,
 		case "id":
 			out.Values[i] = ec._Schedule_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "dayOfWeek":
 			out.Values[i] = ec._Schedule_dayOfWeek(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "startTime":
 			out.Values[i] = ec._Schedule_startTime(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "endTime":
 			out.Values[i] = ec._Schedule_endTime(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
+		case "class":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Schedule_class(ctx, field, obj)
+				return res
+			})
 		case "createTime":
 			out.Values[i] = ec._Schedule_createTime(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "updateTime":
 			out.Values[i] = ec._Schedule_updateTime(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
@@ -7871,6 +8036,13 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 		return graphql.Null
 	}
 	return graphql.MarshalBoolean(*v)
+}
+
+func (ec *executionContext) marshalOClass2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋentᚐClass(ctx context.Context, sel ast.SelectionSet, v *ent.Class) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Class(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOCursor2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋentᚐCursor(ctx context.Context, v interface{}) (*ent.Cursor, error) {

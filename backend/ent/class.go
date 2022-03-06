@@ -22,6 +22,10 @@ type Class struct {
 	CreateTime time.Time `json:"create_time,omitempty"`
 	// UpdateTime holds the value of the "update_time" field.
 	UpdateTime time.Time `json:"update_time,omitempty"`
+	// Name holds the value of the "name" field.
+	Name string `json:"name,omitempty"`
+	// Tuition holds the value of the "tuition" field.
+	Tuition int `json:"tuition,omitempty"`
 	// StartDate holds the value of the "start_date" field.
 	StartDate time.Time `json:"start_date,omitempty"`
 	// EndDate holds the value of the "end_date" field.
@@ -77,8 +81,10 @@ func (*Class) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case class.FieldID:
+		case class.FieldID, class.FieldTuition:
 			values[i] = new(sql.NullInt64)
+		case class.FieldName:
+			values[i] = new(sql.NullString)
 		case class.FieldCreateTime, class.FieldUpdateTime, class.FieldStartDate, class.FieldEndDate:
 			values[i] = new(sql.NullTime)
 		case class.ForeignKeys[0]: // instructor_classes
@@ -117,6 +123,18 @@ func (c *Class) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field update_time", values[i])
 			} else if value.Valid {
 				c.UpdateTime = value.Time
+			}
+		case class.FieldName:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field name", values[i])
+			} else if value.Valid {
+				c.Name = value.String
+			}
+		case class.FieldTuition:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field tuition", values[i])
+			} else if value.Valid {
+				c.Tuition = int(value.Int64)
 			}
 		case class.FieldStartDate:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -186,6 +204,10 @@ func (c *Class) String() string {
 	builder.WriteString(c.CreateTime.Format(time.ANSIC))
 	builder.WriteString(", update_time=")
 	builder.WriteString(c.UpdateTime.Format(time.ANSIC))
+	builder.WriteString(", name=")
+	builder.WriteString(c.Name)
+	builder.WriteString(", tuition=")
+	builder.WriteString(fmt.Sprintf("%v", c.Tuition))
 	builder.WriteString(", start_date=")
 	builder.WriteString(c.StartDate.Format(time.ANSIC))
 	builder.WriteString(", end_date=")

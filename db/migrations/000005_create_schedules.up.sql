@@ -4,8 +4,8 @@ CREATE TABLE IF NOT EXISTS schedules (
     `start_time` varchar(8) NOT NULL,
     `end_time` varchar(8) NOT NULL,
     `room_id` bigint(20) NOT NULL,
-    `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY(`id`),
     CONSTRAINT `fk_room_id_in_rooms` FOREIGN KEY (`room_id`) REFERENCES `rooms`(`id`)
 );

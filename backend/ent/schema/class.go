@@ -21,6 +21,8 @@ func (Class) Mixin() []ent.Mixin {
 // Fields of the Class.
 func (Class) Fields() []ent.Field {
 	return []ent.Field{
+		field.String("name"),
+		field.Int("tuition"),
 		field.Time("start_date"),
 		field.Time("end_date").Optional(),
 	}
@@ -29,7 +31,7 @@ func (Class) Fields() []ent.Field {
 // Edges of the Class.
 func (Class) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("scuedule", Schedule.Type).Ref("classes").Unique(),
-		edge.From("instructor", Instructor.Type).Ref("classes").Unique(),
+		edge.From("scuedule", Schedule.Type).Ref("classes").Unique().Required(),
+		edge.From("instructor", Instructor.Type).Ref("classes").Unique().Required(),
 	}
 }

@@ -4,6 +4,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { Home } from "./pages/home";
 import { NewInstructorPage } from "./pages/instructors/new";
 import { InstructorsPage } from "./pages/instructors";
+import { ClassesPage } from "./pages/classes";
 import { InstructorPage } from "./pages/instructors/:id";
 import { SignIn } from "./pages/sign-in";
 import { SignUp } from "./pages/sign-up";
@@ -65,6 +66,14 @@ function App() {
               element={
                 <Private>
                   <InstructorsPage />
+                </Private>
+              }
+            />
+            <Route
+              path="classes"
+              element={
+                <Private>
+                  <ClassesPage />
                 </Private>
               }
             />

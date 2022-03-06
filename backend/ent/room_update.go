@@ -61,14 +61,6 @@ func (ru *RoomUpdate) SetStudioID(id int) *RoomUpdate {
 	return ru
 }
 
-// SetNillableStudioID sets the "studio" edge to the Studio entity by ID if the given value is not nil.
-func (ru *RoomUpdate) SetNillableStudioID(id *int) *RoomUpdate {
-	if id != nil {
-		ru = ru.SetStudioID(*id)
-	}
-	return ru
-}
-
 // SetStudio sets the "studio" edge to the Studio entity.
 func (ru *RoomUpdate) SetStudio(s *Studio) *RoomUpdate {
 	return ru.SetStudioID(s.ID)
@@ -129,12 +121,18 @@ func (ru *RoomUpdate) Save(ctx context.Context) (int, error) {
 	)
 	ru.defaults()
 	if len(ru.hooks) == 0 {
+		if err = ru.check(); err != nil {
+			return 0, err
+		}
 		affected, err = ru.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*RoomMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = ru.check(); err != nil {
+				return 0, err
 			}
 			ru.mutation = mutation
 			affected, err = ru.sqlSave(ctx)
@@ -182,6 +180,14 @@ func (ru *RoomUpdate) defaults() {
 		v := room.UpdateDefaultUpdateTime()
 		ru.mutation.SetUpdateTime(v)
 	}
+}
+
+// check runs all checks and user-defined validators on the builder.
+func (ru *RoomUpdate) check() error {
+	if _, ok := ru.mutation.StudioID(); ru.mutation.StudioCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Room.studio"`)
+	}
+	return nil
 }
 
 func (ru *RoomUpdate) sqlSave(ctx context.Context) (n int, err error) {
@@ -369,14 +375,6 @@ func (ruo *RoomUpdateOne) SetStudioID(id int) *RoomUpdateOne {
 	return ruo
 }
 
-// SetNillableStudioID sets the "studio" edge to the Studio entity by ID if the given value is not nil.
-func (ruo *RoomUpdateOne) SetNillableStudioID(id *int) *RoomUpdateOne {
-	if id != nil {
-		ruo = ruo.SetStudioID(*id)
-	}
-	return ruo
-}
-
 // SetStudio sets the "studio" edge to the Studio entity.
 func (ruo *RoomUpdateOne) SetStudio(s *Studio) *RoomUpdateOne {
 	return ruo.SetStudioID(s.ID)
@@ -444,12 +442,18 @@ func (ruo *RoomUpdateOne) Save(ctx context.Context) (*Room, error) {
 	)
 	ruo.defaults()
 	if len(ruo.hooks) == 0 {
+		if err = ruo.check(); err != nil {
+			return nil, err
+		}
 		node, err = ruo.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*RoomMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = ruo.check(); err != nil {
+				return nil, err
 			}
 			ruo.mutation = mutation
 			node, err = ruo.sqlSave(ctx)
@@ -497,6 +501,14 @@ func (ruo *RoomUpdateOne) defaults() {
 		v := room.UpdateDefaultUpdateTime()
 		ruo.mutation.SetUpdateTime(v)
 	}
+}
+
+// check runs all checks and user-defined validators on the builder.
+func (ruo *RoomUpdateOne) check() error {
+	if _, ok := ruo.mutation.StudioID(); ruo.mutation.StudioCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Room.studio"`)
+	}
+	return nil
 }
 
 func (ruo *RoomUpdateOne) sqlSave(ctx context.Context) (_node *Room, err error) {

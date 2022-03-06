@@ -50,6 +50,18 @@ func (cc *ClassCreate) SetNillableUpdateTime(t *time.Time) *ClassCreate {
 	return cc
 }
 
+// SetName sets the "name" field.
+func (cc *ClassCreate) SetName(s string) *ClassCreate {
+	cc.mutation.SetName(s)
+	return cc
+}
+
+// SetTuition sets the "tuition" field.
+func (cc *ClassCreate) SetTuition(i int) *ClassCreate {
+	cc.mutation.SetTuition(i)
+	return cc
+}
+
 // SetStartDate sets the "start_date" field.
 func (cc *ClassCreate) SetStartDate(t time.Time) *ClassCreate {
 	cc.mutation.SetStartDate(t)
@@ -76,14 +88,6 @@ func (cc *ClassCreate) SetScueduleID(id int) *ClassCreate {
 	return cc
 }
 
-// SetNillableScueduleID sets the "scuedule" edge to the Schedule entity by ID if the given value is not nil.
-func (cc *ClassCreate) SetNillableScueduleID(id *int) *ClassCreate {
-	if id != nil {
-		cc = cc.SetScueduleID(*id)
-	}
-	return cc
-}
-
 // SetScuedule sets the "scuedule" edge to the Schedule entity.
 func (cc *ClassCreate) SetScuedule(s *Schedule) *ClassCreate {
 	return cc.SetScueduleID(s.ID)
@@ -92,14 +96,6 @@ func (cc *ClassCreate) SetScuedule(s *Schedule) *ClassCreate {
 // SetInstructorID sets the "instructor" edge to the Instructor entity by ID.
 func (cc *ClassCreate) SetInstructorID(id int) *ClassCreate {
 	cc.mutation.SetInstructorID(id)
-	return cc
-}
-
-// SetNillableInstructorID sets the "instructor" edge to the Instructor entity by ID if the given value is not nil.
-func (cc *ClassCreate) SetNillableInstructorID(id *int) *ClassCreate {
-	if id != nil {
-		cc = cc.SetInstructorID(*id)
-	}
 	return cc
 }
 
@@ -197,8 +193,20 @@ func (cc *ClassCreate) check() error {
 	if _, ok := cc.mutation.UpdateTime(); !ok {
 		return &ValidationError{Name: "update_time", err: errors.New(`ent: missing required field "Class.update_time"`)}
 	}
+	if _, ok := cc.mutation.Name(); !ok {
+		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Class.name"`)}
+	}
+	if _, ok := cc.mutation.Tuition(); !ok {
+		return &ValidationError{Name: "tuition", err: errors.New(`ent: missing required field "Class.tuition"`)}
+	}
 	if _, ok := cc.mutation.StartDate(); !ok {
 		return &ValidationError{Name: "start_date", err: errors.New(`ent: missing required field "Class.start_date"`)}
+	}
+	if _, ok := cc.mutation.ScueduleID(); !ok {
+		return &ValidationError{Name: "scuedule", err: errors.New(`ent: missing required edge "Class.scuedule"`)}
+	}
+	if _, ok := cc.mutation.InstructorID(); !ok {
+		return &ValidationError{Name: "instructor", err: errors.New(`ent: missing required edge "Class.instructor"`)}
 	}
 	return nil
 }
@@ -242,6 +250,22 @@ func (cc *ClassCreate) createSpec() (*Class, *sqlgraph.CreateSpec) {
 			Column: class.FieldUpdateTime,
 		})
 		_node.UpdateTime = value
+	}
+	if value, ok := cc.mutation.Name(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: class.FieldName,
+		})
+		_node.Name = value
+	}
+	if value, ok := cc.mutation.Tuition(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: class.FieldTuition,
+		})
+		_node.Tuition = value
 	}
 	if value, ok := cc.mutation.StartDate(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

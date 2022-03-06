@@ -3,6 +3,7 @@ type Schedule implements Node {
   dayOfWeek: Int!
   startTime: String!
   endTime: String!
+  class(time: Time!): Class @goField(forceResolver: true)
   createTime: Time!
   updateTime: Time!
 }

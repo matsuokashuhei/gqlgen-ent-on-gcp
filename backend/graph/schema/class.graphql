@@ -1,0 +1,11 @@
+type Class implements Node {
+    id: ID!
+    name: String!
+    tuition: Int!
+    schedule: Schedule!
+    instructor: Instructor!
+    startDate: Time!
+    endDate: Time
+    createTime: Time!
+    updateTime: Time!
+}

@@ -9,7 +9,7 @@ func (c *Class) Scuedule(ctx context.Context) (*Schedule, error) {
 	if IsNotLoaded(err) {
 		result, err = c.QueryScuedule().Only(ctx)
 	}
-	return result, MaskNotFound(err)
+	return result, err
 }
 
 func (c *Class) Instructor(ctx context.Context) (*Instructor, error) {
@@ -17,7 +17,7 @@ func (c *Class) Instructor(ctx context.Context) (*Instructor, error) {
 	if IsNotLoaded(err) {
 		result, err = c.QueryInstructor().Only(ctx)
 	}
-	return result, MaskNotFound(err)
+	return result, err
 }
 
 func (i *Instructor) Classes(ctx context.Context) ([]*Class, error) {
@@ -33,7 +33,7 @@ func (r *Room) Studio(ctx context.Context) (*Studio, error) {
 	if IsNotLoaded(err) {
 		result, err = r.QueryStudio().Only(ctx)
 	}
-	return result, MaskNotFound(err)
+	return result, err
 }
 
 func (r *Room) Schedules(ctx context.Context) ([]*Schedule, error) {
@@ -58,6 +58,14 @@ func (s *Schedule) Classes(ctx context.Context) ([]*Class, error) {
 		result, err = s.QueryClasses().All(ctx)
 	}
 	return result, err
+}
+
+func (s *Schedule) Class(ctx context.Context) (*Class, error) {
+	result, err := s.Edges.ClassOrErr()
+	if IsNotLoaded(err) {
+		result, err = s.QueryClass().Only(ctx)
+	}
+	return result, MaskNotFound(err)
 }
 
 func (s *School) Studios(ctx context.Context) ([]*Studio, error) {

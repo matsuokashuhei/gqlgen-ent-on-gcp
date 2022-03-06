@@ -423,10 +423,10 @@ func (sq *StudioQuery) sqlAll(ctx context.Context) ([]*Studio, error) {
 		ids := make([]int, 0, len(nodes))
 		nodeids := make(map[int][]*Studio)
 		for i := range nodes {
-			if nodes[i].school_studios == nil {
+			if nodes[i].school_id == nil {
 				continue
 			}
-			fk := *nodes[i].school_studios
+			fk := *nodes[i].school_id
 			if _, ok := nodeids[fk]; !ok {
 				ids = append(ids, fk)
 			}
@@ -440,7 +440,7 @@ func (sq *StudioQuery) sqlAll(ctx context.Context) ([]*Studio, error) {
 		for _, n := range neighbors {
 			nodes, ok := nodeids[n.ID]
 			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "school_studios" returned %v`, n.ID)
+				return nil, fmt.Errorf(`unexpected foreign-key "school_id" returned %v`, n.ID)
 			}
 			for i := range nodes {
 				nodes[i].Edges.School = n

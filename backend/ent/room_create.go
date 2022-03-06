@@ -68,14 +68,6 @@ func (rc *RoomCreate) SetStudioID(id int) *RoomCreate {
 	return rc
 }
 
-// SetNillableStudioID sets the "studio" edge to the Studio entity by ID if the given value is not nil.
-func (rc *RoomCreate) SetNillableStudioID(id *int) *RoomCreate {
-	if id != nil {
-		rc = rc.SetStudioID(*id)
-	}
-	return rc
-}
-
 // SetStudio sets the "studio" edge to the Studio entity.
 func (rc *RoomCreate) SetStudio(s *Studio) *RoomCreate {
 	return rc.SetStudioID(s.ID)
@@ -190,6 +182,9 @@ func (rc *RoomCreate) check() error {
 	}
 	if _, ok := rc.mutation.Capacity(); !ok {
 		return &ValidationError{Name: "capacity", err: errors.New(`ent: missing required field "Room.capacity"`)}
+	}
+	if _, ok := rc.mutation.StudioID(); !ok {
+		return &ValidationError{Name: "studio", err: errors.New(`ent: missing required edge "Room.studio"`)}
 	}
 	return nil
 }

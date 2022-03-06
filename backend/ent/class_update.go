@@ -36,6 +36,25 @@ func (cu *ClassUpdate) SetUpdateTime(t time.Time) *ClassUpdate {
 	return cu
 }
 
+// SetName sets the "name" field.
+func (cu *ClassUpdate) SetName(s string) *ClassUpdate {
+	cu.mutation.SetName(s)
+	return cu
+}
+
+// SetTuition sets the "tuition" field.
+func (cu *ClassUpdate) SetTuition(i int) *ClassUpdate {
+	cu.mutation.ResetTuition()
+	cu.mutation.SetTuition(i)
+	return cu
+}
+
+// AddTuition adds i to the "tuition" field.
+func (cu *ClassUpdate) AddTuition(i int) *ClassUpdate {
+	cu.mutation.AddTuition(i)
+	return cu
+}
+
 // SetStartDate sets the "start_date" field.
 func (cu *ClassUpdate) SetStartDate(t time.Time) *ClassUpdate {
 	cu.mutation.SetStartDate(t)
@@ -68,14 +87,6 @@ func (cu *ClassUpdate) SetScueduleID(id int) *ClassUpdate {
 	return cu
 }
 
-// SetNillableScueduleID sets the "scuedule" edge to the Schedule entity by ID if the given value is not nil.
-func (cu *ClassUpdate) SetNillableScueduleID(id *int) *ClassUpdate {
-	if id != nil {
-		cu = cu.SetScueduleID(*id)
-	}
-	return cu
-}
-
 // SetScuedule sets the "scuedule" edge to the Schedule entity.
 func (cu *ClassUpdate) SetScuedule(s *Schedule) *ClassUpdate {
 	return cu.SetScueduleID(s.ID)
@@ -84,14 +95,6 @@ func (cu *ClassUpdate) SetScuedule(s *Schedule) *ClassUpdate {
 // SetInstructorID sets the "instructor" edge to the Instructor entity by ID.
 func (cu *ClassUpdate) SetInstructorID(id int) *ClassUpdate {
 	cu.mutation.SetInstructorID(id)
-	return cu
-}
-
-// SetNillableInstructorID sets the "instructor" edge to the Instructor entity by ID if the given value is not nil.
-func (cu *ClassUpdate) SetNillableInstructorID(id *int) *ClassUpdate {
-	if id != nil {
-		cu = cu.SetInstructorID(*id)
-	}
 	return cu
 }
 
@@ -125,12 +128,18 @@ func (cu *ClassUpdate) Save(ctx context.Context) (int, error) {
 	)
 	cu.defaults()
 	if len(cu.hooks) == 0 {
+		if err = cu.check(); err != nil {
+			return 0, err
+		}
 		affected, err = cu.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*ClassMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = cu.check(); err != nil {
+				return 0, err
 			}
 			cu.mutation = mutation
 			affected, err = cu.sqlSave(ctx)
@@ -180,6 +189,17 @@ func (cu *ClassUpdate) defaults() {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (cu *ClassUpdate) check() error {
+	if _, ok := cu.mutation.ScueduleID(); cu.mutation.ScueduleCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Class.scuedule"`)
+	}
+	if _, ok := cu.mutation.InstructorID(); cu.mutation.InstructorCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Class.instructor"`)
+	}
+	return nil
+}
+
 func (cu *ClassUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
@@ -203,6 +223,27 @@ func (cu *ClassUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeTime,
 			Value:  value,
 			Column: class.FieldUpdateTime,
+		})
+	}
+	if value, ok := cu.mutation.Name(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: class.FieldName,
+		})
+	}
+	if value, ok := cu.mutation.Tuition(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: class.FieldTuition,
+		})
+	}
+	if value, ok := cu.mutation.AddedTuition(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: class.FieldTuition,
 		})
 	}
 	if value, ok := cu.mutation.StartDate(); ok {
@@ -320,6 +361,25 @@ func (cuo *ClassUpdateOne) SetUpdateTime(t time.Time) *ClassUpdateOne {
 	return cuo
 }
 
+// SetName sets the "name" field.
+func (cuo *ClassUpdateOne) SetName(s string) *ClassUpdateOne {
+	cuo.mutation.SetName(s)
+	return cuo
+}
+
+// SetTuition sets the "tuition" field.
+func (cuo *ClassUpdateOne) SetTuition(i int) *ClassUpdateOne {
+	cuo.mutation.ResetTuition()
+	cuo.mutation.SetTuition(i)
+	return cuo
+}
+
+// AddTuition adds i to the "tuition" field.
+func (cuo *ClassUpdateOne) AddTuition(i int) *ClassUpdateOne {
+	cuo.mutation.AddTuition(i)
+	return cuo
+}
+
 // SetStartDate sets the "start_date" field.
 func (cuo *ClassUpdateOne) SetStartDate(t time.Time) *ClassUpdateOne {
 	cuo.mutation.SetStartDate(t)
@@ -352,14 +412,6 @@ func (cuo *ClassUpdateOne) SetScueduleID(id int) *ClassUpdateOne {
 	return cuo
 }
 
-// SetNillableScueduleID sets the "scuedule" edge to the Schedule entity by ID if the given value is not nil.
-func (cuo *ClassUpdateOne) SetNillableScueduleID(id *int) *ClassUpdateOne {
-	if id != nil {
-		cuo = cuo.SetScueduleID(*id)
-	}
-	return cuo
-}
-
 // SetScuedule sets the "scuedule" edge to the Schedule entity.
 func (cuo *ClassUpdateOne) SetScuedule(s *Schedule) *ClassUpdateOne {
 	return cuo.SetScueduleID(s.ID)
@@ -368,14 +420,6 @@ func (cuo *ClassUpdateOne) SetScuedule(s *Schedule) *ClassUpdateOne {
 // SetInstructorID sets the "instructor" edge to the Instructor entity by ID.
 func (cuo *ClassUpdateOne) SetInstructorID(id int) *ClassUpdateOne {
 	cuo.mutation.SetInstructorID(id)
-	return cuo
-}
-
-// SetNillableInstructorID sets the "instructor" edge to the Instructor entity by ID if the given value is not nil.
-func (cuo *ClassUpdateOne) SetNillableInstructorID(id *int) *ClassUpdateOne {
-	if id != nil {
-		cuo = cuo.SetInstructorID(*id)
-	}
 	return cuo
 }
 
@@ -416,12 +460,18 @@ func (cuo *ClassUpdateOne) Save(ctx context.Context) (*Class, error) {
 	)
 	cuo.defaults()
 	if len(cuo.hooks) == 0 {
+		if err = cuo.check(); err != nil {
+			return nil, err
+		}
 		node, err = cuo.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*ClassMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = cuo.check(); err != nil {
+				return nil, err
 			}
 			cuo.mutation = mutation
 			node, err = cuo.sqlSave(ctx)
@@ -471,6 +521,17 @@ func (cuo *ClassUpdateOne) defaults() {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (cuo *ClassUpdateOne) check() error {
+	if _, ok := cuo.mutation.ScueduleID(); cuo.mutation.ScueduleCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Class.scuedule"`)
+	}
+	if _, ok := cuo.mutation.InstructorID(); cuo.mutation.InstructorCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Class.instructor"`)
+	}
+	return nil
+}
+
 func (cuo *ClassUpdateOne) sqlSave(ctx context.Context) (_node *Class, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
@@ -511,6 +572,27 @@ func (cuo *ClassUpdateOne) sqlSave(ctx context.Context) (_node *Class, err error
 			Type:   field.TypeTime,
 			Value:  value,
 			Column: class.FieldUpdateTime,
+		})
+	}
+	if value, ok := cuo.mutation.Name(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: class.FieldName,
+		})
+	}
+	if value, ok := cuo.mutation.Tuition(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: class.FieldTuition,
+		})
+	}
+	if value, ok := cuo.mutation.AddedTuition(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: class.FieldTuition,
 		})
 	}
 	if value, ok := cuo.mutation.StartDate(); ok {

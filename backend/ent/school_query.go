@@ -391,13 +391,13 @@ func (sq *SchoolQuery) sqlAll(ctx context.Context) ([]*School, error) {
 			return nil, err
 		}
 		for _, n := range neighbors {
-			fk := n.school_studios
+			fk := n.school_id
 			if fk == nil {
-				return nil, fmt.Errorf(`foreign-key "school_studios" is nil for node %v`, n.ID)
+				return nil, fmt.Errorf(`foreign-key "school_id" is nil for node %v`, n.ID)
 			}
 			node, ok := nodeids[*fk]
 			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "school_studios" returned %v for node %v`, *fk, n.ID)
+				return nil, fmt.Errorf(`unexpected foreign-key "school_id" returned %v for node %v`, *fk, n.ID)
 			}
 			node.Edges.Studios = append(node.Edges.Studios, n)
 		}

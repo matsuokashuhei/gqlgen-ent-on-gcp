@@ -13,6 +13,8 @@ var (
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "create_time", Type: field.TypeTime},
 		{Name: "update_time", Type: field.TypeTime},
+		{Name: "name", Type: field.TypeString},
+		{Name: "tuition", Type: field.TypeInt},
 		{Name: "start_date", Type: field.TypeTime},
 		{Name: "end_date", Type: field.TypeTime, Nullable: true},
 		{Name: "instructor_classes", Type: field.TypeInt, Nullable: true},
@@ -26,13 +28,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "classes_instructors_classes",
-				Columns:    []*schema.Column{ClassesColumns[5]},
+				Columns:    []*schema.Column{ClassesColumns[7]},
 				RefColumns: []*schema.Column{InstructorsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "classes_schedules_classes",
-				Columns:    []*schema.Column{ClassesColumns[6]},
+				Columns:    []*schema.Column{ClassesColumns[8]},
 				RefColumns: []*schema.Column{SchedulesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -87,6 +89,7 @@ var (
 		{Name: "start_time", Type: field.TypeString},
 		{Name: "end_time", Type: field.TypeString},
 		{Name: "room_schedules", Type: field.TypeInt, Nullable: true},
+		{Name: "schedule_class", Type: field.TypeInt, Nullable: true},
 	}
 	// SchedulesTable holds the schema information for the "schedules" table.
 	SchedulesTable = &schema.Table{
@@ -98,6 +101,12 @@ var (
 				Symbol:     "schedules_rooms_schedules",
 				Columns:    []*schema.Column{SchedulesColumns[6]},
 				RefColumns: []*schema.Column{RoomsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "schedules_classes_class",
+				Columns:    []*schema.Column{SchedulesColumns[7]},
+				RefColumns: []*schema.Column{ClassesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
@@ -122,7 +131,7 @@ var (
 		{Name: "update_time", Type: field.TypeTime},
 		{Name: "name", Type: field.TypeString},
 		{Name: "location", Type: field.TypeString},
-		{Name: "school_studios", Type: field.TypeInt, Nullable: true},
+		{Name: "school_id", Type: field.TypeInt, Nullable: true},
 	}
 	// StudiosTable holds the schema information for the "studios" table.
 	StudiosTable = &schema.Table{
@@ -169,5 +178,6 @@ func init() {
 	ClassesTable.ForeignKeys[1].RefTable = SchedulesTable
 	RoomsTable.ForeignKeys[0].RefTable = StudiosTable
 	SchedulesTable.ForeignKeys[0].RefTable = RoomsTable
+	SchedulesTable.ForeignKeys[1].RefTable = ClassesTable
 	StudiosTable.ForeignKeys[0].RefTable = SchoolsTable
 }
