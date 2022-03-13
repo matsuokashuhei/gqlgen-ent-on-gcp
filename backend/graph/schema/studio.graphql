@@ -2,12 +2,13 @@
 #
 # https://gqlgen.com/getting-started/
 
+# type Studio implements Node {
 type Studio implements Node {
   id: ID!
   name: String!
   location: String!
   school: School!
-  rooms: [Room]!
+  rooms: [Room!]!
   createTime: Time!
   updateTime: Time!
 }

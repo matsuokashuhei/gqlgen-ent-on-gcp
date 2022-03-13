@@ -12,7 +12,7 @@ type Instructor implements Node {
 type InstructorConnection {
   totalCount: Int!
   pageInfo: PageInfo!
-  edges: [InstructorEdge]!
+  edges: [InstructorEdge!]!
 }
 
 type InstructorEdge {
@@ -52,7 +52,7 @@ input DeleteInstructorInput {
 
 extend type Query {
   instructor(id: ID!): Instructor!
-  instructors(after: Cursor, first: Int, before: Cursor, last: Int, orderBy: InstructorOrder): InstructorConnection
+  instructors(after: Cursor, first: Int, before: Cursor, last: Int, orderBy: InstructorOrder): InstructorConnection!
 }
 
 extend type Mutation {

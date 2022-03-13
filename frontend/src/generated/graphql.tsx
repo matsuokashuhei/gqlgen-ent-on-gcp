@@ -17,6 +17,19 @@ export type Scalars = {
   Time: any;
 };
 
+export type Class = Node & {
+  __typename?: 'Class';
+  createTime: Scalars['Time'];
+  endDate?: Maybe<Scalars['Time']>;
+  id: Scalars['ID'];
+  instructor: Instructor;
+  name: Scalars['String'];
+  schedule: Schedule;
+  startDate: Scalars['Time'];
+  tuition: Scalars['Int'];
+  updateTime: Scalars['Time'];
+};
+
 export type CreateInstructorInput = {
   biography?: InputMaybe<Scalars['String']>;
   email?: InputMaybe<Scalars['String']>;
@@ -64,7 +77,7 @@ export type Instructor = Node & {
 
 export type InstructorConnection = {
   __typename?: 'InstructorConnection';
-  edges: Array<Maybe<InstructorEdge>>;
+  edges: Array<InstructorEdge>;
   pageInfo: PageInfo;
   totalCount: Scalars['Int'];
 };
@@ -199,16 +212,16 @@ export type Query = {
   __typename?: 'Query';
   currentUser: User;
   instructor: Instructor;
-  instructors?: Maybe<InstructorConnection>;
+  instructors: InstructorConnection;
   node?: Maybe<Node>;
-  nodes: Array<Maybe<Node>>;
+  nodes: Array<Node>;
   room: Room;
-  rooms: Array<Maybe<Room>>;
+  rooms: Array<Room>;
   school: School;
-  schools: Array<Maybe<School>>;
+  schools: Array<School>;
   studio: Studio;
   user: User;
-  users: Array<Maybe<User>>;
+  users: Array<User>;
 };
 
 
@@ -261,19 +274,25 @@ export type Room = Node & {
   createTime: Scalars['Time'];
   id: Scalars['ID'];
   name: Scalars['String'];
-  schedules: Array<Maybe<Schedule>>;
+  schedules: Array<Schedule>;
   studio: Studio;
   updateTime: Scalars['Time'];
 };
 
 export type Schedule = Node & {
   __typename?: 'Schedule';
+  class?: Maybe<Class>;
   createTime: Scalars['Time'];
   dayOfWeek: Scalars['Int'];
   endTime: Scalars['String'];
   id: Scalars['ID'];
   startTime: Scalars['String'];
   updateTime: Scalars['Time'];
+};
+
+
+export type ScheduleClassArgs = {
+  time: Scalars['Time'];
 };
 
 export enum ScheduleField {
@@ -286,7 +305,7 @@ export type School = Node & {
   createTime: Scalars['Time'];
   id: Scalars['ID'];
   name: Scalars['String'];
-  studios: Array<Maybe<Studio>>;
+  studios: Array<Studio>;
   updateTime: Scalars['Time'];
 };
 
@@ -301,7 +320,7 @@ export type Studio = Node & {
   id: Scalars['ID'];
   location: Scalars['String'];
   name: Scalars['String'];
-  rooms: Array<Maybe<Room>>;
+  rooms: Array<Room>;
   school: School;
   updateTime: Scalars['Time'];
 };
@@ -377,7 +396,7 @@ export type GetInstructorsQueryVariables = Exact<{
 }>;
 
 
-export type GetInstructorsQuery = { __typename?: 'Query', instructors?: { __typename?: 'InstructorConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', startCursor?: any | null, endCursor?: any | null, hasNextPage: boolean, hasPreviousPage: boolean }, edges: Array<{ __typename?: 'InstructorEdge', cursor: any, node: { __typename?: 'Instructor', id: string, name: string, syllabicCharacters: string, biography?: string | null, phoneNumber?: string | null, email?: string | null, createTime: any, updateTime: any } } | null> } | null };
+export type GetInstructorsQuery = { __typename?: 'Query', instructors: { __typename?: 'InstructorConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', startCursor?: any | null, endCursor?: any | null, hasNextPage: boolean, hasPreviousPage: boolean }, edges: Array<{ __typename?: 'InstructorEdge', cursor: any, node: { __typename?: 'Instructor', id: string, name: string, syllabicCharacters: string, biography?: string | null, phoneNumber?: string | null, email?: string | null, createTime: any, updateTime: any } }> } };
 
 export type GetInstructorQueryVariables = Exact<{
   id: Scalars['ID'];
@@ -386,12 +405,12 @@ export type GetInstructorQueryVariables = Exact<{
 
 export type GetInstructorQuery = { __typename?: 'Query', instructor: { __typename?: 'Instructor', id: string, name: string, syllabicCharacters: string, biography?: string | null, phoneNumber?: string | null, email?: string | null, createTime: any, updateTime: any } };
 
-export type GetSchedulesQueryVariables = Exact<{
-  schoolID: Scalars['ID'];
+export type GetSchoolQueryVariables = Exact<{
+  id: Scalars['ID'];
 }>;
 
 
-export type GetSchedulesQuery = { __typename?: 'Query', school: { __typename?: 'School', id: string, name: string, createTime: any, updateTime: any, studios: Array<{ __typename?: 'Studio', id: string, name: string, location: string, createTime: any, updateTime: any, rooms: Array<{ __typename?: 'Room', id: string, name: string, capacity: number, createTime: any, updateTime: any, schedules: Array<{ __typename?: 'Schedule', id: string, dayOfWeek: number, startTime: string, endTime: string, createTime: any, updateTime: any } | null> } | null> } | null> } };
+export type GetSchoolQuery = { __typename?: 'Query', school: { __typename?: 'School', id: string, name: string, createTime: any, updateTime: any, studios: Array<{ __typename?: 'Studio', id: string, name: string, location: string, createTime: any, updateTime: any, rooms: Array<{ __typename?: 'Room', id: string, name: string, capacity: number, createTime: any, updateTime: any, schedules: Array<{ __typename?: 'Schedule', id: string, dayOfWeek: number, startTime: string, endTime: string, createTime: any, updateTime: any }> }> }> } };
 
 
 export const CreateInstructorDocument = gql`
@@ -607,9 +626,9 @@ export function useGetInstructorLazyQuery(baseOptions?: Apollo.LazyQueryHookOpti
 export type GetInstructorQueryHookResult = ReturnType<typeof useGetInstructorQuery>;
 export type GetInstructorLazyQueryHookResult = ReturnType<typeof useGetInstructorLazyQuery>;
 export type GetInstructorQueryResult = Apollo.QueryResult<GetInstructorQuery, GetInstructorQueryVariables>;
-export const GetSchedulesDocument = gql`
-    query getSchedules($schoolID: ID!) {
-  school(id: $schoolID) {
+export const GetSchoolDocument = gql`
+    query getSchool($id: ID!) {
+  school(id: $id) {
     id
     name
     createTime
@@ -641,29 +660,29 @@ export const GetSchedulesDocument = gql`
     `;
 
 /**
- * __useGetSchedulesQuery__
+ * __useGetSchoolQuery__
  *
- * To run a query within a React component, call `useGetSchedulesQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetSchedulesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useGetSchoolQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetSchoolQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useGetSchedulesQuery({
+ * const { data, loading, error } = useGetSchoolQuery({
  *   variables: {
- *      schoolID: // value for 'schoolID'
+ *      id: // value for 'id'
  *   },
  * });
  */
-export function useGetSchedulesQuery(baseOptions: Apollo.QueryHookOptions<GetSchedulesQuery, GetSchedulesQueryVariables>) {
+export function useGetSchoolQuery(baseOptions: Apollo.QueryHookOptions<GetSchoolQuery, GetSchoolQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetSchedulesQuery, GetSchedulesQueryVariables>(GetSchedulesDocument, options);
+        return Apollo.useQuery<GetSchoolQuery, GetSchoolQueryVariables>(GetSchoolDocument, options);
       }
-export function useGetSchedulesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetSchedulesQuery, GetSchedulesQueryVariables>) {
+export function useGetSchoolLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetSchoolQuery, GetSchoolQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetSchedulesQuery, GetSchedulesQueryVariables>(GetSchedulesDocument, options);
+          return Apollo.useLazyQuery<GetSchoolQuery, GetSchoolQueryVariables>(GetSchoolDocument, options);
         }
-export type GetSchedulesQueryHookResult = ReturnType<typeof useGetSchedulesQuery>;
-export type GetSchedulesLazyQueryHookResult = ReturnType<typeof useGetSchedulesLazyQuery>;
-export type GetSchedulesQueryResult = Apollo.QueryResult<GetSchedulesQuery, GetSchedulesQueryVariables>;
+export type GetSchoolQueryHookResult = ReturnType<typeof useGetSchoolQuery>;
+export type GetSchoolLazyQueryHookResult = ReturnType<typeof useGetSchoolLazyQuery>;
+export type GetSchoolQueryResult = Apollo.QueryResult<GetSchoolQuery, GetSchoolQueryVariables>;

@@ -4,5 +4,5 @@ interface Node {
 
 extend type Query {
   node(id: ID!): Node
-  nodes(ids: [ID!]!): [Node]!
+  nodes(ids: [ID!]!): [Node!]!
 }

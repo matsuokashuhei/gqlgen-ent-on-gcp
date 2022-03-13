@@ -5,7 +5,7 @@
 type School implements Node {
   id: ID!
   name: String!
-  studios: [Studio]!
+  studios: [Studio!]!
   createTime: Time!
   updateTime: Time!
 }
@@ -21,7 +21,7 @@ input UpdateSchoolInput {
 
 extend type Query {
   school(id: ID!): School!
-  schools: [School]!
+  schools: [School!]!
 }
 
 extend type Mutation {

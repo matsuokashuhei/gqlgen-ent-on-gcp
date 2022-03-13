@@ -1,7 +1,3 @@
 package main
 
-import "github.com/99designs/gqlgen/cmd"
-
-func main() {
-	cmd.Execute()
-}
+//go:generate go run github.com/99designs/gqlgen generate

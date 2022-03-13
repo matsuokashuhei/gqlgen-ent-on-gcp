@@ -48,8 +48,8 @@ gql`
 `;
 
 gql`
-  query getSchedules($schoolID: ID!) {
-    school(id: $schoolID) {
+  query getSchool($id: ID!) {
+    school(id: $id) {
       id
       name
       createTime

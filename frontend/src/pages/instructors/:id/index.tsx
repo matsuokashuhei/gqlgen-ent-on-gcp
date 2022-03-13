@@ -137,8 +137,8 @@ export const InstructorPage: VFC = () => {
     );
   };
 
-  const instructor = data?.instructor;
-  if (!instructor) return <></>;
+  if (!data) return <></>;
+  const { instructor } = data;
 
   return (
     <Layout>

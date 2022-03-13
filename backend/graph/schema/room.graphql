@@ -7,7 +7,7 @@ type Room implements Node {
   name: String!
   capacity: Int!
   studio: Studio!
-  schedules: [Schedule]! @goField(forceResolver: true)
+  schedules: [Schedule!]! @goField(forceResolver: true)
   createTime: Time!
   updateTime: Time!
 }
@@ -27,7 +27,7 @@ input UpdateRoomInput {
 
 extend type Query {
   room(id: ID!): Room!
-  rooms: [Room]!
+  rooms: [Room!]!
 }
 
 extend type Mutation {

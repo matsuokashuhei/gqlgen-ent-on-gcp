@@ -2,7 +2,7 @@ import { useEffect, VFC } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Layout, PaginationLinks } from "../../components";
 import {
-  GetInstructorsQuery,
+  InstructorEdge,
   useGetInstructorsLazyQuery,
 } from "../../generated/graphql";
 
@@ -24,17 +24,20 @@ export const InstructorsPage: VFC = () => {
     }
   }, [getInstructors, searchParams]);
 
-  const renderInstructors = (data?: GetInstructorsQuery) => {
-    return data?.instructors?.edges.map((edge) => (
-      <tr
-        key={edge?.cursor}
-        onClick={() => navigate(`/instructors/${edge?.node.id}`)}
-      >
-        <td>{edge?.node?.id}</td>
-        <td>{edge?.node?.name}</td>
+  const renderInstructors = (edges: InstructorEdge[]) => {
+    return edges.map(({ cursor, node }) => (
+      <tr key={cursor} onClick={() => navigate(`/instructors/${node.id}`)}>
+        <td>{node.id}</td>
+        <td>{node.name}</td>
       </tr>
     ));
   };
+
+  if (!data) return <></>;
+
+  const {
+    instructors: { edges, pageInfo },
+  } = data;
 
   return (
     <Layout>
@@ -47,14 +50,9 @@ export const InstructorsPage: VFC = () => {
             <td>Name</td>
           </tr>
         </thead>
-        <tbody>{renderInstructors(data)}</tbody>
+        <tbody>{renderInstructors(edges)}</tbody>
       </table>
-      {data?.instructors?.pageInfo && (
-        <PaginationLinks
-          path="/instructors"
-          pageInfo={data?.instructors?.pageInfo}
-        />
-      )}
+      <PaginationLinks path="/instructors" pageInfo={pageInfo} />
     </Layout>
   );
 };
