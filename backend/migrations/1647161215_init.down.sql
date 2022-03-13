@@ -1,0 +1,11 @@
+ALTER TABLE `studios` DROP FOREIGN KEY `studios_schools_studios`;
+ALTER TABLE `schedules` DROP FOREIGN KEY `schedules_rooms_schedules`, DROP FOREIGN KEY `schedules_classes_class`;
+ALTER TABLE `rooms` DROP FOREIGN KEY `rooms_studios_rooms`;
+ALTER TABLE `classes` DROP FOREIGN KEY `classes_instructors_classes`, DROP FOREIGN KEY `classes_schedules_classes`;
+DROP TABLE `users`;
+DROP TABLE `studios`;
+DROP TABLE `schools`;
+DROP TABLE `schedules`;
+DROP TABLE `rooms`;
+DROP TABLE `instructors`;
+DROP TABLE `classes`;

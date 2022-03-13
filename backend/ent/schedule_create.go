@@ -74,14 +74,6 @@ func (sc *ScheduleCreate) SetRoomID(id int) *ScheduleCreate {
 	return sc
 }
 
-// SetNillableRoomID sets the "room" edge to the Room entity by ID if the given value is not nil.
-func (sc *ScheduleCreate) SetNillableRoomID(id *int) *ScheduleCreate {
-	if id != nil {
-		sc = sc.SetRoomID(*id)
-	}
-	return sc
-}
-
 // SetRoom sets the "room" edge to the Room entity.
 func (sc *ScheduleCreate) SetRoom(r *Room) *ScheduleCreate {
 	return sc.SetRoomID(r.ID)
@@ -218,6 +210,9 @@ func (sc *ScheduleCreate) check() error {
 	}
 	if _, ok := sc.mutation.EndTime(); !ok {
 		return &ValidationError{Name: "end_time", err: errors.New(`ent: missing required field "Schedule.end_time"`)}
+	}
+	if _, ok := sc.mutation.RoomID(); !ok {
+		return &ValidationError{Name: "room", err: errors.New(`ent: missing required edge "Schedule.room"`)}
 	}
 	return nil
 }

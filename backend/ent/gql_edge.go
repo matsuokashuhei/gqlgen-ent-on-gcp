@@ -4,10 +4,10 @@ package ent
 
 import "context"
 
-func (c *Class) Scuedule(ctx context.Context) (*Schedule, error) {
-	result, err := c.Edges.ScueduleOrErr()
+func (c *Class) Schedule(ctx context.Context) (*Schedule, error) {
+	result, err := c.Edges.ScheduleOrErr()
 	if IsNotLoaded(err) {
-		result, err = c.QueryScuedule().Only(ctx)
+		result, err = c.QuerySchedule().Only(ctx)
 	}
 	return result, err
 }
@@ -49,7 +49,7 @@ func (s *Schedule) Room(ctx context.Context) (*Room, error) {
 	if IsNotLoaded(err) {
 		result, err = s.QueryRoom().Only(ctx)
 	}
-	return result, MaskNotFound(err)
+	return result, err
 }
 
 func (s *Schedule) Classes(ctx context.Context) ([]*Class, error) {
@@ -81,7 +81,7 @@ func (s *Studio) School(ctx context.Context) (*School, error) {
 	if IsNotLoaded(err) {
 		result, err = s.QuerySchool().Only(ctx)
 	}
-	return result, MaskNotFound(err)
+	return result, err
 }
 
 func (s *Studio) Rooms(ctx context.Context) ([]*Room, error) {

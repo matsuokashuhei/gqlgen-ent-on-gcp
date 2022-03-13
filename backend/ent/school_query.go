@@ -132,7 +132,7 @@ func (sq *SchoolQuery) FirstIDX(ctx context.Context) int {
 }
 
 // Only returns a single School entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one School entity is not found.
+// Returns a *NotSingularError when more than one School entity is found.
 // Returns a *NotFoundError when no School entities are found.
 func (sq *SchoolQuery) Only(ctx context.Context) (*School, error) {
 	nodes, err := sq.Limit(2).All(ctx)
@@ -159,7 +159,7 @@ func (sq *SchoolQuery) OnlyX(ctx context.Context) *School {
 }
 
 // OnlyID is like Only, but returns the only School ID in the query.
-// Returns a *NotSingularError when exactly one School ID is not found.
+// Returns a *NotSingularError when more than one School ID is found.
 // Returns a *NotFoundError when no entities are found.
 func (sq *SchoolQuery) OnlyID(ctx context.Context) (id int, err error) {
 	var ids []int
@@ -269,8 +269,9 @@ func (sq *SchoolQuery) Clone() *SchoolQuery {
 		predicates:  append([]predicate.School{}, sq.predicates...),
 		withStudios: sq.withStudios.Clone(),
 		// clone intermediate query.
-		sql:  sq.sql.Clone(),
-		path: sq.path,
+		sql:    sq.sql.Clone(),
+		path:   sq.path,
+		unique: sq.unique,
 	}
 }
 
@@ -391,13 +392,13 @@ func (sq *SchoolQuery) sqlAll(ctx context.Context) ([]*School, error) {
 			return nil, err
 		}
 		for _, n := range neighbors {
-			fk := n.school_id
+			fk := n.school_studios
 			if fk == nil {
-				return nil, fmt.Errorf(`foreign-key "school_id" is nil for node %v`, n.ID)
+				return nil, fmt.Errorf(`foreign-key "school_studios" is nil for node %v`, n.ID)
 			}
 			node, ok := nodeids[*fk]
 			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "school_id" returned %v for node %v`, *fk, n.ID)
+				return nil, fmt.Errorf(`unexpected foreign-key "school_studios" returned %v for node %v`, *fk, n.ID)
 			}
 			node.Edges.Studios = append(node.Edges.Studios, n)
 		}

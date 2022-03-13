@@ -110,9 +110,9 @@ func (c *Class) Node(ctx context.Context) (node *Node, err error) {
 	}
 	node.Edges[0] = &Edge{
 		Type: "Schedule",
-		Name: "scuedule",
+		Name: "schedule",
 	}
-	err = c.QueryScuedule().
+	err = c.QuerySchedule().
 		Select(schedule.FieldID).
 		Scan(ctx, &node.Edges[0].IDs)
 	if err != nil {

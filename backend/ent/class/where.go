@@ -640,25 +640,25 @@ func EndDateNotNil() predicate.Class {
 	})
 }
 
-// HasScuedule applies the HasEdge predicate on the "scuedule" edge.
-func HasScuedule() predicate.Class {
+// HasSchedule applies the HasEdge predicate on the "schedule" edge.
+func HasSchedule() predicate.Class {
 	return predicate.Class(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ScueduleTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, ScueduleTable, ScueduleColumn),
+			sqlgraph.To(ScheduleTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, ScheduleTable, ScheduleColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasScueduleWith applies the HasEdge predicate on the "scuedule" edge with a given conditions (other predicates).
-func HasScueduleWith(preds ...predicate.Schedule) predicate.Class {
+// HasScheduleWith applies the HasEdge predicate on the "schedule" edge with a given conditions (other predicates).
+func HasScheduleWith(preds ...predicate.Schedule) predicate.Class {
 	return predicate.Class(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ScueduleInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, ScueduleTable, ScueduleColumn),
+			sqlgraph.To(ScheduleInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, ScheduleTable, ScheduleColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

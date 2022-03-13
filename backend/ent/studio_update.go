@@ -54,14 +54,6 @@ func (su *StudioUpdate) SetSchoolID(id int) *StudioUpdate {
 	return su
 }
 
-// SetNillableSchoolID sets the "school" edge to the School entity by ID if the given value is not nil.
-func (su *StudioUpdate) SetNillableSchoolID(id *int) *StudioUpdate {
-	if id != nil {
-		su = su.SetSchoolID(*id)
-	}
-	return su
-}
-
 // SetSchool sets the "school" edge to the School entity.
 func (su *StudioUpdate) SetSchool(s *School) *StudioUpdate {
 	return su.SetSchoolID(s.ID)
@@ -122,12 +114,18 @@ func (su *StudioUpdate) Save(ctx context.Context) (int, error) {
 	)
 	su.defaults()
 	if len(su.hooks) == 0 {
+		if err = su.check(); err != nil {
+			return 0, err
+		}
 		affected, err = su.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*StudioMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = su.check(); err != nil {
+				return 0, err
 			}
 			su.mutation = mutation
 			affected, err = su.sqlSave(ctx)
@@ -175,6 +173,14 @@ func (su *StudioUpdate) defaults() {
 		v := studio.UpdateDefaultUpdateTime()
 		su.mutation.SetUpdateTime(v)
 	}
+}
+
+// check runs all checks and user-defined validators on the builder.
+func (su *StudioUpdate) check() error {
+	if _, ok := su.mutation.SchoolID(); su.mutation.SchoolCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Studio.school"`)
+	}
+	return nil
 }
 
 func (su *StudioUpdate) sqlSave(ctx context.Context) (n int, err error) {
@@ -348,14 +354,6 @@ func (suo *StudioUpdateOne) SetSchoolID(id int) *StudioUpdateOne {
 	return suo
 }
 
-// SetNillableSchoolID sets the "school" edge to the School entity by ID if the given value is not nil.
-func (suo *StudioUpdateOne) SetNillableSchoolID(id *int) *StudioUpdateOne {
-	if id != nil {
-		suo = suo.SetSchoolID(*id)
-	}
-	return suo
-}
-
 // SetSchool sets the "school" edge to the School entity.
 func (suo *StudioUpdateOne) SetSchool(s *School) *StudioUpdateOne {
 	return suo.SetSchoolID(s.ID)
@@ -423,12 +421,18 @@ func (suo *StudioUpdateOne) Save(ctx context.Context) (*Studio, error) {
 	)
 	suo.defaults()
 	if len(suo.hooks) == 0 {
+		if err = suo.check(); err != nil {
+			return nil, err
+		}
 		node, err = suo.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*StudioMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = suo.check(); err != nil {
+				return nil, err
 			}
 			suo.mutation = mutation
 			node, err = suo.sqlSave(ctx)
@@ -476,6 +480,14 @@ func (suo *StudioUpdateOne) defaults() {
 		v := studio.UpdateDefaultUpdateTime()
 		suo.mutation.SetUpdateTime(v)
 	}
+}
+
+// check runs all checks and user-defined validators on the builder.
+func (suo *StudioUpdateOne) check() error {
+	if _, ok := suo.mutation.SchoolID(); suo.mutation.SchoolCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Studio.school"`)
+	}
+	return nil
 }
 
 func (suo *StudioUpdateOne) sqlSave(ctx context.Context) (_node *Studio, err error) {

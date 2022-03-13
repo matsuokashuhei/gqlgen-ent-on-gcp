@@ -31,7 +31,7 @@ func (Class) Fields() []ent.Field {
 // Edges of the Class.
 func (Class) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("scuedule", Schedule.Type).Ref("classes").Unique().Required(),
+		edge.From("schedule", Schedule.Type).Ref("classes").Unique().Required(),
 		edge.From("instructor", Instructor.Type).Ref("classes").Unique().Required(),
 	}
 }

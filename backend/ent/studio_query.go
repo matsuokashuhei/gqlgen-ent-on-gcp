@@ -157,7 +157,7 @@ func (sq *StudioQuery) FirstIDX(ctx context.Context) int {
 }
 
 // Only returns a single Studio entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one Studio entity is not found.
+// Returns a *NotSingularError when more than one Studio entity is found.
 // Returns a *NotFoundError when no Studio entities are found.
 func (sq *StudioQuery) Only(ctx context.Context) (*Studio, error) {
 	nodes, err := sq.Limit(2).All(ctx)
@@ -184,7 +184,7 @@ func (sq *StudioQuery) OnlyX(ctx context.Context) *Studio {
 }
 
 // OnlyID is like Only, but returns the only Studio ID in the query.
-// Returns a *NotSingularError when exactly one Studio ID is not found.
+// Returns a *NotSingularError when more than one Studio ID is found.
 // Returns a *NotFoundError when no entities are found.
 func (sq *StudioQuery) OnlyID(ctx context.Context) (id int, err error) {
 	var ids []int
@@ -295,8 +295,9 @@ func (sq *StudioQuery) Clone() *StudioQuery {
 		withSchool: sq.withSchool.Clone(),
 		withRooms:  sq.withRooms.Clone(),
 		// clone intermediate query.
-		sql:  sq.sql.Clone(),
-		path: sq.path,
+		sql:    sq.sql.Clone(),
+		path:   sq.path,
+		unique: sq.unique,
 	}
 }
 
@@ -423,10 +424,10 @@ func (sq *StudioQuery) sqlAll(ctx context.Context) ([]*Studio, error) {
 		ids := make([]int, 0, len(nodes))
 		nodeids := make(map[int][]*Studio)
 		for i := range nodes {
-			if nodes[i].school_id == nil {
+			if nodes[i].school_studios == nil {
 				continue
 			}
-			fk := *nodes[i].school_id
+			fk := *nodes[i].school_studios
 			if _, ok := nodeids[fk]; !ok {
 				ids = append(ids, fk)
 			}
@@ -440,7 +441,7 @@ func (sq *StudioQuery) sqlAll(ctx context.Context) ([]*Studio, error) {
 		for _, n := range neighbors {
 			nodes, ok := nodeids[n.ID]
 			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "school_id" returned %v`, n.ID)
+				return nil, fmt.Errorf(`unexpected foreign-key "school_studios" returned %v`, n.ID)
 			}
 			for i := range nodes {
 				nodes[i].Edges.School = n

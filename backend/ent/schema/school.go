@@ -28,6 +28,6 @@ func (School) Fields() []ent.Field {
 // Edges of the School.
 func (School) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("studios", Studio.Type).StorageKey(edge.Column("school_id")),
+		edge.To("studios", Studio.Type),
 	}
 }

@@ -68,14 +68,6 @@ func (sc *StudioCreate) SetSchoolID(id int) *StudioCreate {
 	return sc
 }
 
-// SetNillableSchoolID sets the "school" edge to the School entity by ID if the given value is not nil.
-func (sc *StudioCreate) SetNillableSchoolID(id *int) *StudioCreate {
-	if id != nil {
-		sc = sc.SetSchoolID(*id)
-	}
-	return sc
-}
-
 // SetSchool sets the "school" edge to the School entity.
 func (sc *StudioCreate) SetSchool(s *School) *StudioCreate {
 	return sc.SetSchoolID(s.ID)
@@ -191,6 +183,9 @@ func (sc *StudioCreate) check() error {
 	if _, ok := sc.mutation.Location(); !ok {
 		return &ValidationError{Name: "location", err: errors.New(`ent: missing required field "Studio.location"`)}
 	}
+	if _, ok := sc.mutation.SchoolID(); !ok {
+		return &ValidationError{Name: "school", err: errors.New(`ent: missing required edge "Studio.school"`)}
+	}
 	return nil
 }
 
@@ -267,7 +262,7 @@ func (sc *StudioCreate) createSpec() (*Studio, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.school_id = &nodes[0]
+		_node.school_studios = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := sc.mutation.RoomsIDs(); len(nodes) > 0 {

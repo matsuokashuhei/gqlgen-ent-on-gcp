@@ -17,8 +17,8 @@ var (
 		{Name: "tuition", Type: field.TypeInt},
 		{Name: "start_date", Type: field.TypeTime},
 		{Name: "end_date", Type: field.TypeTime, Nullable: true},
-		{Name: "instructor_classes", Type: field.TypeInt, Nullable: true},
-		{Name: "schedule_classes", Type: field.TypeInt, Nullable: true},
+		{Name: "instructor_classes", Type: field.TypeInt},
+		{Name: "schedule_classes", Type: field.TypeInt},
 	}
 	// ClassesTable holds the schema information for the "classes" table.
 	ClassesTable = &schema.Table{
@@ -30,13 +30,13 @@ var (
 				Symbol:     "classes_instructors_classes",
 				Columns:    []*schema.Column{ClassesColumns[7]},
 				RefColumns: []*schema.Column{InstructorsColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "classes_schedules_classes",
 				Columns:    []*schema.Column{ClassesColumns[8]},
 				RefColumns: []*schema.Column{SchedulesColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 		},
 	}
@@ -64,7 +64,7 @@ var (
 		{Name: "update_time", Type: field.TypeTime},
 		{Name: "name", Type: field.TypeString},
 		{Name: "capacity", Type: field.TypeInt},
-		{Name: "studio_rooms", Type: field.TypeInt, Nullable: true},
+		{Name: "studio_rooms", Type: field.TypeInt},
 	}
 	// RoomsTable holds the schema information for the "rooms" table.
 	RoomsTable = &schema.Table{
@@ -76,7 +76,7 @@ var (
 				Symbol:     "rooms_studios_rooms",
 				Columns:    []*schema.Column{RoomsColumns[5]},
 				RefColumns: []*schema.Column{StudiosColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 		},
 	}
@@ -88,7 +88,7 @@ var (
 		{Name: "day_of_week", Type: field.TypeInt},
 		{Name: "start_time", Type: field.TypeString},
 		{Name: "end_time", Type: field.TypeString},
-		{Name: "room_schedules", Type: field.TypeInt, Nullable: true},
+		{Name: "room_schedules", Type: field.TypeInt},
 		{Name: "schedule_class", Type: field.TypeInt, Nullable: true},
 	}
 	// SchedulesTable holds the schema information for the "schedules" table.
@@ -101,7 +101,7 @@ var (
 				Symbol:     "schedules_rooms_schedules",
 				Columns:    []*schema.Column{SchedulesColumns[6]},
 				RefColumns: []*schema.Column{RoomsColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "schedules_classes_class",
@@ -131,7 +131,7 @@ var (
 		{Name: "update_time", Type: field.TypeTime},
 		{Name: "name", Type: field.TypeString},
 		{Name: "location", Type: field.TypeString},
-		{Name: "school_id", Type: field.TypeInt, Nullable: true},
+		{Name: "school_studios", Type: field.TypeInt},
 	}
 	// StudiosTable holds the schema information for the "studios" table.
 	StudiosTable = &schema.Table{
@@ -143,7 +143,7 @@ var (
 				Symbol:     "studios_schools_studios",
 				Columns:    []*schema.Column{StudiosColumns[5]},
 				RefColumns: []*schema.Column{SchoolsColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 		},
 	}
