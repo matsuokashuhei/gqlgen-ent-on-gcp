@@ -23,19 +23,19 @@ const (
 	FieldStartDate = "start_date"
 	// FieldEndDate holds the string denoting the end_date field in the database.
 	FieldEndDate = "end_date"
-	// EdgeScuedule holds the string denoting the scuedule edge name in mutations.
-	EdgeScuedule = "scuedule"
+	// EdgeSchedule holds the string denoting the schedule edge name in mutations.
+	EdgeSchedule = "schedule"
 	// EdgeInstructor holds the string denoting the instructor edge name in mutations.
 	EdgeInstructor = "instructor"
 	// Table holds the table name of the class in the database.
 	Table = "classes"
-	// ScueduleTable is the table that holds the scuedule relation/edge.
-	ScueduleTable = "classes"
-	// ScueduleInverseTable is the table name for the Schedule entity.
+	// ScheduleTable is the table that holds the schedule relation/edge.
+	ScheduleTable = "classes"
+	// ScheduleInverseTable is the table name for the Schedule entity.
 	// It exists in this package in order to avoid circular dependency with the "schedule" package.
-	ScueduleInverseTable = "schedules"
-	// ScueduleColumn is the table column denoting the scuedule relation/edge.
-	ScueduleColumn = "schedule_classes"
+	ScheduleInverseTable = "schedules"
+	// ScheduleColumn is the table column denoting the schedule relation/edge.
+	ScheduleColumn = "schedule_classes"
 	// InstructorTable is the table that holds the instructor relation/edge.
 	InstructorTable = "classes"
 	// InstructorInverseTable is the table name for the Instructor entity.

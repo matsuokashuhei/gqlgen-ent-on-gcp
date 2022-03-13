@@ -252,15 +252,15 @@ func (c *ClassClient) GetX(ctx context.Context, id int) *Class {
 	return obj
 }
 
-// QueryScuedule queries the scuedule edge of a Class.
-func (c *ClassClient) QueryScuedule(cl *Class) *ScheduleQuery {
+// QuerySchedule queries the schedule edge of a Class.
+func (c *ClassClient) QuerySchedule(cl *Class) *ScheduleQuery {
 	query := &ScheduleQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := cl.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(class.Table, class.FieldID, id),
 			sqlgraph.To(schedule.Table, schedule.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, class.ScueduleTable, class.ScueduleColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, class.ScheduleTable, class.ScheduleColumn),
 		)
 		fromV = sqlgraph.Neighbors(cl.driver.Dialect(), step)
 		return fromV, nil

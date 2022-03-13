@@ -27,7 +27,7 @@ type ClassQuery struct {
 	fields     []string
 	predicates []predicate.Class
 	// eager-loading edges.
-	withScuedule   *ScheduleQuery
+	withSchedule   *ScheduleQuery
 	withInstructor *InstructorQuery
 	withFKs        bool
 	// intermediate query (i.e. traversal path).
@@ -66,8 +66,8 @@ func (cq *ClassQuery) Order(o ...OrderFunc) *ClassQuery {
 	return cq
 }
 
-// QueryScuedule chains the current query on the "scuedule" edge.
-func (cq *ClassQuery) QueryScuedule() *ScheduleQuery {
+// QuerySchedule chains the current query on the "schedule" edge.
+func (cq *ClassQuery) QuerySchedule() *ScheduleQuery {
 	query := &ScheduleQuery{config: cq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := cq.prepareQuery(ctx); err != nil {
@@ -80,7 +80,7 @@ func (cq *ClassQuery) QueryScuedule() *ScheduleQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(class.Table, class.FieldID, selector),
 			sqlgraph.To(schedule.Table, schedule.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, class.ScueduleTable, class.ScueduleColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, class.ScheduleTable, class.ScheduleColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
 		return fromU, nil
@@ -156,7 +156,7 @@ func (cq *ClassQuery) FirstIDX(ctx context.Context) int {
 }
 
 // Only returns a single Class entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one Class entity is not found.
+// Returns a *NotSingularError when more than one Class entity is found.
 // Returns a *NotFoundError when no Class entities are found.
 func (cq *ClassQuery) Only(ctx context.Context) (*Class, error) {
 	nodes, err := cq.Limit(2).All(ctx)
@@ -183,7 +183,7 @@ func (cq *ClassQuery) OnlyX(ctx context.Context) *Class {
 }
 
 // OnlyID is like Only, but returns the only Class ID in the query.
-// Returns a *NotSingularError when exactly one Class ID is not found.
+// Returns a *NotSingularError when more than one Class ID is found.
 // Returns a *NotFoundError when no entities are found.
 func (cq *ClassQuery) OnlyID(ctx context.Context) (id int, err error) {
 	var ids []int
@@ -291,22 +291,23 @@ func (cq *ClassQuery) Clone() *ClassQuery {
 		offset:         cq.offset,
 		order:          append([]OrderFunc{}, cq.order...),
 		predicates:     append([]predicate.Class{}, cq.predicates...),
-		withScuedule:   cq.withScuedule.Clone(),
+		withSchedule:   cq.withSchedule.Clone(),
 		withInstructor: cq.withInstructor.Clone(),
 		// clone intermediate query.
-		sql:  cq.sql.Clone(),
-		path: cq.path,
+		sql:    cq.sql.Clone(),
+		path:   cq.path,
+		unique: cq.unique,
 	}
 }
 
-// WithScuedule tells the query-builder to eager-load the nodes that are connected to
-// the "scuedule" edge. The optional arguments are used to configure the query builder of the edge.
-func (cq *ClassQuery) WithScuedule(opts ...func(*ScheduleQuery)) *ClassQuery {
+// WithSchedule tells the query-builder to eager-load the nodes that are connected to
+// the "schedule" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *ClassQuery) WithSchedule(opts ...func(*ScheduleQuery)) *ClassQuery {
 	query := &ScheduleQuery{config: cq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	cq.withScuedule = query
+	cq.withSchedule = query
 	return cq
 }
 
@@ -388,11 +389,11 @@ func (cq *ClassQuery) sqlAll(ctx context.Context) ([]*Class, error) {
 		withFKs     = cq.withFKs
 		_spec       = cq.querySpec()
 		loadedTypes = [2]bool{
-			cq.withScuedule != nil,
+			cq.withSchedule != nil,
 			cq.withInstructor != nil,
 		}
 	)
-	if cq.withScuedule != nil || cq.withInstructor != nil {
+	if cq.withSchedule != nil || cq.withInstructor != nil {
 		withFKs = true
 	}
 	if withFKs {
@@ -418,7 +419,7 @@ func (cq *ClassQuery) sqlAll(ctx context.Context) ([]*Class, error) {
 		return nodes, nil
 	}
 
-	if query := cq.withScuedule; query != nil {
+	if query := cq.withSchedule; query != nil {
 		ids := make([]int, 0, len(nodes))
 		nodeids := make(map[int][]*Class)
 		for i := range nodes {
@@ -442,7 +443,7 @@ func (cq *ClassQuery) sqlAll(ctx context.Context) ([]*Class, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "schedule_classes" returned %v`, n.ID)
 			}
 			for i := range nodes {
-				nodes[i].Edges.Scuedule = n
+				nodes[i].Edges.Schedule = n
 			}
 		}
 	}

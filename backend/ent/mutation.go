@@ -53,8 +53,8 @@ type ClassMutation struct {
 	start_date        *time.Time
 	end_date          *time.Time
 	clearedFields     map[string]struct{}
-	scuedule          *int
-	clearedscuedule   bool
+	schedule          *int
+	clearedschedule   bool
 	instructor        *int
 	clearedinstructor bool
 	done              bool
@@ -409,43 +409,43 @@ func (m *ClassMutation) ResetEndDate() {
 	delete(m.clearedFields, class.FieldEndDate)
 }
 
-// SetScueduleID sets the "scuedule" edge to the Schedule entity by id.
-func (m *ClassMutation) SetScueduleID(id int) {
-	m.scuedule = &id
+// SetScheduleID sets the "schedule" edge to the Schedule entity by id.
+func (m *ClassMutation) SetScheduleID(id int) {
+	m.schedule = &id
 }
 
-// ClearScuedule clears the "scuedule" edge to the Schedule entity.
-func (m *ClassMutation) ClearScuedule() {
-	m.clearedscuedule = true
+// ClearSchedule clears the "schedule" edge to the Schedule entity.
+func (m *ClassMutation) ClearSchedule() {
+	m.clearedschedule = true
 }
 
-// ScueduleCleared reports if the "scuedule" edge to the Schedule entity was cleared.
-func (m *ClassMutation) ScueduleCleared() bool {
-	return m.clearedscuedule
+// ScheduleCleared reports if the "schedule" edge to the Schedule entity was cleared.
+func (m *ClassMutation) ScheduleCleared() bool {
+	return m.clearedschedule
 }
 
-// ScueduleID returns the "scuedule" edge ID in the mutation.
-func (m *ClassMutation) ScueduleID() (id int, exists bool) {
-	if m.scuedule != nil {
-		return *m.scuedule, true
+// ScheduleID returns the "schedule" edge ID in the mutation.
+func (m *ClassMutation) ScheduleID() (id int, exists bool) {
+	if m.schedule != nil {
+		return *m.schedule, true
 	}
 	return
 }
 
-// ScueduleIDs returns the "scuedule" edge IDs in the mutation.
+// ScheduleIDs returns the "schedule" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// ScueduleID instead. It exists only for internal usage by the builders.
-func (m *ClassMutation) ScueduleIDs() (ids []int) {
-	if id := m.scuedule; id != nil {
+// ScheduleID instead. It exists only for internal usage by the builders.
+func (m *ClassMutation) ScheduleIDs() (ids []int) {
+	if id := m.schedule; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetScuedule resets all changes to the "scuedule" edge.
-func (m *ClassMutation) ResetScuedule() {
-	m.scuedule = nil
-	m.clearedscuedule = false
+// ResetSchedule resets all changes to the "schedule" edge.
+func (m *ClassMutation) ResetSchedule() {
+	m.schedule = nil
+	m.clearedschedule = false
 }
 
 // SetInstructorID sets the "instructor" edge to the Instructor entity by id.
@@ -715,8 +715,8 @@ func (m *ClassMutation) ResetField(name string) error {
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *ClassMutation) AddedEdges() []string {
 	edges := make([]string, 0, 2)
-	if m.scuedule != nil {
-		edges = append(edges, class.EdgeScuedule)
+	if m.schedule != nil {
+		edges = append(edges, class.EdgeSchedule)
 	}
 	if m.instructor != nil {
 		edges = append(edges, class.EdgeInstructor)
@@ -728,8 +728,8 @@ func (m *ClassMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *ClassMutation) AddedIDs(name string) []ent.Value {
 	switch name {
-	case class.EdgeScuedule:
-		if id := m.scuedule; id != nil {
+	case class.EdgeSchedule:
+		if id := m.schedule; id != nil {
 			return []ent.Value{*id}
 		}
 	case class.EdgeInstructor:
@@ -757,8 +757,8 @@ func (m *ClassMutation) RemovedIDs(name string) []ent.Value {
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *ClassMutation) ClearedEdges() []string {
 	edges := make([]string, 0, 2)
-	if m.clearedscuedule {
-		edges = append(edges, class.EdgeScuedule)
+	if m.clearedschedule {
+		edges = append(edges, class.EdgeSchedule)
 	}
 	if m.clearedinstructor {
 		edges = append(edges, class.EdgeInstructor)
@@ -770,8 +770,8 @@ func (m *ClassMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *ClassMutation) EdgeCleared(name string) bool {
 	switch name {
-	case class.EdgeScuedule:
-		return m.clearedscuedule
+	case class.EdgeSchedule:
+		return m.clearedschedule
 	case class.EdgeInstructor:
 		return m.clearedinstructor
 	}
@@ -782,8 +782,8 @@ func (m *ClassMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *ClassMutation) ClearEdge(name string) error {
 	switch name {
-	case class.EdgeScuedule:
-		m.ClearScuedule()
+	case class.EdgeSchedule:
+		m.ClearSchedule()
 		return nil
 	case class.EdgeInstructor:
 		m.ClearInstructor()
@@ -796,8 +796,8 @@ func (m *ClassMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *ClassMutation) ResetEdge(name string) error {
 	switch name {
-	case class.EdgeScuedule:
-		m.ResetScuedule()
+	case class.EdgeSchedule:
+		m.ResetSchedule()
 		return nil
 	case class.EdgeInstructor:
 		m.ResetInstructor()

@@ -27,7 +27,7 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "studio" package.
 	StudiosInverseTable = "studios"
 	// StudiosColumn is the table column denoting the studios relation/edge.
-	StudiosColumn = "school_id"
+	StudiosColumn = "school_studios"
 )
 
 // Columns holds all SQL columns for school fields.

@@ -29,7 +29,7 @@ func (Studio) Fields() []ent.Field {
 // Edges of the Studio.
 func (Studio) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("school", School.Type).Ref("studios").Unique(),
+		edge.From("school", School.Type).Ref("studios").Unique().Required(),
 		edge.To("rooms", Room.Type),
 	}
 }

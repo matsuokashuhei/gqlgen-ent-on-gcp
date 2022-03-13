@@ -81,15 +81,15 @@ func (cu *ClassUpdate) ClearEndDate() *ClassUpdate {
 	return cu
 }
 
-// SetScueduleID sets the "scuedule" edge to the Schedule entity by ID.
-func (cu *ClassUpdate) SetScueduleID(id int) *ClassUpdate {
-	cu.mutation.SetScueduleID(id)
+// SetScheduleID sets the "schedule" edge to the Schedule entity by ID.
+func (cu *ClassUpdate) SetScheduleID(id int) *ClassUpdate {
+	cu.mutation.SetScheduleID(id)
 	return cu
 }
 
-// SetScuedule sets the "scuedule" edge to the Schedule entity.
-func (cu *ClassUpdate) SetScuedule(s *Schedule) *ClassUpdate {
-	return cu.SetScueduleID(s.ID)
+// SetSchedule sets the "schedule" edge to the Schedule entity.
+func (cu *ClassUpdate) SetSchedule(s *Schedule) *ClassUpdate {
+	return cu.SetScheduleID(s.ID)
 }
 
 // SetInstructorID sets the "instructor" edge to the Instructor entity by ID.
@@ -108,9 +108,9 @@ func (cu *ClassUpdate) Mutation() *ClassMutation {
 	return cu.mutation
 }
 
-// ClearScuedule clears the "scuedule" edge to the Schedule entity.
-func (cu *ClassUpdate) ClearScuedule() *ClassUpdate {
-	cu.mutation.ClearScuedule()
+// ClearSchedule clears the "schedule" edge to the Schedule entity.
+func (cu *ClassUpdate) ClearSchedule() *ClassUpdate {
+	cu.mutation.ClearSchedule()
 	return cu
 }
 
@@ -191,8 +191,8 @@ func (cu *ClassUpdate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (cu *ClassUpdate) check() error {
-	if _, ok := cu.mutation.ScueduleID(); cu.mutation.ScueduleCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Class.scuedule"`)
+	if _, ok := cu.mutation.ScheduleID(); cu.mutation.ScheduleCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Class.schedule"`)
 	}
 	if _, ok := cu.mutation.InstructorID(); cu.mutation.InstructorCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Class.instructor"`)
@@ -266,12 +266,12 @@ func (cu *ClassUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: class.FieldEndDate,
 		})
 	}
-	if cu.mutation.ScueduleCleared() {
+	if cu.mutation.ScheduleCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   class.ScueduleTable,
-			Columns: []string{class.ScueduleColumn},
+			Table:   class.ScheduleTable,
+			Columns: []string{class.ScheduleColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -282,12 +282,12 @@ func (cu *ClassUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := cu.mutation.ScueduleIDs(); len(nodes) > 0 {
+	if nodes := cu.mutation.ScheduleIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   class.ScueduleTable,
-			Columns: []string{class.ScueduleColumn},
+			Table:   class.ScheduleTable,
+			Columns: []string{class.ScheduleColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -406,15 +406,15 @@ func (cuo *ClassUpdateOne) ClearEndDate() *ClassUpdateOne {
 	return cuo
 }
 
-// SetScueduleID sets the "scuedule" edge to the Schedule entity by ID.
-func (cuo *ClassUpdateOne) SetScueduleID(id int) *ClassUpdateOne {
-	cuo.mutation.SetScueduleID(id)
+// SetScheduleID sets the "schedule" edge to the Schedule entity by ID.
+func (cuo *ClassUpdateOne) SetScheduleID(id int) *ClassUpdateOne {
+	cuo.mutation.SetScheduleID(id)
 	return cuo
 }
 
-// SetScuedule sets the "scuedule" edge to the Schedule entity.
-func (cuo *ClassUpdateOne) SetScuedule(s *Schedule) *ClassUpdateOne {
-	return cuo.SetScueduleID(s.ID)
+// SetSchedule sets the "schedule" edge to the Schedule entity.
+func (cuo *ClassUpdateOne) SetSchedule(s *Schedule) *ClassUpdateOne {
+	return cuo.SetScheduleID(s.ID)
 }
 
 // SetInstructorID sets the "instructor" edge to the Instructor entity by ID.
@@ -433,9 +433,9 @@ func (cuo *ClassUpdateOne) Mutation() *ClassMutation {
 	return cuo.mutation
 }
 
-// ClearScuedule clears the "scuedule" edge to the Schedule entity.
-func (cuo *ClassUpdateOne) ClearScuedule() *ClassUpdateOne {
-	cuo.mutation.ClearScuedule()
+// ClearSchedule clears the "schedule" edge to the Schedule entity.
+func (cuo *ClassUpdateOne) ClearSchedule() *ClassUpdateOne {
+	cuo.mutation.ClearSchedule()
 	return cuo
 }
 
@@ -523,8 +523,8 @@ func (cuo *ClassUpdateOne) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (cuo *ClassUpdateOne) check() error {
-	if _, ok := cuo.mutation.ScueduleID(); cuo.mutation.ScueduleCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Class.scuedule"`)
+	if _, ok := cuo.mutation.ScheduleID(); cuo.mutation.ScheduleCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Class.schedule"`)
 	}
 	if _, ok := cuo.mutation.InstructorID(); cuo.mutation.InstructorCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Class.instructor"`)
@@ -615,12 +615,12 @@ func (cuo *ClassUpdateOne) sqlSave(ctx context.Context) (_node *Class, err error
 			Column: class.FieldEndDate,
 		})
 	}
-	if cuo.mutation.ScueduleCleared() {
+	if cuo.mutation.ScheduleCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   class.ScueduleTable,
-			Columns: []string{class.ScueduleColumn},
+			Table:   class.ScheduleTable,
+			Columns: []string{class.ScheduleColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -631,12 +631,12 @@ func (cuo *ClassUpdateOne) sqlSave(ctx context.Context) (_node *Class, err error
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := cuo.mutation.ScueduleIDs(); len(nodes) > 0 {
+	if nodes := cuo.mutation.ScheduleIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   class.ScueduleTable,
-			Columns: []string{class.ScueduleColumn},
+			Table:   class.ScheduleTable,
+			Columns: []string{class.ScheduleColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{

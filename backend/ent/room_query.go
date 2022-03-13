@@ -157,7 +157,7 @@ func (rq *RoomQuery) FirstIDX(ctx context.Context) int {
 }
 
 // Only returns a single Room entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one Room entity is not found.
+// Returns a *NotSingularError when more than one Room entity is found.
 // Returns a *NotFoundError when no Room entities are found.
 func (rq *RoomQuery) Only(ctx context.Context) (*Room, error) {
 	nodes, err := rq.Limit(2).All(ctx)
@@ -184,7 +184,7 @@ func (rq *RoomQuery) OnlyX(ctx context.Context) *Room {
 }
 
 // OnlyID is like Only, but returns the only Room ID in the query.
-// Returns a *NotSingularError when exactly one Room ID is not found.
+// Returns a *NotSingularError when more than one Room ID is found.
 // Returns a *NotFoundError when no entities are found.
 func (rq *RoomQuery) OnlyID(ctx context.Context) (id int, err error) {
 	var ids []int
@@ -295,8 +295,9 @@ func (rq *RoomQuery) Clone() *RoomQuery {
 		withStudio:    rq.withStudio.Clone(),
 		withSchedules: rq.withSchedules.Clone(),
 		// clone intermediate query.
-		sql:  rq.sql.Clone(),
-		path: rq.path,
+		sql:    rq.sql.Clone(),
+		path:   rq.path,
+		unique: rq.unique,
 	}
 }
 

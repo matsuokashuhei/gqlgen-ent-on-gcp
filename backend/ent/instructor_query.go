@@ -132,7 +132,7 @@ func (iq *InstructorQuery) FirstIDX(ctx context.Context) int {
 }
 
 // Only returns a single Instructor entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one Instructor entity is not found.
+// Returns a *NotSingularError when more than one Instructor entity is found.
 // Returns a *NotFoundError when no Instructor entities are found.
 func (iq *InstructorQuery) Only(ctx context.Context) (*Instructor, error) {
 	nodes, err := iq.Limit(2).All(ctx)
@@ -159,7 +159,7 @@ func (iq *InstructorQuery) OnlyX(ctx context.Context) *Instructor {
 }
 
 // OnlyID is like Only, but returns the only Instructor ID in the query.
-// Returns a *NotSingularError when exactly one Instructor ID is not found.
+// Returns a *NotSingularError when more than one Instructor ID is found.
 // Returns a *NotFoundError when no entities are found.
 func (iq *InstructorQuery) OnlyID(ctx context.Context) (id int, err error) {
 	var ids []int
@@ -269,8 +269,9 @@ func (iq *InstructorQuery) Clone() *InstructorQuery {
 		predicates:  append([]predicate.Instructor{}, iq.predicates...),
 		withClasses: iq.withClasses.Clone(),
 		// clone intermediate query.
-		sql:  iq.sql.Clone(),
-		path: iq.path,
+		sql:    iq.sql.Clone(),
+		path:   iq.path,
+		unique: iq.unique,
 	}
 }
 

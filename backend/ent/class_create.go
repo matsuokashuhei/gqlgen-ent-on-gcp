@@ -82,15 +82,15 @@ func (cc *ClassCreate) SetNillableEndDate(t *time.Time) *ClassCreate {
 	return cc
 }
 
-// SetScueduleID sets the "scuedule" edge to the Schedule entity by ID.
-func (cc *ClassCreate) SetScueduleID(id int) *ClassCreate {
-	cc.mutation.SetScueduleID(id)
+// SetScheduleID sets the "schedule" edge to the Schedule entity by ID.
+func (cc *ClassCreate) SetScheduleID(id int) *ClassCreate {
+	cc.mutation.SetScheduleID(id)
 	return cc
 }
 
-// SetScuedule sets the "scuedule" edge to the Schedule entity.
-func (cc *ClassCreate) SetScuedule(s *Schedule) *ClassCreate {
-	return cc.SetScueduleID(s.ID)
+// SetSchedule sets the "schedule" edge to the Schedule entity.
+func (cc *ClassCreate) SetSchedule(s *Schedule) *ClassCreate {
+	return cc.SetScheduleID(s.ID)
 }
 
 // SetInstructorID sets the "instructor" edge to the Instructor entity by ID.
@@ -202,8 +202,8 @@ func (cc *ClassCreate) check() error {
 	if _, ok := cc.mutation.StartDate(); !ok {
 		return &ValidationError{Name: "start_date", err: errors.New(`ent: missing required field "Class.start_date"`)}
 	}
-	if _, ok := cc.mutation.ScueduleID(); !ok {
-		return &ValidationError{Name: "scuedule", err: errors.New(`ent: missing required edge "Class.scuedule"`)}
+	if _, ok := cc.mutation.ScheduleID(); !ok {
+		return &ValidationError{Name: "schedule", err: errors.New(`ent: missing required edge "Class.schedule"`)}
 	}
 	if _, ok := cc.mutation.InstructorID(); !ok {
 		return &ValidationError{Name: "instructor", err: errors.New(`ent: missing required edge "Class.instructor"`)}
@@ -283,12 +283,12 @@ func (cc *ClassCreate) createSpec() (*Class, *sqlgraph.CreateSpec) {
 		})
 		_node.EndDate = value
 	}
-	if nodes := cc.mutation.ScueduleIDs(); len(nodes) > 0 {
+	if nodes := cc.mutation.ScheduleIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   class.ScueduleTable,
-			Columns: []string{class.ScueduleColumn},
+			Table:   class.ScheduleTable,
+			Columns: []string{class.ScheduleColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{

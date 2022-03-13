@@ -39,8 +39,8 @@ type Class struct {
 
 // ClassEdges holds the relations/edges for other nodes in the graph.
 type ClassEdges struct {
-	// Scuedule holds the value of the scuedule edge.
-	Scuedule *Schedule `json:"scuedule,omitempty"`
+	// Schedule holds the value of the schedule edge.
+	Schedule *Schedule `json:"schedule,omitempty"`
 	// Instructor holds the value of the instructor edge.
 	Instructor *Instructor `json:"instructor,omitempty"`
 	// loadedTypes holds the information for reporting if a
@@ -48,18 +48,18 @@ type ClassEdges struct {
 	loadedTypes [2]bool
 }
 
-// ScueduleOrErr returns the Scuedule value or an error if the edge
+// ScheduleOrErr returns the Schedule value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e ClassEdges) ScueduleOrErr() (*Schedule, error) {
+func (e ClassEdges) ScheduleOrErr() (*Schedule, error) {
 	if e.loadedTypes[0] {
-		if e.Scuedule == nil {
-			// The edge scuedule was loaded in eager-loading,
+		if e.Schedule == nil {
+			// The edge schedule was loaded in eager-loading,
 			// but was not found.
 			return nil, &NotFoundError{label: schedule.Label}
 		}
-		return e.Scuedule, nil
+		return e.Schedule, nil
 	}
-	return nil, &NotLoadedError{edge: "scuedule"}
+	return nil, &NotLoadedError{edge: "schedule"}
 }
 
 // InstructorOrErr returns the Instructor value or an error if the edge
@@ -167,9 +167,9 @@ func (c *Class) assignValues(columns []string, values []interface{}) error {
 	return nil
 }
 
-// QueryScuedule queries the "scuedule" edge of the Class entity.
-func (c *Class) QueryScuedule() *ScheduleQuery {
-	return (&ClassClient{config: c.config}).QueryScuedule(c)
+// QuerySchedule queries the "schedule" edge of the Class entity.
+func (c *Class) QuerySchedule() *ScheduleQuery {
+	return (&ClassClient{config: c.config}).QuerySchedule(c)
 }
 
 // QueryInstructor queries the "instructor" edge of the Class entity.

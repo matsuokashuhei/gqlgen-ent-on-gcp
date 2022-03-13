@@ -67,14 +67,6 @@ func (su *ScheduleUpdate) SetRoomID(id int) *ScheduleUpdate {
 	return su
 }
 
-// SetNillableRoomID sets the "room" edge to the Room entity by ID if the given value is not nil.
-func (su *ScheduleUpdate) SetNillableRoomID(id *int) *ScheduleUpdate {
-	if id != nil {
-		su = su.SetRoomID(*id)
-	}
-	return su
-}
-
 // SetRoom sets the "room" edge to the Room entity.
 func (su *ScheduleUpdate) SetRoom(r *Room) *ScheduleUpdate {
 	return su.SetRoomID(r.ID)
@@ -160,12 +152,18 @@ func (su *ScheduleUpdate) Save(ctx context.Context) (int, error) {
 	)
 	su.defaults()
 	if len(su.hooks) == 0 {
+		if err = su.check(); err != nil {
+			return 0, err
+		}
 		affected, err = su.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*ScheduleMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = su.check(); err != nil {
+				return 0, err
 			}
 			su.mutation = mutation
 			affected, err = su.sqlSave(ctx)
@@ -213,6 +211,14 @@ func (su *ScheduleUpdate) defaults() {
 		v := schedule.UpdateDefaultUpdateTime()
 		su.mutation.SetUpdateTime(v)
 	}
+}
+
+// check runs all checks and user-defined validators on the builder.
+func (su *ScheduleUpdate) check() error {
+	if _, ok := su.mutation.RoomID(); su.mutation.RoomCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Schedule.room"`)
+	}
+	return nil
 }
 
 func (su *ScheduleUpdate) sqlSave(ctx context.Context) (n int, err error) {
@@ -448,14 +454,6 @@ func (suo *ScheduleUpdateOne) SetRoomID(id int) *ScheduleUpdateOne {
 	return suo
 }
 
-// SetNillableRoomID sets the "room" edge to the Room entity by ID if the given value is not nil.
-func (suo *ScheduleUpdateOne) SetNillableRoomID(id *int) *ScheduleUpdateOne {
-	if id != nil {
-		suo = suo.SetRoomID(*id)
-	}
-	return suo
-}
-
 // SetRoom sets the "room" edge to the Room entity.
 func (suo *ScheduleUpdateOne) SetRoom(r *Room) *ScheduleUpdateOne {
 	return suo.SetRoomID(r.ID)
@@ -548,12 +546,18 @@ func (suo *ScheduleUpdateOne) Save(ctx context.Context) (*Schedule, error) {
 	)
 	suo.defaults()
 	if len(suo.hooks) == 0 {
+		if err = suo.check(); err != nil {
+			return nil, err
+		}
 		node, err = suo.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*ScheduleMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = suo.check(); err != nil {
+				return nil, err
 			}
 			suo.mutation = mutation
 			node, err = suo.sqlSave(ctx)
@@ -601,6 +605,14 @@ func (suo *ScheduleUpdateOne) defaults() {
 		v := schedule.UpdateDefaultUpdateTime()
 		suo.mutation.SetUpdateTime(v)
 	}
+}
+
+// check runs all checks and user-defined validators on the builder.
+func (suo *ScheduleUpdateOne) check() error {
+	if _, ok := suo.mutation.RoomID(); suo.mutation.RoomCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Schedule.room"`)
+	}
+	return nil
 }
 
 func (suo *ScheduleUpdateOne) sqlSave(ctx context.Context) (_node *Schedule, err error) {

@@ -180,7 +180,7 @@ func (sq *ScheduleQuery) FirstIDX(ctx context.Context) int {
 }
 
 // Only returns a single Schedule entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one Schedule entity is not found.
+// Returns a *NotSingularError when more than one Schedule entity is found.
 // Returns a *NotFoundError when no Schedule entities are found.
 func (sq *ScheduleQuery) Only(ctx context.Context) (*Schedule, error) {
 	nodes, err := sq.Limit(2).All(ctx)
@@ -207,7 +207,7 @@ func (sq *ScheduleQuery) OnlyX(ctx context.Context) *Schedule {
 }
 
 // OnlyID is like Only, but returns the only Schedule ID in the query.
-// Returns a *NotSingularError when exactly one Schedule ID is not found.
+// Returns a *NotSingularError when more than one Schedule ID is found.
 // Returns a *NotFoundError when no entities are found.
 func (sq *ScheduleQuery) OnlyID(ctx context.Context) (id int, err error) {
 	var ids []int
@@ -319,8 +319,9 @@ func (sq *ScheduleQuery) Clone() *ScheduleQuery {
 		withClasses: sq.withClasses.Clone(),
 		withClass:   sq.withClass.Clone(),
 		// clone intermediate query.
-		sql:  sq.sql.Clone(),
-		path: sq.path,
+		sql:    sq.sql.Clone(),
+		path:   sq.path,
+		unique: sq.unique,
 	}
 }
 

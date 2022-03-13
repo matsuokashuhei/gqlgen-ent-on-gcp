@@ -27,8 +27,8 @@ type Studio struct {
 	Location string `json:"location,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the StudioQuery when eager-loading is set.
-	Edges     StudioEdges `json:"edges"`
-	school_id *int
+	Edges          StudioEdges `json:"edges"`
+	school_studios *int
 }
 
 // StudioEdges holds the relations/edges for other nodes in the graph.
@@ -76,7 +76,7 @@ func (*Studio) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullString)
 		case studio.FieldCreateTime, studio.FieldUpdateTime:
 			values[i] = new(sql.NullTime)
-		case studio.ForeignKeys[0]: // school_id
+		case studio.ForeignKeys[0]: // school_studios
 			values[i] = new(sql.NullInt64)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Studio", columns[i])
@@ -125,10 +125,10 @@ func (s *Studio) assignValues(columns []string, values []interface{}) error {
 			}
 		case studio.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field school_id", value)
+				return fmt.Errorf("unexpected type %T for edge-field school_studios", value)
 			} else if value.Valid {
-				s.school_id = new(int)
-				*s.school_id = int(value.Int64)
+				s.school_studios = new(int)
+				*s.school_studios = int(value.Int64)
 			}
 		}
 	}
