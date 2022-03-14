@@ -1,10 +1,6 @@
 import { useEffect, VFC } from "react";
 import { Layout } from "../../components";
-import {
-  GetSchoolQuery,
-  Studio,
-  useGetSchoolLazyQuery,
-} from "../../generated/graphql";
+import { GetSchoolQuery, useGetSchoolLazyQuery } from "../../generated/graphql";
 
 export const ClassesPage: VFC = () => {
   const [getSchool, { data, loading, error }] = useGetSchoolLazyQuery();
@@ -17,7 +13,9 @@ export const ClassesPage: VFC = () => {
     return studios.map((studio) => renderStudio(studio));
   };
 
-  const renderStudio = (studio: GetSchoolQuery["school"]["studios"][0]) => {
+  const renderStudio = (
+    studio: GetSchoolQuery["school"]["studios"][number]
+  ) => {
     return (
       <div key={studio.id}>
         {studio.name}
@@ -44,7 +42,7 @@ export const ClassesPage: VFC = () => {
   };
 
   const renderSchedules = (
-    schedules: GetSchoolQuery["school"]["studios"][0]["rooms"][0]["schedules"]
+    schedules: GetSchoolQuery["school"]["studios"][number]["rooms"][number]["schedules"]
   ) => {
     return (
       <div className="grid grid-cols-8">
@@ -57,7 +55,7 @@ export const ClassesPage: VFC = () => {
   };
 
   const renderTimeslots = (
-    schedules: GetSchoolQuery["school"]["studios"][0]["rooms"][0]["schedules"]
+    schedules: GetSchoolQuery["school"]["studios"][number]["rooms"][number]["schedules"]
   ) => {
     return [
       "13:00",
