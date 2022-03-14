@@ -276,7 +276,7 @@ func (s *Schedule) Node(ctx context.Context) (node *Node, err error) {
 		ID:     s.ID,
 		Type:   "Schedule",
 		Fields: make([]*Field, 5),
-		Edges:  make([]*Edge, 3),
+		Edges:  make([]*Edge, 2),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(s.CreateTime); err != nil {
@@ -336,16 +336,6 @@ func (s *Schedule) Node(ctx context.Context) (node *Node, err error) {
 	err = s.QueryClasses().
 		Select(class.FieldID).
 		Scan(ctx, &node.Edges[1].IDs)
-	if err != nil {
-		return nil, err
-	}
-	node.Edges[2] = &Edge{
-		Type: "Class",
-		Name: "class",
-	}
-	err = s.QueryClass().
-		Select(class.FieldID).
-		Scan(ctx, &node.Edges[2].IDs)
 	if err != nil {
 		return nil, err
 	}

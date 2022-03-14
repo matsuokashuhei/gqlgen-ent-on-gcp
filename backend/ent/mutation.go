@@ -2273,8 +2273,6 @@ type ScheduleMutation struct {
 	classes        map[int]struct{}
 	removedclasses map[int]struct{}
 	clearedclasses bool
-	class          *int
-	clearedclass   bool
 	done           bool
 	oldValue       func(context.Context) (*Schedule, error)
 	predicates     []predicate.Schedule
@@ -2671,45 +2669,6 @@ func (m *ScheduleMutation) ResetClasses() {
 	m.removedclasses = nil
 }
 
-// SetClassID sets the "class" edge to the Class entity by id.
-func (m *ScheduleMutation) SetClassID(id int) {
-	m.class = &id
-}
-
-// ClearClass clears the "class" edge to the Class entity.
-func (m *ScheduleMutation) ClearClass() {
-	m.clearedclass = true
-}
-
-// ClassCleared reports if the "class" edge to the Class entity was cleared.
-func (m *ScheduleMutation) ClassCleared() bool {
-	return m.clearedclass
-}
-
-// ClassID returns the "class" edge ID in the mutation.
-func (m *ScheduleMutation) ClassID() (id int, exists bool) {
-	if m.class != nil {
-		return *m.class, true
-	}
-	return
-}
-
-// ClassIDs returns the "class" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// ClassID instead. It exists only for internal usage by the builders.
-func (m *ScheduleMutation) ClassIDs() (ids []int) {
-	if id := m.class; id != nil {
-		ids = append(ids, *id)
-	}
-	return
-}
-
-// ResetClass resets all changes to the "class" edge.
-func (m *ScheduleMutation) ResetClass() {
-	m.class = nil
-	m.clearedclass = false
-}
-
 // Where appends a list predicates to the ScheduleMutation builder.
 func (m *ScheduleMutation) Where(ps ...predicate.Schedule) {
 	m.predicates = append(m.predicates, ps...)
@@ -2911,15 +2870,12 @@ func (m *ScheduleMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *ScheduleMutation) AddedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 2)
 	if m.room != nil {
 		edges = append(edges, schedule.EdgeRoom)
 	}
 	if m.classes != nil {
 		edges = append(edges, schedule.EdgeClasses)
-	}
-	if m.class != nil {
-		edges = append(edges, schedule.EdgeClass)
 	}
 	return edges
 }
@@ -2938,17 +2894,13 @@ func (m *ScheduleMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case schedule.EdgeClass:
-		if id := m.class; id != nil {
-			return []ent.Value{*id}
-		}
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *ScheduleMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 2)
 	if m.removedclasses != nil {
 		edges = append(edges, schedule.EdgeClasses)
 	}
@@ -2971,15 +2923,12 @@ func (m *ScheduleMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *ScheduleMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 2)
 	if m.clearedroom {
 		edges = append(edges, schedule.EdgeRoom)
 	}
 	if m.clearedclasses {
 		edges = append(edges, schedule.EdgeClasses)
-	}
-	if m.clearedclass {
-		edges = append(edges, schedule.EdgeClass)
 	}
 	return edges
 }
@@ -2992,8 +2941,6 @@ func (m *ScheduleMutation) EdgeCleared(name string) bool {
 		return m.clearedroom
 	case schedule.EdgeClasses:
 		return m.clearedclasses
-	case schedule.EdgeClass:
-		return m.clearedclass
 	}
 	return false
 }
@@ -3004,9 +2951,6 @@ func (m *ScheduleMutation) ClearEdge(name string) error {
 	switch name {
 	case schedule.EdgeRoom:
 		m.ClearRoom()
-		return nil
-	case schedule.EdgeClass:
-		m.ClearClass()
 		return nil
 	}
 	return fmt.Errorf("unknown Schedule unique edge %s", name)
@@ -3021,9 +2965,6 @@ func (m *ScheduleMutation) ResetEdge(name string) error {
 		return nil
 	case schedule.EdgeClasses:
 		m.ResetClasses()
-		return nil
-	case schedule.EdgeClass:
-		m.ResetClass()
 		return nil
 	}
 	return fmt.Errorf("unknown Schedule edge %s", name)

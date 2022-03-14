@@ -94,25 +94,6 @@ func (sc *ScheduleCreate) AddClasses(c ...*Class) *ScheduleCreate {
 	return sc.AddClassIDs(ids...)
 }
 
-// SetClassID sets the "class" edge to the Class entity by ID.
-func (sc *ScheduleCreate) SetClassID(id int) *ScheduleCreate {
-	sc.mutation.SetClassID(id)
-	return sc
-}
-
-// SetNillableClassID sets the "class" edge to the Class entity by ID if the given value is not nil.
-func (sc *ScheduleCreate) SetNillableClassID(id *int) *ScheduleCreate {
-	if id != nil {
-		sc = sc.SetClassID(*id)
-	}
-	return sc
-}
-
-// SetClass sets the "class" edge to the Class entity.
-func (sc *ScheduleCreate) SetClass(c *Class) *ScheduleCreate {
-	return sc.SetClassID(c.ID)
-}
-
 // Mutation returns the ScheduleMutation object of the builder.
 func (sc *ScheduleCreate) Mutation() *ScheduleMutation {
 	return sc.mutation
@@ -318,26 +299,6 @@ func (sc *ScheduleCreate) createSpec() (*Schedule, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := sc.mutation.ClassIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   schedule.ClassTable,
-			Columns: []string{schedule.ClassColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: class.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.schedule_class = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/matsuokashuhei/landin/ent/class"
 	"github.com/matsuokashuhei/landin/ent/room"
 	"github.com/matsuokashuhei/landin/ent/schedule"
 )
@@ -32,7 +31,6 @@ type Schedule struct {
 	// The values are being populated by the ScheduleQuery when eager-loading is set.
 	Edges          ScheduleEdges `json:"edges"`
 	room_schedules *int
-	schedule_class *int
 }
 
 // ScheduleEdges holds the relations/edges for other nodes in the graph.
@@ -41,11 +39,9 @@ type ScheduleEdges struct {
 	Room *Room `json:"room,omitempty"`
 	// Classes holds the value of the classes edge.
 	Classes []*Class `json:"classes,omitempty"`
-	// Class holds the value of the class edge.
-	Class *Class `json:"class,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [2]bool
 }
 
 // RoomOrErr returns the Room value or an error if the edge
@@ -71,20 +67,6 @@ func (e ScheduleEdges) ClassesOrErr() ([]*Class, error) {
 	return nil, &NotLoadedError{edge: "classes"}
 }
 
-// ClassOrErr returns the Class value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e ScheduleEdges) ClassOrErr() (*Class, error) {
-	if e.loadedTypes[2] {
-		if e.Class == nil {
-			// The edge class was loaded in eager-loading,
-			// but was not found.
-			return nil, &NotFoundError{label: class.Label}
-		}
-		return e.Class, nil
-	}
-	return nil, &NotLoadedError{edge: "class"}
-}
-
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Schedule) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
@@ -97,8 +79,6 @@ func (*Schedule) scanValues(columns []string) ([]interface{}, error) {
 		case schedule.FieldCreateTime, schedule.FieldUpdateTime:
 			values[i] = new(sql.NullTime)
 		case schedule.ForeignKeys[0]: // room_schedules
-			values[i] = new(sql.NullInt64)
-		case schedule.ForeignKeys[1]: // schedule_class
 			values[i] = new(sql.NullInt64)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Schedule", columns[i])
@@ -158,13 +138,6 @@ func (s *Schedule) assignValues(columns []string, values []interface{}) error {
 				s.room_schedules = new(int)
 				*s.room_schedules = int(value.Int64)
 			}
-		case schedule.ForeignKeys[1]:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field schedule_class", value)
-			} else if value.Valid {
-				s.schedule_class = new(int)
-				*s.schedule_class = int(value.Int64)
-			}
 		}
 	}
 	return nil
@@ -178,11 +151,6 @@ func (s *Schedule) QueryRoom() *RoomQuery {
 // QueryClasses queries the "classes" edge of the Schedule entity.
 func (s *Schedule) QueryClasses() *ClassQuery {
 	return (&ScheduleClient{config: s.config}).QueryClasses(s)
-}
-
-// QueryClass queries the "class" edge of the Schedule entity.
-func (s *Schedule) QueryClass() *ClassQuery {
-	return (&ScheduleClient{config: s.config}).QueryClass(s)
 }
 
 // Update returns a builder for updating this Schedule.

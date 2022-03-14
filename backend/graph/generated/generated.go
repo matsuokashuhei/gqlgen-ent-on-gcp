@@ -133,7 +133,7 @@ type ComplexityRoot struct {
 	}
 
 	Schedule struct {
-		Class      func(childComplexity int, time time.Time) int
+		Class      func(childComplexity int, date *time.Time) int
 		CreateTime func(childComplexity int) int
 		DayOfWeek  func(childComplexity int) int
 		EndTime    func(childComplexity int) int
@@ -204,7 +204,7 @@ type RoomResolver interface {
 	Schedules(ctx context.Context, obj *ent.Room) ([]*ent.Schedule, error)
 }
 type ScheduleResolver interface {
-	Class(ctx context.Context, obj *ent.Schedule, time time.Time) (*ent.Class, error)
+	Class(ctx context.Context, obj *ent.Schedule, date *time.Time) (*ent.Class, error)
 }
 
 type executableSchema struct {
@@ -767,7 +767,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Schedule.Class(childComplexity, args["time"].(time.Time)), true
+		return e.complexity.Schedule.Class(childComplexity, args["date"].(*time.Time)), true
 
 	case "Schedule.createTime":
 		if e.complexity.Schedule.CreateTime == nil {
@@ -1144,7 +1144,7 @@ scalar Cursor
   dayOfWeek: Int!
   startTime: String!
   endTime: String!
-  class(time: Time!): Class @goField(forceResolver: true)
+  class(date: Time): Class @goField(forceResolver: true)
   createTime: Time!
   updateTime: Time!
 }
@@ -1665,15 +1665,15 @@ func (ec *executionContext) field_Query_user_args(ctx context.Context, rawArgs m
 func (ec *executionContext) field_Schedule_class_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 time.Time
-	if tmp, ok := rawArgs["time"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("time"))
-		arg0, err = ec.unmarshalNTime2timeᚐTime(ctx, tmp)
+	var arg0 *time.Time
+	if tmp, ok := rawArgs["date"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("date"))
+		arg0, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["time"] = arg0
+	args["date"] = arg0
 	return args, nil
 }
 
@@ -4191,7 +4191,7 @@ func (ec *executionContext) _Schedule_class(ctx context.Context, field graphql.C
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Schedule().Class(rctx, obj, args["time"].(time.Time))
+		return ec.resolvers.Schedule().Class(rctx, obj, args["date"].(*time.Time))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -9369,6 +9369,22 @@ func (ec *executionContext) unmarshalOTime2timeᚐTime(ctx context.Context, v in
 
 func (ec *executionContext) marshalOTime2timeᚐTime(ctx context.Context, sel ast.SelectionSet, v time.Time) graphql.Marshaler {
 	res := graphql.MarshalTime(v)
+	return res
+}
+
+func (ec *executionContext) unmarshalOTime2ᚖtimeᚐTime(ctx context.Context, v interface{}) (*time.Time, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := graphql.UnmarshalTime(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOTime2ᚖtimeᚐTime(ctx context.Context, sel ast.SelectionSet, v *time.Time) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	res := graphql.MarshalTime(*v)
 	return res
 }
 

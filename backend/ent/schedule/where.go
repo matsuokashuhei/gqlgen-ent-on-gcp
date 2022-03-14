@@ -634,34 +634,6 @@ func HasClassesWith(preds ...predicate.Class) predicate.Schedule {
 	})
 }
 
-// HasClass applies the HasEdge predicate on the "class" edge.
-func HasClass() predicate.Schedule {
-	return predicate.Schedule(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ClassTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, ClassTable, ClassColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasClassWith applies the HasEdge predicate on the "class" edge with a given conditions (other predicates).
-func HasClassWith(preds ...predicate.Class) predicate.Schedule {
-	return predicate.Schedule(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ClassInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, ClassTable, ClassColumn),
-		)
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Schedule) predicate.Schedule {
 	return predicate.Schedule(func(s *sql.Selector) {

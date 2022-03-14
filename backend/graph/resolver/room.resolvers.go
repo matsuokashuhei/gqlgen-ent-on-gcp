@@ -14,6 +14,7 @@ import (
 )
 
 func (r *mutationResolver) CreateRoom(ctx context.Context, input model.CreateRoomInput) (*ent.Room, error) {
+	// TODO: Move to repository
 	room, err := r.client.Room.Create().
 		SetName(input.Name).
 		SetCapacity(input.Capacity).
@@ -26,6 +27,7 @@ func (r *mutationResolver) CreateRoom(ctx context.Context, input model.CreateRoo
 }
 
 func (r *mutationResolver) UpdateRoom(ctx context.Context, input model.UpdateRoomInput) (*ent.Room, error) {
+	// TODO: Move to repository
 	room, err := r.client.Room.Query().Where(room.ID(input.ID)).First(ctx)
 	if err != nil {
 		return nil, err
@@ -45,6 +47,7 @@ func (r *mutationResolver) UpdateRoom(ctx context.Context, input model.UpdateRoo
 }
 
 func (r *mutationResolver) DeleteRoom(ctx context.Context, id int) (*ent.Room, error) {
+	// TODO: Move to repository
 	room, err := r.client.Room.Query().Where(room.ID(id)).First(ctx)
 	if err != nil {
 		return nil, err
@@ -56,6 +59,7 @@ func (r *mutationResolver) DeleteRoom(ctx context.Context, id int) (*ent.Room, e
 }
 
 func (r *queryResolver) Room(ctx context.Context, id int) (*ent.Room, error) {
+	// TODO: Move to repository
 	room, err := r.client.Room.Query().Where(room.ID(id)).First(ctx)
 	if err != nil {
 		return nil, err
@@ -64,6 +68,7 @@ func (r *queryResolver) Room(ctx context.Context, id int) (*ent.Room, error) {
 }
 
 func (r *queryResolver) Rooms(ctx context.Context) ([]*ent.Room, error) {
+	// TODO: Move to repository
 	rooms, err := r.client.Room.Query().All(ctx)
 	if err != nil {
 		return nil, err
