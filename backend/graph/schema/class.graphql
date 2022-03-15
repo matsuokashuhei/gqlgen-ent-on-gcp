@@ -1,6 +1,7 @@
 type Class implements Node {
     id: ID!
     name: String!
+    level: String!
     tuition: Int!
     schedule: Schedule!
     instructor: Instructor!

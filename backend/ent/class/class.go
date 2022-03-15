@@ -17,6 +17,8 @@ const (
 	FieldUpdateTime = "update_time"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
+	// FieldLevel holds the string denoting the level field in the database.
+	FieldLevel = "level"
 	// FieldTuition holds the string denoting the tuition field in the database.
 	FieldTuition = "tuition"
 	// FieldStartDate holds the string denoting the start_date field in the database.
@@ -51,6 +53,7 @@ var Columns = []string{
 	FieldCreateTime,
 	FieldUpdateTime,
 	FieldName,
+	FieldLevel,
 	FieldTuition,
 	FieldStartDate,
 	FieldEndDate,

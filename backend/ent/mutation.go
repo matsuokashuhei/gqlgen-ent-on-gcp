@@ -48,6 +48,7 @@ type ClassMutation struct {
 	create_time       *time.Time
 	update_time       *time.Time
 	name              *string
+	level             *string
 	tuition           *int
 	addtuition        *int
 	start_date        *time.Time
@@ -266,6 +267,42 @@ func (m *ClassMutation) OldName(ctx context.Context) (v string, err error) {
 // ResetName resets all changes to the "name" field.
 func (m *ClassMutation) ResetName() {
 	m.name = nil
+}
+
+// SetLevel sets the "level" field.
+func (m *ClassMutation) SetLevel(s string) {
+	m.level = &s
+}
+
+// Level returns the value of the "level" field in the mutation.
+func (m *ClassMutation) Level() (r string, exists bool) {
+	v := m.level
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLevel returns the old "level" field's value of the Class entity.
+// If the Class object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ClassMutation) OldLevel(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLevel is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLevel requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLevel: %w", err)
+	}
+	return oldValue.Level, nil
+}
+
+// ResetLevel resets all changes to the "level" field.
+func (m *ClassMutation) ResetLevel() {
+	m.level = nil
 }
 
 // SetTuition sets the "tuition" field.
@@ -506,7 +543,7 @@ func (m *ClassMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ClassMutation) Fields() []string {
-	fields := make([]string, 0, 6)
+	fields := make([]string, 0, 7)
 	if m.create_time != nil {
 		fields = append(fields, class.FieldCreateTime)
 	}
@@ -515,6 +552,9 @@ func (m *ClassMutation) Fields() []string {
 	}
 	if m.name != nil {
 		fields = append(fields, class.FieldName)
+	}
+	if m.level != nil {
+		fields = append(fields, class.FieldLevel)
 	}
 	if m.tuition != nil {
 		fields = append(fields, class.FieldTuition)
@@ -539,6 +579,8 @@ func (m *ClassMutation) Field(name string) (ent.Value, bool) {
 		return m.UpdateTime()
 	case class.FieldName:
 		return m.Name()
+	case class.FieldLevel:
+		return m.Level()
 	case class.FieldTuition:
 		return m.Tuition()
 	case class.FieldStartDate:
@@ -560,6 +602,8 @@ func (m *ClassMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldUpdateTime(ctx)
 	case class.FieldName:
 		return m.OldName(ctx)
+	case class.FieldLevel:
+		return m.OldLevel(ctx)
 	case class.FieldTuition:
 		return m.OldTuition(ctx)
 	case class.FieldStartDate:
@@ -595,6 +639,13 @@ func (m *ClassMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetName(v)
+		return nil
+	case class.FieldLevel:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLevel(v)
 		return nil
 	case class.FieldTuition:
 		v, ok := value.(int)
@@ -698,6 +749,9 @@ func (m *ClassMutation) ResetField(name string) error {
 		return nil
 	case class.FieldName:
 		m.ResetName()
+		return nil
+	case class.FieldLevel:
+		m.ResetLevel()
 		return nil
 	case class.FieldTuition:
 		m.ResetTuition()

@@ -14,6 +14,7 @@ var (
 		{Name: "create_time", Type: field.TypeTime},
 		{Name: "update_time", Type: field.TypeTime},
 		{Name: "name", Type: field.TypeString},
+		{Name: "level", Type: field.TypeString},
 		{Name: "tuition", Type: field.TypeInt},
 		{Name: "start_date", Type: field.TypeTime},
 		{Name: "end_date", Type: field.TypeTime, Nullable: true},
@@ -28,13 +29,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "classes_instructors_classes",
-				Columns:    []*schema.Column{ClassesColumns[7]},
+				Columns:    []*schema.Column{ClassesColumns[8]},
 				RefColumns: []*schema.Column{InstructorsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "classes_schedules_classes",
-				Columns:    []*schema.Column{ClassesColumns[8]},
+				Columns:    []*schema.Column{ClassesColumns[9]},
 				RefColumns: []*schema.Column{SchedulesColumns[0]},
 				OnDelete:   schema.NoAction,
 			},

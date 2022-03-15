@@ -42,6 +42,12 @@ func (cu *ClassUpdate) SetName(s string) *ClassUpdate {
 	return cu
 }
 
+// SetLevel sets the "level" field.
+func (cu *ClassUpdate) SetLevel(s string) *ClassUpdate {
+	cu.mutation.SetLevel(s)
+	return cu
+}
+
 // SetTuition sets the "tuition" field.
 func (cu *ClassUpdate) SetTuition(i int) *ClassUpdate {
 	cu.mutation.ResetTuition()
@@ -232,6 +238,13 @@ func (cu *ClassUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: class.FieldName,
 		})
 	}
+	if value, ok := cu.mutation.Level(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: class.FieldLevel,
+		})
+	}
 	if value, ok := cu.mutation.Tuition(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt,
@@ -364,6 +377,12 @@ func (cuo *ClassUpdateOne) SetUpdateTime(t time.Time) *ClassUpdateOne {
 // SetName sets the "name" field.
 func (cuo *ClassUpdateOne) SetName(s string) *ClassUpdateOne {
 	cuo.mutation.SetName(s)
+	return cuo
+}
+
+// SetLevel sets the "level" field.
+func (cuo *ClassUpdateOne) SetLevel(s string) *ClassUpdateOne {
+	cuo.mutation.SetLevel(s)
 	return cuo
 }
 
@@ -579,6 +598,13 @@ func (cuo *ClassUpdateOne) sqlSave(ctx context.Context) (_node *Class, err error
 			Type:   field.TypeString,
 			Value:  value,
 			Column: class.FieldName,
+		})
+	}
+	if value, ok := cuo.mutation.Level(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: class.FieldLevel,
 		})
 	}
 	if value, ok := cuo.mutation.Tuition(); ok {

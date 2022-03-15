@@ -24,6 +24,8 @@ type Class struct {
 	UpdateTime time.Time `json:"update_time,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
+	// Level holds the value of the "level" field.
+	Level string `json:"level,omitempty"`
 	// Tuition holds the value of the "tuition" field.
 	Tuition int `json:"tuition,omitempty"`
 	// StartDate holds the value of the "start_date" field.
@@ -83,7 +85,7 @@ func (*Class) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case class.FieldID, class.FieldTuition:
 			values[i] = new(sql.NullInt64)
-		case class.FieldName:
+		case class.FieldName, class.FieldLevel:
 			values[i] = new(sql.NullString)
 		case class.FieldCreateTime, class.FieldUpdateTime, class.FieldStartDate, class.FieldEndDate:
 			values[i] = new(sql.NullTime)
@@ -129,6 +131,12 @@ func (c *Class) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
 			} else if value.Valid {
 				c.Name = value.String
+			}
+		case class.FieldLevel:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field level", values[i])
+			} else if value.Valid {
+				c.Level = value.String
 			}
 		case class.FieldTuition:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -206,6 +214,8 @@ func (c *Class) String() string {
 	builder.WriteString(c.UpdateTime.Format(time.ANSIC))
 	builder.WriteString(", name=")
 	builder.WriteString(c.Name)
+	builder.WriteString(", level=")
+	builder.WriteString(c.Level)
 	builder.WriteString(", tuition=")
 	builder.WriteString(fmt.Sprintf("%v", c.Tuition))
 	builder.WriteString(", start_date=")

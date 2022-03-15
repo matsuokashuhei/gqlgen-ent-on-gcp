@@ -53,6 +53,7 @@ type ComplexityRoot struct {
 		EndDate    func(childComplexity int) int
 		ID         func(childComplexity int) int
 		Instructor func(childComplexity int) int
+		Level      func(childComplexity int) int
 		Name       func(childComplexity int) int
 		Schedule   func(childComplexity int) int
 		StartDate  func(childComplexity int) int
@@ -249,6 +250,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Class.Instructor(childComplexity), true
+
+	case "Class.level":
+		if e.complexity.Class.Level == nil {
+			break
+		}
+
+		return e.complexity.Class.Level(childComplexity), true
 
 	case "Class.name":
 		if e.complexity.Class.Name == nil {
@@ -1010,6 +1018,7 @@ extend type Mutation {
 	{Name: "graph/schema/class.graphql", Input: `type Class implements Node {
     id: ID!
     name: String!
+    level: String!
     tuition: Int!
     schedule: Schedule!
     instructor: Instructor!
@@ -1769,6 +1778,41 @@ func (ec *executionContext) _Class_name(ctx context.Context, field graphql.Colle
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Name, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Class_level(ctx context.Context, field graphql.CollectedField, obj *ent.Class) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Class",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Level, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -6622,6 +6666,16 @@ func (ec *executionContext) _Class(ctx context.Context, sel ast.SelectionSet, ob
 		case "name":
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Class_name(ctx, field, obj)
+			}
+
+			out.Values[i] = innerFunc(ctx)
+
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "level":
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Class_level(ctx, field, obj)
 			}
 
 			out.Values[i] = innerFunc(ctx)
