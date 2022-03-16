@@ -23,11 +23,22 @@ export type Class = Node & {
   endDate?: Maybe<Scalars['Time']>;
   id: Scalars['ID'];
   instructor: Instructor;
+  level: Scalars['String'];
   name: Scalars['String'];
   schedule: Schedule;
   startDate: Scalars['Time'];
   tuition: Scalars['Int'];
   updateTime: Scalars['Time'];
+};
+
+export type CreateClassInput = {
+  endDate?: InputMaybe<Scalars['Time']>;
+  instructorId: Scalars['ID'];
+  level: Scalars['String'];
+  name: Scalars['String'];
+  scheduleId: Scalars['ID'];
+  startDate: Scalars['Time'];
+  tuition: Scalars['Int'];
 };
 
 export type CreateInstructorInput = {
@@ -99,6 +110,7 @@ export enum InstructorOrderField {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  createClass: Class;
   createInstructor: Instructor;
   createRoom: Room;
   createSchool: School;
@@ -114,6 +126,11 @@ export type Mutation = {
   updateSchool: School;
   updateStudio: Studio;
   updateUser: User;
+};
+
+
+export type MutationCreateClassArgs = {
+  input: CreateClassInput;
 };
 
 
@@ -292,7 +309,7 @@ export type Schedule = Node & {
 
 
 export type ScheduleClassArgs = {
-  time: Scalars['Time'];
+  date?: InputMaybe<Scalars['Time']>;
 };
 
 export enum ScheduleField {
@@ -388,6 +405,13 @@ export type DeleteInstructorMutationVariables = Exact<{
 
 export type DeleteInstructorMutation = { __typename?: 'Mutation', deleteInstructor: { __typename?: 'Instructor', id: string, name: string, syllabicCharacters: string, biography?: string | null, phoneNumber?: string | null, email?: string | null } };
 
+export type CreateClassMutationVariables = Exact<{
+  input: CreateClassInput;
+}>;
+
+
+export type CreateClassMutation = { __typename?: 'Mutation', createClass: { __typename?: 'Class', id: string, name: string, level: string, startDate: any, endDate?: any | null, instructor: { __typename?: 'Instructor', id: string }, schedule: { __typename?: 'Schedule', id: string } } };
+
 export type GetInstructorsQueryVariables = Exact<{
   first?: InputMaybe<Scalars['Int']>;
   after?: InputMaybe<Scalars['Cursor']>;
@@ -396,21 +420,21 @@ export type GetInstructorsQueryVariables = Exact<{
 }>;
 
 
-export type GetInstructorsQuery = { __typename?: 'Query', instructors: { __typename?: 'InstructorConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', startCursor?: any | null, endCursor?: any | null, hasNextPage: boolean, hasPreviousPage: boolean }, edges: Array<{ __typename?: 'InstructorEdge', cursor: any, node: { __typename?: 'Instructor', id: string, name: string, syllabicCharacters: string, biography?: string | null, phoneNumber?: string | null, email?: string | null, createTime: any, updateTime: any } }> } };
+export type GetInstructorsQuery = { __typename?: 'Query', instructors: { __typename?: 'InstructorConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', startCursor?: any | null, endCursor?: any | null, hasNextPage: boolean, hasPreviousPage: boolean }, edges: Array<{ __typename?: 'InstructorEdge', cursor: any, node: { __typename?: 'Instructor', id: string, name: string, syllabicCharacters: string, biography?: string | null, phoneNumber?: string | null, email?: string | null } }> } };
 
 export type GetInstructorQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
 
 
-export type GetInstructorQuery = { __typename?: 'Query', instructor: { __typename?: 'Instructor', id: string, name: string, syllabicCharacters: string, biography?: string | null, phoneNumber?: string | null, email?: string | null, createTime: any, updateTime: any } };
+export type GetInstructorQuery = { __typename?: 'Query', instructor: { __typename?: 'Instructor', id: string, name: string, syllabicCharacters: string, biography?: string | null, phoneNumber?: string | null, email?: string | null } };
 
 export type GetSchoolQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
 
 
-export type GetSchoolQuery = { __typename?: 'Query', school: { __typename?: 'School', id: string, name: string, createTime: any, updateTime: any, studios: Array<{ __typename?: 'Studio', id: string, name: string, location: string, createTime: any, updateTime: any, rooms: Array<{ __typename?: 'Room', id: string, name: string, capacity: number, createTime: any, updateTime: any, schedules: Array<{ __typename?: 'Schedule', id: string, dayOfWeek: number, startTime: string, endTime: string, createTime: any, updateTime: any }> }> }> } };
+export type GetSchoolQuery = { __typename?: 'Query', school: { __typename?: 'School', id: string, name: string, studios: Array<{ __typename?: 'Studio', id: string, name: string, location: string, rooms: Array<{ __typename?: 'Room', id: string, name: string, capacity: number, schedules: Array<{ __typename?: 'Schedule', id: string, dayOfWeek: number, startTime: string, endTime: string, class?: { __typename?: 'Class', id: string, name: string, level: string, tuition: number, startDate: any, endDate?: any | null, instructor: { __typename?: 'Instructor', id: string, name: string } } | null }> }> }> } };
 
 
 export const CreateInstructorDocument = gql`
@@ -527,6 +551,49 @@ export function useDeleteInstructorMutation(baseOptions?: Apollo.MutationHookOpt
 export type DeleteInstructorMutationHookResult = ReturnType<typeof useDeleteInstructorMutation>;
 export type DeleteInstructorMutationResult = Apollo.MutationResult<DeleteInstructorMutation>;
 export type DeleteInstructorMutationOptions = Apollo.BaseMutationOptions<DeleteInstructorMutation, DeleteInstructorMutationVariables>;
+export const CreateClassDocument = gql`
+    mutation CreateClass($input: CreateClassInput!) {
+  createClass(input: $input) {
+    id
+    name
+    level
+    startDate
+    endDate
+    instructor {
+      id
+    }
+    schedule {
+      id
+    }
+  }
+}
+    `;
+export type CreateClassMutationFn = Apollo.MutationFunction<CreateClassMutation, CreateClassMutationVariables>;
+
+/**
+ * __useCreateClassMutation__
+ *
+ * To run a mutation, you first call `useCreateClassMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateClassMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createClassMutation, { data, loading, error }] = useCreateClassMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateClassMutation(baseOptions?: Apollo.MutationHookOptions<CreateClassMutation, CreateClassMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateClassMutation, CreateClassMutationVariables>(CreateClassDocument, options);
+      }
+export type CreateClassMutationHookResult = ReturnType<typeof useCreateClassMutation>;
+export type CreateClassMutationResult = Apollo.MutationResult<CreateClassMutation>;
+export type CreateClassMutationOptions = Apollo.BaseMutationOptions<CreateClassMutation, CreateClassMutationVariables>;
 export const GetInstructorsDocument = gql`
     query getInstructors($first: Int, $after: Cursor, $last: Int, $before: Cursor) {
   instructors(first: $first, after: $after, last: $last, before: $before) {
@@ -546,8 +613,6 @@ export const GetInstructorsDocument = gql`
         biography
         phoneNumber
         email
-        createTime
-        updateTime
       }
     }
   }
@@ -593,8 +658,6 @@ export const GetInstructorDocument = gql`
     biography
     phoneNumber
     email
-    createTime
-    updateTime
   }
 }
     `;
@@ -631,27 +694,31 @@ export const GetSchoolDocument = gql`
   school(id: $id) {
     id
     name
-    createTime
-    updateTime
     studios {
       id
       name
       location
-      createTime
-      updateTime
       rooms {
         id
         name
         capacity
-        createTime
-        updateTime
         schedules {
           id
           dayOfWeek
           startTime
           endTime
-          createTime
-          updateTime
+          class {
+            id
+            name
+            level
+            tuition
+            startDate
+            endDate
+            instructor {
+              id
+              name
+            }
+          }
         }
       }
     }

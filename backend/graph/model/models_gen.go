@@ -6,7 +6,18 @@ import (
 	"fmt"
 	"io"
 	"strconv"
+	"time"
 )
+
+type CreateClassInput struct {
+	Name         string     `json:"name"`
+	Level        string     `json:"level"`
+	Tuition      int        `json:"tuition"`
+	ScheduleID   int        `json:"scheduleId"`
+	InstructorID int        `json:"instructorId"`
+	StartDate    time.Time  `json:"startDate"`
+	EndDate      *time.Time `json:"endDate"`
+}
 
 type CreateInstructorInput struct {
 	Name               string  `json:"name"`

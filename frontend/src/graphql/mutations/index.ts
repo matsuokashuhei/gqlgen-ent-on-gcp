@@ -38,3 +38,21 @@ gql`
     }
   }
 `;
+
+gql`
+  mutation CreateClass($input: CreateClassInput!) {
+    createClass(input: $input) {
+      id
+      name
+      level
+      startDate
+      endDate
+      instructor {
+        id
+      }
+      schedule {
+        id
+      }
+    }
+  }
+`;
