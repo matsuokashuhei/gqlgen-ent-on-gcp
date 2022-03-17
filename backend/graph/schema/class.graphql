@@ -21,6 +21,23 @@ input CreateClassInput {
   endDate: Time
 }
 
+input UpdateClassInput {
+  id: ID!
+  name: String
+  level: String
+  tuition: Int
+  scheduleId: ID
+  instructorId: ID
+  startDate: Time
+  endDate: Time
+}
+
+extend type Query {
+  class(id: ID!): Class!
+}
+
 extend type Mutation {
   createClass(input: CreateClassInput!): Class!
+  updateClass(input: UpdateClassInput!): Class!
+  deleteClass(id: ID!): Class!
 }

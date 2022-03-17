@@ -57,6 +57,17 @@ type SignUpInput struct {
 	Password string `json:"password"`
 }
 
+type UpdateClassInput struct {
+	ID           int        `json:"id"`
+	Name         *string    `json:"name"`
+	Level        *string    `json:"level"`
+	Tuition      *int       `json:"tuition"`
+	ScheduleID   *int       `json:"scheduleId"`
+	InstructorID *int       `json:"instructorId"`
+	StartDate    *time.Time `json:"startDate"`
+	EndDate      *time.Time `json:"endDate"`
+}
+
 type UpdateInstructorInput struct {
 	ID                 int     `json:"id"`
 	Name               *string `json:"name"`

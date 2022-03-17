@@ -79,3 +79,23 @@ gql`
     }
   }
 `;
+
+gql`
+  query getClass($id: ID!) {
+    class(id: $id) {
+      id
+      name
+      level
+      tuition
+      startDate
+      endDate
+      instructor {
+        id
+        name
+      }
+      schedule {
+        id
+      }
+    }
+  }
+`;

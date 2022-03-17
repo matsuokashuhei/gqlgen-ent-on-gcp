@@ -56,3 +56,39 @@ gql`
     }
   }
 `;
+
+gql`
+  mutation UpdateClass($input: UpdateClassInput!) {
+    updateClass(input: $input) {
+      id
+      name
+      level
+      startDate
+      endDate
+      instructor {
+        id
+      }
+      schedule {
+        id
+      }
+    }
+  }
+`;
+
+gql`
+  mutation DeleteClass($id: ID!) {
+    deleteClass(id: $id) {
+      id
+      name
+      level
+      startDate
+      endDate
+      instructor {
+        id
+      }
+      schedule {
+        id
+      }
+    }
+  }
+`;

@@ -81,7 +81,7 @@ export const ClassesPage: VFC = () => {
         } else {
           return (
             <div>
-              <Link to={`/classes/new`}>
+              <Link to={`/schedules/${schedule.id}/classes/new`}>
                 <PlusSmIcon className="h-4 w-4" />
               </Link>
             </div>
@@ -95,9 +95,11 @@ export const ClassesPage: VFC = () => {
     if (!clazz) return <></>;
     return (
       <div>
-        <div>{clazz.name}</div>
-        <div>{clazz.level}</div>
-        {renderInstructor(clazz.instructor)}
+        <Link to={`/classes/${clazz.id}`}>
+          <div>{clazz.name}</div>
+          <div>{clazz.level}</div>
+          {renderInstructor(clazz.instructor)}
+        </Link>
       </div>
     );
   };

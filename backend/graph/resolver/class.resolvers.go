@@ -15,3 +15,18 @@ func (r *mutationResolver) CreateClass(ctx context.Context, input model.CreateCl
 	repository := repositories.NewClassRepository(r.client)
 	return repository.Create(ctx, input)
 }
+
+func (r *mutationResolver) UpdateClass(ctx context.Context, input model.UpdateClassInput) (*ent.Class, error) {
+	repository := repositories.NewClassRepository(r.client)
+	return repository.Update(ctx, input)
+}
+
+func (r *mutationResolver) DeleteClass(ctx context.Context, id int) (*ent.Class, error) {
+	repository := repositories.NewClassRepository(r.client)
+	return repository.Delete(ctx, id)
+}
+
+func (r *queryResolver) Class(ctx context.Context, id int) (*ent.Class, error) {
+	repository := repositories.NewClassRepository(r.client)
+	return repository.Find(ctx, id)
+}
