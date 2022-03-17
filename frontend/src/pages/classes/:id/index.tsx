@@ -7,6 +7,7 @@ import {
   GetClassQuery,
   UpdateClassInput,
   useGetClassLazyQuery,
+  useDeleteClassMutation,
   useUpdateClassMutation,
 } from "../../../generated/graphql";
 
@@ -29,6 +30,7 @@ export const ClassPage: VFC = () => {
   const { register, handleSubmit } = useForm<Inputs>();
   const [getClass, { data, loading, error }] = useGetClassLazyQuery();
   const [UpdateClass] = useUpdateClassMutation();
+  const [DeleteClass] = useDeleteClassMutation();
   const [clazz, setClazz] = useState<Clazz>();
   const [editable, setEditable] = useState<boolean>(false);
 
@@ -55,7 +57,15 @@ export const ClassPage: VFC = () => {
       instructorId: data.instructorId.toString(),
       scheduleId: data.scheduleId.toString(),
     };
-    UpdateClass({ variables: { input } }).then((data) => navigate(`/classes/`));
+    UpdateClass({ variables: { input } })
+      .then((data) => navigate(`/classes/`))
+      .catch((error) => console.error(error));
+  };
+
+  const handleDelete = (id: string) => {
+    DeleteClass({ variables: { id: id } })
+      .then((data) => navigate(`/classes/`))
+      .catch((error) => console.error(error));
   };
 
   if (!clazz) return <></>;
@@ -130,9 +140,14 @@ export const ClassPage: VFC = () => {
           </button>
         </div>
       ) : (
-        <button type="button" onClick={() => setEditable(!editable)}>
-          編集
-        </button>
+        <div className="flex flex-row justify-between">
+          <button type="button" onClick={() => handleDelete(clazz.id)}>
+            削除
+          </button>
+          <button type="button" onClick={() => setEditable(!editable)}>
+            編集
+          </button>
+        </div>
       )}
     </Layout>
   );

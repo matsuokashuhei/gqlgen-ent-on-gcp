@@ -83,12 +83,6 @@ gql`
       level
       startDate
       endDate
-      instructor {
-        id
-      }
-      schedule {
-        id
-      }
     }
   }
 `;

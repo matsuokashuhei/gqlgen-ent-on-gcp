@@ -453,7 +453,7 @@ export type DeleteClassMutationVariables = Exact<{
 }>;
 
 
-export type DeleteClassMutation = { __typename?: 'Mutation', deleteClass: { __typename?: 'Class', id: string, name: string, level: string, startDate: any, endDate?: any | null, instructor: { __typename?: 'Instructor', id: string }, schedule: { __typename?: 'Schedule', id: string } } };
+export type DeleteClassMutation = { __typename?: 'Mutation', deleteClass: { __typename?: 'Class', id: string, name: string, level: string, startDate: any, endDate?: any | null } };
 
 export type GetInstructorsQueryVariables = Exact<{
   first?: InputMaybe<Scalars['Int']>;
@@ -695,12 +695,6 @@ export const DeleteClassDocument = gql`
     level
     startDate
     endDate
-    instructor {
-      id
-    }
-    schedule {
-      id
-    }
   }
 }
     `;
