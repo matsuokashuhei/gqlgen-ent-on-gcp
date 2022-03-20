@@ -20,10 +20,42 @@ func (c *Class) Instructor(ctx context.Context) (*Instructor, error) {
 	return result, err
 }
 
+func (c *Class) MembersClasses(ctx context.Context) ([]*MembersClass, error) {
+	result, err := c.Edges.MembersClassesOrErr()
+	if IsNotLoaded(err) {
+		result, err = c.QueryMembersClasses().All(ctx)
+	}
+	return result, err
+}
+
 func (i *Instructor) Classes(ctx context.Context) ([]*Class, error) {
 	result, err := i.Edges.ClassesOrErr()
 	if IsNotLoaded(err) {
 		result, err = i.QueryClasses().All(ctx)
+	}
+	return result, err
+}
+
+func (m *Member) MembersClasses(ctx context.Context) ([]*MembersClass, error) {
+	result, err := m.Edges.MembersClassesOrErr()
+	if IsNotLoaded(err) {
+		result, err = m.QueryMembersClasses().All(ctx)
+	}
+	return result, err
+}
+
+func (mc *MembersClass) Member(ctx context.Context) (*Member, error) {
+	result, err := mc.Edges.MemberOrErr()
+	if IsNotLoaded(err) {
+		result, err = mc.QueryMember().Only(ctx)
+	}
+	return result, err
+}
+
+func (mc *MembersClass) Class(ctx context.Context) (*Class, error) {
+	result, err := mc.Edges.ClassOrErr()
+	if IsNotLoaded(err) {
+		result, err = mc.QueryClass().Only(ctx)
 	}
 	return result, err
 }

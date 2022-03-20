@@ -7,6 +7,8 @@ import (
 
 	"github.com/matsuokashuhei/landin/ent/class"
 	"github.com/matsuokashuhei/landin/ent/instructor"
+	"github.com/matsuokashuhei/landin/ent/member"
+	"github.com/matsuokashuhei/landin/ent/membersclass"
 	"github.com/matsuokashuhei/landin/ent/room"
 	"github.com/matsuokashuhei/landin/ent/schedule"
 	"github.com/matsuokashuhei/landin/ent/schema"
@@ -49,6 +51,36 @@ func init() {
 	instructor.DefaultUpdateTime = instructorDescUpdateTime.Default.(func() time.Time)
 	// instructor.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
 	instructor.UpdateDefaultUpdateTime = instructorDescUpdateTime.UpdateDefault.(func() time.Time)
+	memberMixin := schema.Member{}.Mixin()
+	memberMixinFields0 := memberMixin[0].Fields()
+	_ = memberMixinFields0
+	memberFields := schema.Member{}.Fields()
+	_ = memberFields
+	// memberDescCreateTime is the schema descriptor for create_time field.
+	memberDescCreateTime := memberMixinFields0[0].Descriptor()
+	// member.DefaultCreateTime holds the default value on creation for the create_time field.
+	member.DefaultCreateTime = memberDescCreateTime.Default.(func() time.Time)
+	// memberDescUpdateTime is the schema descriptor for update_time field.
+	memberDescUpdateTime := memberMixinFields0[1].Descriptor()
+	// member.DefaultUpdateTime holds the default value on creation for the update_time field.
+	member.DefaultUpdateTime = memberDescUpdateTime.Default.(func() time.Time)
+	// member.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
+	member.UpdateDefaultUpdateTime = memberDescUpdateTime.UpdateDefault.(func() time.Time)
+	membersclassMixin := schema.MembersClass{}.Mixin()
+	membersclassMixinFields0 := membersclassMixin[0].Fields()
+	_ = membersclassMixinFields0
+	membersclassFields := schema.MembersClass{}.Fields()
+	_ = membersclassFields
+	// membersclassDescCreateTime is the schema descriptor for create_time field.
+	membersclassDescCreateTime := membersclassMixinFields0[0].Descriptor()
+	// membersclass.DefaultCreateTime holds the default value on creation for the create_time field.
+	membersclass.DefaultCreateTime = membersclassDescCreateTime.Default.(func() time.Time)
+	// membersclassDescUpdateTime is the schema descriptor for update_time field.
+	membersclassDescUpdateTime := membersclassMixinFields0[1].Descriptor()
+	// membersclass.DefaultUpdateTime holds the default value on creation for the update_time field.
+	membersclass.DefaultUpdateTime = membersclassDescUpdateTime.Default.(func() time.Time)
+	// membersclass.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
+	membersclass.UpdateDefaultUpdateTime = membersclassDescUpdateTime.UpdateDefault.(func() time.Time)
 	roomMixin := schema.Room{}.Mixin()
 	roomMixinFields0 := roomMixin[0].Fields()
 	_ = roomMixinFields0

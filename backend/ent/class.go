@@ -45,9 +45,11 @@ type ClassEdges struct {
 	Schedule *Schedule `json:"schedule,omitempty"`
 	// Instructor holds the value of the instructor edge.
 	Instructor *Instructor `json:"instructor,omitempty"`
+	// MembersClasses holds the value of the members_classes edge.
+	MembersClasses []*MembersClass `json:"members_classes,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
 }
 
 // ScheduleOrErr returns the Schedule value or an error if the edge
@@ -76,6 +78,15 @@ func (e ClassEdges) InstructorOrErr() (*Instructor, error) {
 		return e.Instructor, nil
 	}
 	return nil, &NotLoadedError{edge: "instructor"}
+}
+
+// MembersClassesOrErr returns the MembersClasses value or an error if the edge
+// was not loaded in eager-loading.
+func (e ClassEdges) MembersClassesOrErr() ([]*MembersClass, error) {
+	if e.loadedTypes[2] {
+		return e.MembersClasses, nil
+	}
+	return nil, &NotLoadedError{edge: "members_classes"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -183,6 +194,11 @@ func (c *Class) QuerySchedule() *ScheduleQuery {
 // QueryInstructor queries the "instructor" edge of the Class entity.
 func (c *Class) QueryInstructor() *InstructorQuery {
 	return (&ClassClient{config: c.config}).QueryInstructor(c)
+}
+
+// QueryMembersClasses queries the "members_classes" edge of the Class entity.
+func (c *Class) QueryMembersClasses() *MembersClassQuery {
+	return (&ClassClient{config: c.config}).QueryMembersClasses(c)
 }
 
 // Update returns a builder for updating this Class.

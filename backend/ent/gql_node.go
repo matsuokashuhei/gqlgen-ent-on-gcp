@@ -17,6 +17,8 @@ import (
 	"github.com/hashicorp/go-multierror"
 	"github.com/matsuokashuhei/landin/ent/class"
 	"github.com/matsuokashuhei/landin/ent/instructor"
+	"github.com/matsuokashuhei/landin/ent/member"
+	"github.com/matsuokashuhei/landin/ent/membersclass"
 	"github.com/matsuokashuhei/landin/ent/room"
 	"github.com/matsuokashuhei/landin/ent/schedule"
 	"github.com/matsuokashuhei/landin/ent/school"
@@ -57,7 +59,7 @@ func (c *Class) Node(ctx context.Context) (node *Node, err error) {
 		ID:     c.ID,
 		Type:   "Class",
 		Fields: make([]*Field, 7),
-		Edges:  make([]*Edge, 2),
+		Edges:  make([]*Edge, 3),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(c.CreateTime); err != nil {
@@ -136,6 +138,16 @@ func (c *Class) Node(ctx context.Context) (node *Node, err error) {
 	if err != nil {
 		return nil, err
 	}
+	node.Edges[2] = &Edge{
+		Type: "MembersClass",
+		Name: "members_classes",
+	}
+	err = c.QueryMembersClasses().
+		Select(membersclass.FieldID).
+		Scan(ctx, &node.Edges[2].IDs)
+	if err != nil {
+		return nil, err
+	}
 	return node, nil
 }
 
@@ -210,6 +222,186 @@ func (i *Instructor) Node(ctx context.Context) (node *Node, err error) {
 	err = i.QueryClasses().
 		Select(class.FieldID).
 		Scan(ctx, &node.Edges[0].IDs)
+	if err != nil {
+		return nil, err
+	}
+	return node, nil
+}
+
+func (m *Member) Node(ctx context.Context) (node *Node, err error) {
+	node = &Node{
+		ID:     m.ID,
+		Type:   "Member",
+		Fields: make([]*Field, 12),
+		Edges:  make([]*Edge, 1),
+	}
+	var buf []byte
+	if buf, err = json.Marshal(m.CreateTime); err != nil {
+		return nil, err
+	}
+	node.Fields[0] = &Field{
+		Type:  "time.Time",
+		Name:  "create_time",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(m.UpdateTime); err != nil {
+		return nil, err
+	}
+	node.Fields[1] = &Field{
+		Type:  "time.Time",
+		Name:  "update_time",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(m.Number); err != nil {
+		return nil, err
+	}
+	node.Fields[2] = &Field{
+		Type:  "int",
+		Name:  "number",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(m.Name); err != nil {
+		return nil, err
+	}
+	node.Fields[3] = &Field{
+		Type:  "string",
+		Name:  "name",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(m.Kana); err != nil {
+		return nil, err
+	}
+	node.Fields[4] = &Field{
+		Type:  "string",
+		Name:  "kana",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(m.Gender); err != nil {
+		return nil, err
+	}
+	node.Fields[5] = &Field{
+		Type:  "member.Gender",
+		Name:  "gender",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(m.DateOfBirth); err != nil {
+		return nil, err
+	}
+	node.Fields[6] = &Field{
+		Type:  "time.Time",
+		Name:  "date_of_birth",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(m.PhoneNumber); err != nil {
+		return nil, err
+	}
+	node.Fields[7] = &Field{
+		Type:  "string",
+		Name:  "phone_number",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(m.Email); err != nil {
+		return nil, err
+	}
+	node.Fields[8] = &Field{
+		Type:  "string",
+		Name:  "email",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(m.DateOfAdmission); err != nil {
+		return nil, err
+	}
+	node.Fields[9] = &Field{
+		Type:  "time.Time",
+		Name:  "date_of_admission",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(m.DateOfWithdrawal); err != nil {
+		return nil, err
+	}
+	node.Fields[10] = &Field{
+		Type:  "time.Time",
+		Name:  "date_of_withdrawal",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(m.Memo); err != nil {
+		return nil, err
+	}
+	node.Fields[11] = &Field{
+		Type:  "string",
+		Name:  "memo",
+		Value: string(buf),
+	}
+	node.Edges[0] = &Edge{
+		Type: "MembersClass",
+		Name: "members_classes",
+	}
+	err = m.QueryMembersClasses().
+		Select(membersclass.FieldID).
+		Scan(ctx, &node.Edges[0].IDs)
+	if err != nil {
+		return nil, err
+	}
+	return node, nil
+}
+
+func (mc *MembersClass) Node(ctx context.Context) (node *Node, err error) {
+	node = &Node{
+		ID:     mc.ID,
+		Type:   "MembersClass",
+		Fields: make([]*Field, 4),
+		Edges:  make([]*Edge, 2),
+	}
+	var buf []byte
+	if buf, err = json.Marshal(mc.CreateTime); err != nil {
+		return nil, err
+	}
+	node.Fields[0] = &Field{
+		Type:  "time.Time",
+		Name:  "create_time",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(mc.UpdateTime); err != nil {
+		return nil, err
+	}
+	node.Fields[1] = &Field{
+		Type:  "time.Time",
+		Name:  "update_time",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(mc.DateOfAdmission); err != nil {
+		return nil, err
+	}
+	node.Fields[2] = &Field{
+		Type:  "time.Time",
+		Name:  "date_of_admission",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(mc.DateOfWithdrawal); err != nil {
+		return nil, err
+	}
+	node.Fields[3] = &Field{
+		Type:  "time.Time",
+		Name:  "date_of_withdrawal",
+		Value: string(buf),
+	}
+	node.Edges[0] = &Edge{
+		Type: "Member",
+		Name: "member",
+	}
+	err = mc.QueryMember().
+		Select(member.FieldID).
+		Scan(ctx, &node.Edges[0].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[1] = &Edge{
+		Type: "Class",
+		Name: "class",
+	}
+	err = mc.QueryClass().
+		Select(class.FieldID).
+		Scan(ctx, &node.Edges[1].IDs)
 	if err != nil {
 		return nil, err
 	}
@@ -586,6 +778,24 @@ func (c *Client) noder(ctx context.Context, table string, id int) (Noder, error)
 			return nil, err
 		}
 		return n, nil
+	case member.Table:
+		n, err := c.Member.Query().
+			Where(member.ID(id)).
+			CollectFields(ctx, "Member").
+			Only(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return n, nil
+	case membersclass.Table:
+		n, err := c.MembersClass.Query().
+			Where(membersclass.ID(id)).
+			CollectFields(ctx, "MembersClass").
+			Only(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return n, nil
 	case room.Table:
 		n, err := c.Room.Query().
 			Where(room.ID(id)).
@@ -721,6 +931,32 @@ func (c *Client) noders(ctx context.Context, table string, ids []int) ([]Noder, 
 		nodes, err := c.Instructor.Query().
 			Where(instructor.IDIn(ids...)).
 			CollectFields(ctx, "Instructor").
+			All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
+	case member.Table:
+		nodes, err := c.Member.Query().
+			Where(member.IDIn(ids...)).
+			CollectFields(ctx, "Member").
+			All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
+	case membersclass.Table:
+		nodes, err := c.MembersClass.Query().
+			Where(membersclass.IDIn(ids...)).
+			CollectFields(ctx, "MembersClass").
 			All(ctx)
 		if err != nil {
 			return nil, err

@@ -27,6 +27,19 @@ type CreateInstructorInput struct {
 	Email       *string `json:"email"`
 }
 
+type CreateMemberInput struct {
+	Name             string     `json:"name"`
+	Number           int        `json:"number"`
+	Kana             string     `json:"kana"`
+	Gender           Gender     `json:"gender"`
+	DateOfBirth      *time.Time `json:"dateOfBirth"`
+	PhoneNumber      *string    `json:"phoneNumber"`
+	Email            *string    `json:"email"`
+	DateOfAdmission  time.Time  `json:"dateOfAdmission"`
+	DateOfWithdrawal *time.Time `json:"dateOfWithdrawal"`
+	Memo             *string    `json:"memo"`
+}
+
 type CreateRoomInput struct {
 	Name     string `json:"name"`
 	Capacity int    `json:"capacity"`
@@ -49,6 +62,10 @@ type CreateUserInput struct {
 }
 
 type DeleteInstructorInput struct {
+	ID int `json:"id"`
+}
+
+type DeleteMemberInput struct {
 	ID int `json:"id"`
 }
 
@@ -77,6 +94,20 @@ type UpdateInstructorInput struct {
 	Email       *string `json:"email"`
 }
 
+type UpdateMemberInput struct {
+	ID               int        `json:"id"`
+	Number           *int       `json:"number"`
+	Name             *string    `json:"name"`
+	Kana             *string    `json:"kana"`
+	Gender           *Gender    `json:"gender"`
+	DateOfBirth      *time.Time `json:"dateOfBirth"`
+	PhoneNumber      *string    `json:"phoneNumber"`
+	Email            *string    `json:"email"`
+	DateOfAdmission  *time.Time `json:"dateOfAdmission"`
+	DateOfWithdrawal *time.Time `json:"dateOfWithdrawal"`
+	Memo             *string    `json:"memo"`
+}
+
 type UpdateRoomInput struct {
 	ID       int     `json:"id"`
 	Name     *string `json:"name"`
@@ -99,6 +130,49 @@ type UpdateStudioInput struct {
 type UpdateUserInput struct {
 	ID   int    `json:"id"`
 	Name string `json:"name"`
+}
+
+type Gender string
+
+const (
+	GenderMale   Gender = "MALE"
+	GenderFemale Gender = "FEMALE"
+	GenderOther  Gender = "OTHER"
+)
+
+var AllGender = []Gender{
+	GenderMale,
+	GenderFemale,
+	GenderOther,
+}
+
+func (e Gender) IsValid() bool {
+	switch e {
+	case GenderMale, GenderFemale, GenderOther:
+		return true
+	}
+	return false
+}
+
+func (e Gender) String() string {
+	return string(e)
+}
+
+func (e *Gender) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = Gender(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid Gender", str)
+	}
+	return nil
+}
+
+func (e Gender) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
 }
 
 type ScheduleField string

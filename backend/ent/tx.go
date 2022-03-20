@@ -16,6 +16,10 @@ type Tx struct {
 	Class *ClassClient
 	// Instructor is the client for interacting with the Instructor builders.
 	Instructor *InstructorClient
+	// Member is the client for interacting with the Member builders.
+	Member *MemberClient
+	// MembersClass is the client for interacting with the MembersClass builders.
+	MembersClass *MembersClassClient
 	// Room is the client for interacting with the Room builders.
 	Room *RoomClient
 	// Schedule is the client for interacting with the Schedule builders.
@@ -163,6 +167,8 @@ func (tx *Tx) Client() *Client {
 func (tx *Tx) init() {
 	tx.Class = NewClassClient(tx.config)
 	tx.Instructor = NewInstructorClient(tx.config)
+	tx.Member = NewMemberClient(tx.config)
+	tx.MembersClass = NewMembersClassClient(tx.config)
 	tx.Room = NewRoomClient(tx.config)
 	tx.Schedule = NewScheduleClient(tx.config)
 	tx.School = NewSchoolClient(tx.config)

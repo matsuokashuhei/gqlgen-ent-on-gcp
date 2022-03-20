@@ -33,6 +33,30 @@ func (i *InstructorQuery) collectField(ctx *graphql.OperationContext, field grap
 }
 
 // CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (m *MemberQuery) CollectFields(ctx context.Context, satisfies ...string) *MemberQuery {
+	if fc := graphql.GetFieldContext(ctx); fc != nil {
+		m = m.collectField(graphql.GetOperationContext(ctx), fc.Field, satisfies...)
+	}
+	return m
+}
+
+func (m *MemberQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *MemberQuery {
+	return m
+}
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (mc *MembersClassQuery) CollectFields(ctx context.Context, satisfies ...string) *MembersClassQuery {
+	if fc := graphql.GetFieldContext(ctx); fc != nil {
+		mc = mc.collectField(graphql.GetOperationContext(ctx), fc.Field, satisfies...)
+	}
+	return mc
+}
+
+func (mc *MembersClassQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *MembersClassQuery {
+	return mc
+}
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
 func (r *RoomQuery) CollectFields(ctx context.Context, satisfies ...string) *RoomQuery {
 	if fc := graphql.GetFieldContext(ctx); fc != nil {
 		r = r.collectField(graphql.GetOperationContext(ctx), fc.Field, satisfies...)

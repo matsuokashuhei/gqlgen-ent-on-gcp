@@ -478,12 +478,12 @@ export type GetInstructorQueryVariables = Exact<{
 
 export type GetInstructorQuery = { __typename?: 'Query', instructor: { __typename?: 'Instructor', id: string, name: string, kana: string, biography?: string | null, phoneNumber?: string | null, email?: string | null } };
 
-export type GetSchoolQueryVariables = Exact<{
+export type GetClassSchedulesBySchoolQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
 
 
-export type GetSchoolQuery = { __typename?: 'Query', school: { __typename?: 'School', id: string, name: string, studios: Array<{ __typename?: 'Studio', id: string, name: string, location: string, rooms: Array<{ __typename?: 'Room', id: string, name: string, capacity: number, schedules: Array<{ __typename?: 'Schedule', id: string, dayOfWeek: number, startTime: string, endTime: string, class?: { __typename?: 'Class', id: string, name: string, level: string, tuition: number, startDate: any, endDate?: any | null, instructor: { __typename?: 'Instructor', id: string, name: string } } | null }> }> }> } };
+export type GetClassSchedulesBySchoolQuery = { __typename?: 'Query', school: { __typename?: 'School', id: string, name: string, studios: Array<{ __typename?: 'Studio', id: string, name: string, location: string, rooms: Array<{ __typename?: 'Room', id: string, name: string, capacity: number, schedules: Array<{ __typename?: 'Schedule', id: string, dayOfWeek: number, startTime: string, endTime: string, class?: { __typename?: 'Class', id: string, name: string, level: string, tuition: number, startDate: any, endDate?: any | null, instructor: { __typename?: 'Instructor', id: string, name: string } } | null }> }> }> } };
 
 export type GetClassQueryVariables = Exact<{
   id: Scalars['ID'];
@@ -832,8 +832,8 @@ export function useGetInstructorLazyQuery(baseOptions?: Apollo.LazyQueryHookOpti
 export type GetInstructorQueryHookResult = ReturnType<typeof useGetInstructorQuery>;
 export type GetInstructorLazyQueryHookResult = ReturnType<typeof useGetInstructorLazyQuery>;
 export type GetInstructorQueryResult = Apollo.QueryResult<GetInstructorQuery, GetInstructorQueryVariables>;
-export const GetSchoolDocument = gql`
-    query getSchool($id: ID!) {
+export const GetClassSchedulesBySchoolDocument = gql`
+    query getClassSchedulesBySchool($id: ID!) {
   school(id: $id) {
     id
     name
@@ -870,32 +870,32 @@ export const GetSchoolDocument = gql`
     `;
 
 /**
- * __useGetSchoolQuery__
+ * __useGetClassSchedulesBySchoolQuery__
  *
- * To run a query within a React component, call `useGetSchoolQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetSchoolQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useGetClassSchedulesBySchoolQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetClassSchedulesBySchoolQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useGetSchoolQuery({
+ * const { data, loading, error } = useGetClassSchedulesBySchoolQuery({
  *   variables: {
  *      id: // value for 'id'
  *   },
  * });
  */
-export function useGetSchoolQuery(baseOptions: Apollo.QueryHookOptions<GetSchoolQuery, GetSchoolQueryVariables>) {
+export function useGetClassSchedulesBySchoolQuery(baseOptions: Apollo.QueryHookOptions<GetClassSchedulesBySchoolQuery, GetClassSchedulesBySchoolQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetSchoolQuery, GetSchoolQueryVariables>(GetSchoolDocument, options);
+        return Apollo.useQuery<GetClassSchedulesBySchoolQuery, GetClassSchedulesBySchoolQueryVariables>(GetClassSchedulesBySchoolDocument, options);
       }
-export function useGetSchoolLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetSchoolQuery, GetSchoolQueryVariables>) {
+export function useGetClassSchedulesBySchoolLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetClassSchedulesBySchoolQuery, GetClassSchedulesBySchoolQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetSchoolQuery, GetSchoolQueryVariables>(GetSchoolDocument, options);
+          return Apollo.useLazyQuery<GetClassSchedulesBySchoolQuery, GetClassSchedulesBySchoolQueryVariables>(GetClassSchedulesBySchoolDocument, options);
         }
-export type GetSchoolQueryHookResult = ReturnType<typeof useGetSchoolQuery>;
-export type GetSchoolLazyQueryHookResult = ReturnType<typeof useGetSchoolLazyQuery>;
-export type GetSchoolQueryResult = Apollo.QueryResult<GetSchoolQuery, GetSchoolQueryVariables>;
+export type GetClassSchedulesBySchoolQueryHookResult = ReturnType<typeof useGetClassSchedulesBySchoolQuery>;
+export type GetClassSchedulesBySchoolLazyQueryHookResult = ReturnType<typeof useGetClassSchedulesBySchoolLazyQuery>;
+export type GetClassSchedulesBySchoolQueryResult = Apollo.QueryResult<GetClassSchedulesBySchoolQuery, GetClassSchedulesBySchoolQueryVariables>;
 export const GetClassDocument = gql`
     query getClass($id: ID!) {
   class(id: $id) {

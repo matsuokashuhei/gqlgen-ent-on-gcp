@@ -34,5 +34,6 @@ func (Class) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("schedule", Schedule.Type).Ref("classes").Unique().Required(),
 		edge.From("instructor", Instructor.Type).Ref("classes").Unique().Required(),
+		edge.To("members_classes", MembersClass.Type),
 	}
 }

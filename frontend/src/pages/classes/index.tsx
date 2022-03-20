@@ -2,9 +2,12 @@ import { PlusSmIcon } from "@heroicons/react/solid";
 import { useEffect, VFC } from "react";
 import { Link } from "react-router-dom";
 import { Layout } from "../../components";
-import { GetSchoolQuery, useGetSchoolLazyQuery } from "../../generated/graphql";
+import {
+  GetClassSchedulesBySchoolQuery,
+  useGetClassSchedulesBySchoolLazyQuery,
+} from "../../generated/graphql";
 
-type StdiosType = GetSchoolQuery["school"]["studios"];
+type StdiosType = GetClassSchedulesBySchoolQuery["school"]["studios"];
 type StdioType = StdiosType[number];
 type RoomsType = StdioType["rooms"];
 type RoomType = RoomsType[number];
@@ -13,11 +16,12 @@ type ClassType = NonNullable<SchedulesType[number]["class"]>;
 type InstructorType = ClassType["instructor"];
 
 export const ClassesPage: VFC = () => {
-  const [getSchool, { data, loading, error }] = useGetSchoolLazyQuery();
+  const [getClassSchedulesBySchool, { data, loading, error }] =
+    useGetClassSchedulesBySchoolLazyQuery();
 
   useEffect(() => {
-    getSchool({ variables: { id: "1" } });
-  }, [getSchool]);
+    getClassSchedulesBySchool({ variables: { id: "1" } });
+  }, [getClassSchedulesBySchool]);
 
   const renderStudios = (studios: StdiosType) => {
     return studios.map((studio) => renderStudio(studio));
@@ -67,7 +71,7 @@ export const ClassesPage: VFC = () => {
       "20:30",
       "21:45",
     ].map((startTime) => {
-      return [0, 1, 2, 3, 4, 5, 6, 7].map((dayOfWeek, index) => {
+      return [0, 1, 2, 3, 4, 5, 6, 7].map((dayOfWeek) => {
         if (dayOfWeek === 0) {
           return <div key={dayOfWeek}>{startTime}</div>;
         }

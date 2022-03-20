@@ -44,7 +44,7 @@ gql`
 `;
 
 gql`
-  query getSchool($id: ID!) {
+  query getClassSchedulesBySchool($id: ID!) {
     school(id: $id) {
       id
       name

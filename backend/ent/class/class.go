@@ -29,6 +29,8 @@ const (
 	EdgeSchedule = "schedule"
 	// EdgeInstructor holds the string denoting the instructor edge name in mutations.
 	EdgeInstructor = "instructor"
+	// EdgeMembersClasses holds the string denoting the members_classes edge name in mutations.
+	EdgeMembersClasses = "members_classes"
 	// Table holds the table name of the class in the database.
 	Table = "classes"
 	// ScheduleTable is the table that holds the schedule relation/edge.
@@ -45,6 +47,13 @@ const (
 	InstructorInverseTable = "instructors"
 	// InstructorColumn is the table column denoting the instructor relation/edge.
 	InstructorColumn = "instructor_classes"
+	// MembersClassesTable is the table that holds the members_classes relation/edge.
+	MembersClassesTable = "members_classes"
+	// MembersClassesInverseTable is the table name for the MembersClass entity.
+	// It exists in this package in order to avoid circular dependency with the "membersclass" package.
+	MembersClassesInverseTable = "members_classes"
+	// MembersClassesColumn is the table column denoting the members_classes relation/edge.
+	MembersClassesColumn = "class_members_classes"
 )
 
 // Columns holds all SQL columns for class fields.

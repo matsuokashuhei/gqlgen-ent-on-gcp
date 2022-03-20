@@ -58,6 +58,58 @@ var (
 		Columns:    InstructorsColumns,
 		PrimaryKey: []*schema.Column{InstructorsColumns[0]},
 	}
+	// MembersColumns holds the columns for the "members" table.
+	MembersColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "create_time", Type: field.TypeTime},
+		{Name: "update_time", Type: field.TypeTime},
+		{Name: "number", Type: field.TypeInt, Unique: true},
+		{Name: "name", Type: field.TypeString},
+		{Name: "kana", Type: field.TypeString},
+		{Name: "gender", Type: field.TypeEnum, Enums: []string{"male", "female", "other"}},
+		{Name: "date_of_birth", Type: field.TypeTime, Nullable: true},
+		{Name: "phone_number", Type: field.TypeString, Nullable: true},
+		{Name: "email", Type: field.TypeString, Nullable: true},
+		{Name: "date_of_admission", Type: field.TypeTime},
+		{Name: "date_of_withdrawal", Type: field.TypeTime, Nullable: true},
+		{Name: "memo", Type: field.TypeString, Nullable: true},
+	}
+	// MembersTable holds the schema information for the "members" table.
+	MembersTable = &schema.Table{
+		Name:       "members",
+		Columns:    MembersColumns,
+		PrimaryKey: []*schema.Column{MembersColumns[0]},
+	}
+	// MembersClassesColumns holds the columns for the "members_classes" table.
+	MembersClassesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "create_time", Type: field.TypeTime},
+		{Name: "update_time", Type: field.TypeTime},
+		{Name: "date_of_admission", Type: field.TypeTime},
+		{Name: "date_of_withdrawal", Type: field.TypeTime, Nullable: true},
+		{Name: "class_members_classes", Type: field.TypeInt},
+		{Name: "member_members_classes", Type: field.TypeInt},
+	}
+	// MembersClassesTable holds the schema information for the "members_classes" table.
+	MembersClassesTable = &schema.Table{
+		Name:       "members_classes",
+		Columns:    MembersClassesColumns,
+		PrimaryKey: []*schema.Column{MembersClassesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "members_classes_classes_members_classes",
+				Columns:    []*schema.Column{MembersClassesColumns[5]},
+				RefColumns: []*schema.Column{ClassesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "members_classes_members_members_classes",
+				Columns:    []*schema.Column{MembersClassesColumns[6]},
+				RefColumns: []*schema.Column{MembersColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
 	// RoomsColumns holds the columns for the "rooms" table.
 	RoomsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -159,6 +211,8 @@ var (
 	Tables = []*schema.Table{
 		ClassesTable,
 		InstructorsTable,
+		MembersTable,
+		MembersClassesTable,
 		RoomsTable,
 		SchedulesTable,
 		SchoolsTable,
@@ -170,6 +224,8 @@ var (
 func init() {
 	ClassesTable.ForeignKeys[0].RefTable = InstructorsTable
 	ClassesTable.ForeignKeys[1].RefTable = SchedulesTable
+	MembersClassesTable.ForeignKeys[0].RefTable = ClassesTable
+	MembersClassesTable.ForeignKeys[1].RefTable = MembersTable
 	RoomsTable.ForeignKeys[0].RefTable = StudiosTable
 	SchedulesTable.ForeignKeys[0].RefTable = RoomsTable
 	StudiosTable.ForeignKeys[0].RefTable = SchoolsTable

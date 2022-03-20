@@ -21,7 +21,7 @@ type InstructorEdge {
 }
 
 enum InstructorOrderField {
-  SYLLABIC_CHARACTERS
+  KANA
 }
 
 input InstructorOrder {
