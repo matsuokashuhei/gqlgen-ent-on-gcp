@@ -48,6 +48,7 @@ type ClassMutation struct {
 	create_time       *time.Time
 	update_time       *time.Time
 	name              *string
+	level             *string
 	tuition           *int
 	addtuition        *int
 	start_date        *time.Time
@@ -266,6 +267,42 @@ func (m *ClassMutation) OldName(ctx context.Context) (v string, err error) {
 // ResetName resets all changes to the "name" field.
 func (m *ClassMutation) ResetName() {
 	m.name = nil
+}
+
+// SetLevel sets the "level" field.
+func (m *ClassMutation) SetLevel(s string) {
+	m.level = &s
+}
+
+// Level returns the value of the "level" field in the mutation.
+func (m *ClassMutation) Level() (r string, exists bool) {
+	v := m.level
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLevel returns the old "level" field's value of the Class entity.
+// If the Class object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ClassMutation) OldLevel(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLevel is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLevel requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLevel: %w", err)
+	}
+	return oldValue.Level, nil
+}
+
+// ResetLevel resets all changes to the "level" field.
+func (m *ClassMutation) ResetLevel() {
+	m.level = nil
 }
 
 // SetTuition sets the "tuition" field.
@@ -506,7 +543,7 @@ func (m *ClassMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ClassMutation) Fields() []string {
-	fields := make([]string, 0, 6)
+	fields := make([]string, 0, 7)
 	if m.create_time != nil {
 		fields = append(fields, class.FieldCreateTime)
 	}
@@ -515,6 +552,9 @@ func (m *ClassMutation) Fields() []string {
 	}
 	if m.name != nil {
 		fields = append(fields, class.FieldName)
+	}
+	if m.level != nil {
+		fields = append(fields, class.FieldLevel)
 	}
 	if m.tuition != nil {
 		fields = append(fields, class.FieldTuition)
@@ -539,6 +579,8 @@ func (m *ClassMutation) Field(name string) (ent.Value, bool) {
 		return m.UpdateTime()
 	case class.FieldName:
 		return m.Name()
+	case class.FieldLevel:
+		return m.Level()
 	case class.FieldTuition:
 		return m.Tuition()
 	case class.FieldStartDate:
@@ -560,6 +602,8 @@ func (m *ClassMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldUpdateTime(ctx)
 	case class.FieldName:
 		return m.OldName(ctx)
+	case class.FieldLevel:
+		return m.OldLevel(ctx)
 	case class.FieldTuition:
 		return m.OldTuition(ctx)
 	case class.FieldStartDate:
@@ -595,6 +639,13 @@ func (m *ClassMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetName(v)
+		return nil
+	case class.FieldLevel:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLevel(v)
 		return nil
 	case class.FieldTuition:
 		v, ok := value.(int)
@@ -698,6 +749,9 @@ func (m *ClassMutation) ResetField(name string) error {
 		return nil
 	case class.FieldName:
 		m.ResetName()
+		return nil
+	case class.FieldLevel:
+		m.ResetLevel()
 		return nil
 	case class.FieldTuition:
 		m.ResetTuition()
@@ -2273,8 +2327,6 @@ type ScheduleMutation struct {
 	classes        map[int]struct{}
 	removedclasses map[int]struct{}
 	clearedclasses bool
-	class          *int
-	clearedclass   bool
 	done           bool
 	oldValue       func(context.Context) (*Schedule, error)
 	predicates     []predicate.Schedule
@@ -2671,45 +2723,6 @@ func (m *ScheduleMutation) ResetClasses() {
 	m.removedclasses = nil
 }
 
-// SetClassID sets the "class" edge to the Class entity by id.
-func (m *ScheduleMutation) SetClassID(id int) {
-	m.class = &id
-}
-
-// ClearClass clears the "class" edge to the Class entity.
-func (m *ScheduleMutation) ClearClass() {
-	m.clearedclass = true
-}
-
-// ClassCleared reports if the "class" edge to the Class entity was cleared.
-func (m *ScheduleMutation) ClassCleared() bool {
-	return m.clearedclass
-}
-
-// ClassID returns the "class" edge ID in the mutation.
-func (m *ScheduleMutation) ClassID() (id int, exists bool) {
-	if m.class != nil {
-		return *m.class, true
-	}
-	return
-}
-
-// ClassIDs returns the "class" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// ClassID instead. It exists only for internal usage by the builders.
-func (m *ScheduleMutation) ClassIDs() (ids []int) {
-	if id := m.class; id != nil {
-		ids = append(ids, *id)
-	}
-	return
-}
-
-// ResetClass resets all changes to the "class" edge.
-func (m *ScheduleMutation) ResetClass() {
-	m.class = nil
-	m.clearedclass = false
-}
-
 // Where appends a list predicates to the ScheduleMutation builder.
 func (m *ScheduleMutation) Where(ps ...predicate.Schedule) {
 	m.predicates = append(m.predicates, ps...)
@@ -2911,15 +2924,12 @@ func (m *ScheduleMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *ScheduleMutation) AddedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 2)
 	if m.room != nil {
 		edges = append(edges, schedule.EdgeRoom)
 	}
 	if m.classes != nil {
 		edges = append(edges, schedule.EdgeClasses)
-	}
-	if m.class != nil {
-		edges = append(edges, schedule.EdgeClass)
 	}
 	return edges
 }
@@ -2938,17 +2948,13 @@ func (m *ScheduleMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case schedule.EdgeClass:
-		if id := m.class; id != nil {
-			return []ent.Value{*id}
-		}
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *ScheduleMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 2)
 	if m.removedclasses != nil {
 		edges = append(edges, schedule.EdgeClasses)
 	}
@@ -2971,15 +2977,12 @@ func (m *ScheduleMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *ScheduleMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 2)
 	if m.clearedroom {
 		edges = append(edges, schedule.EdgeRoom)
 	}
 	if m.clearedclasses {
 		edges = append(edges, schedule.EdgeClasses)
-	}
-	if m.clearedclass {
-		edges = append(edges, schedule.EdgeClass)
 	}
 	return edges
 }
@@ -2992,8 +2995,6 @@ func (m *ScheduleMutation) EdgeCleared(name string) bool {
 		return m.clearedroom
 	case schedule.EdgeClasses:
 		return m.clearedclasses
-	case schedule.EdgeClass:
-		return m.clearedclass
 	}
 	return false
 }
@@ -3004,9 +3005,6 @@ func (m *ScheduleMutation) ClearEdge(name string) error {
 	switch name {
 	case schedule.EdgeRoom:
 		m.ClearRoom()
-		return nil
-	case schedule.EdgeClass:
-		m.ClearClass()
 		return nil
 	}
 	return fmt.Errorf("unknown Schedule unique edge %s", name)
@@ -3021,9 +3019,6 @@ func (m *ScheduleMutation) ResetEdge(name string) error {
 		return nil
 	case schedule.EdgeClasses:
 		m.ResetClasses()
-		return nil
-	case schedule.EdgeClass:
-		m.ResetClass()
 		return nil
 	}
 	return fmt.Errorf("unknown Schedule edge %s", name)

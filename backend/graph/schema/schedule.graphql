@@ -3,7 +3,7 @@ type Schedule implements Node {
   dayOfWeek: Int!
   startTime: String!
   endTime: String!
-  class(time: Time!): Class @goField(forceResolver: true)
+  class(date: Time): Class @goField(forceResolver: true)
   createTime: Time!
   updateTime: Time!
 }
@@ -11,4 +11,8 @@ type Schedule implements Node {
 enum ScheduleField {
   DAY_OF_WEEK
   START_TIME
+}
+
+extend type Query {
+  schedule(id: ID!): Schedule!
 }

@@ -30,7 +30,6 @@ type ScheduleQuery struct {
 	// eager-loading edges.
 	withRoom    *RoomQuery
 	withClasses *ClassQuery
-	withClass   *ClassQuery
 	withFKs     bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -105,28 +104,6 @@ func (sq *ScheduleQuery) QueryClasses() *ClassQuery {
 			sqlgraph.From(schedule.Table, schedule.FieldID, selector),
 			sqlgraph.To(class.Table, class.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, schedule.ClassesTable, schedule.ClassesColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryClass chains the current query on the "class" edge.
-func (sq *ScheduleQuery) QueryClass() *ClassQuery {
-	query := &ClassQuery{config: sq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := sq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := sq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(schedule.Table, schedule.FieldID, selector),
-			sqlgraph.To(class.Table, class.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, schedule.ClassTable, schedule.ClassColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
 		return fromU, nil
@@ -317,7 +294,6 @@ func (sq *ScheduleQuery) Clone() *ScheduleQuery {
 		predicates:  append([]predicate.Schedule{}, sq.predicates...),
 		withRoom:    sq.withRoom.Clone(),
 		withClasses: sq.withClasses.Clone(),
-		withClass:   sq.withClass.Clone(),
 		// clone intermediate query.
 		sql:    sq.sql.Clone(),
 		path:   sq.path,
@@ -344,17 +320,6 @@ func (sq *ScheduleQuery) WithClasses(opts ...func(*ClassQuery)) *ScheduleQuery {
 		opt(query)
 	}
 	sq.withClasses = query
-	return sq
-}
-
-// WithClass tells the query-builder to eager-load the nodes that are connected to
-// the "class" edge. The optional arguments are used to configure the query builder of the edge.
-func (sq *ScheduleQuery) WithClass(opts ...func(*ClassQuery)) *ScheduleQuery {
-	query := &ClassQuery{config: sq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	sq.withClass = query
 	return sq
 }
 
@@ -424,13 +389,12 @@ func (sq *ScheduleQuery) sqlAll(ctx context.Context) ([]*Schedule, error) {
 		nodes       = []*Schedule{}
 		withFKs     = sq.withFKs
 		_spec       = sq.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [2]bool{
 			sq.withRoom != nil,
 			sq.withClasses != nil,
-			sq.withClass != nil,
 		}
 	)
-	if sq.withRoom != nil || sq.withClass != nil {
+	if sq.withRoom != nil {
 		withFKs = true
 	}
 	if withFKs {
@@ -511,35 +475,6 @@ func (sq *ScheduleQuery) sqlAll(ctx context.Context) ([]*Schedule, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "schedule_classes" returned %v for node %v`, *fk, n.ID)
 			}
 			node.Edges.Classes = append(node.Edges.Classes, n)
-		}
-	}
-
-	if query := sq.withClass; query != nil {
-		ids := make([]int, 0, len(nodes))
-		nodeids := make(map[int][]*Schedule)
-		for i := range nodes {
-			if nodes[i].schedule_class == nil {
-				continue
-			}
-			fk := *nodes[i].schedule_class
-			if _, ok := nodeids[fk]; !ok {
-				ids = append(ids, fk)
-			}
-			nodeids[fk] = append(nodeids[fk], nodes[i])
-		}
-		query.Where(class.IDIn(ids...))
-		neighbors, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, n := range neighbors {
-			nodes, ok := nodeids[n.ID]
-			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "schedule_class" returned %v`, n.ID)
-			}
-			for i := range nodes {
-				nodes[i].Edges.Class = n
-			}
 		}
 	}
 

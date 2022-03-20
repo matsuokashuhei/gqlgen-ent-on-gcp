@@ -24,8 +24,6 @@ gql`
           biography
           phoneNumber
           email
-          createTime
-          updateTime
         }
       }
     }
@@ -41,8 +39,6 @@ gql`
       biography
       phoneNumber
       email
-      createTime
-      updateTime
     }
   }
 `;
@@ -52,28 +48,72 @@ gql`
     school(id: $id) {
       id
       name
-      createTime
-      updateTime
       studios {
         id
         name
         location
-        createTime
-        updateTime
         rooms {
           id
           name
           capacity
-          createTime
-          updateTime
           schedules {
             id
             dayOfWeek
             startTime
             endTime
-            createTime
-            updateTime
+            class {
+              id
+              name
+              level
+              tuition
+              startDate
+              endDate
+              instructor {
+                id
+                name
+              }
+            }
           }
+        }
+      }
+    }
+  }
+`;
+
+gql`
+  query getClass($id: ID!) {
+    class(id: $id) {
+      id
+      name
+      level
+      tuition
+      startDate
+      endDate
+      instructor {
+        id
+        name
+      }
+      schedule {
+        id
+      }
+    }
+  }
+`;
+
+gql`
+  query getScheduleAndInstructorsToRegisterNewClass($id: ID!) {
+    schedule(id: $id) {
+      id
+      dayOfWeek
+      startTime
+      endTime
+    }
+    instructors(first: 100) {
+      totalCount
+      edges {
+        node {
+          id
+          name
         }
       }
     }

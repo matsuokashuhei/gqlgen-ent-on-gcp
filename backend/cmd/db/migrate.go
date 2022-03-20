@@ -6,10 +6,11 @@ import (
 	"log"
 	"os"
 
-	"ariga.io/atlas/sql/migrate"
+	atlas "ariga.io/atlas/sql/migrate"
 	"entgo.io/ent/dialect/sql/schema"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/matsuokashuhei/landin/ent"
+	"github.com/matsuokashuhei/landin/ent/migrate"
 )
 
 func main() {
@@ -30,13 +31,18 @@ func main() {
 	defer client.Close()
 
 	// Create a local migration directory.
-	dir, err := migrate.NewLocalDir("migrations")
+	dir, err := atlas.NewLocalDir("migrations")
 	if err != nil {
 		log.Fatalf("failed creating atlas migration directory: %v", err)
 	}
 	ctx := context.Background()
 	// Write migration diff.
-	err = client.Schema.Diff(ctx, schema.WithDir(dir))
+	err = client.Schema.Diff(
+		ctx,
+		schema.WithDir(dir),
+		migrate.WithDropColumn(true),
+		migrate.WithDropIndex(true),
+	)
 	if err != nil {
 		log.Fatalf("failed creating schema resources: %v", err)
 	}

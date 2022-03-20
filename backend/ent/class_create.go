@@ -56,6 +56,12 @@ func (cc *ClassCreate) SetName(s string) *ClassCreate {
 	return cc
 }
 
+// SetLevel sets the "level" field.
+func (cc *ClassCreate) SetLevel(s string) *ClassCreate {
+	cc.mutation.SetLevel(s)
+	return cc
+}
+
 // SetTuition sets the "tuition" field.
 func (cc *ClassCreate) SetTuition(i int) *ClassCreate {
 	cc.mutation.SetTuition(i)
@@ -196,6 +202,9 @@ func (cc *ClassCreate) check() error {
 	if _, ok := cc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Class.name"`)}
 	}
+	if _, ok := cc.mutation.Level(); !ok {
+		return &ValidationError{Name: "level", err: errors.New(`ent: missing required field "Class.level"`)}
+	}
 	if _, ok := cc.mutation.Tuition(); !ok {
 		return &ValidationError{Name: "tuition", err: errors.New(`ent: missing required field "Class.tuition"`)}
 	}
@@ -258,6 +267,14 @@ func (cc *ClassCreate) createSpec() (*Class, *sqlgraph.CreateSpec) {
 			Column: class.FieldName,
 		})
 		_node.Name = value
+	}
+	if value, ok := cc.mutation.Level(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: class.FieldLevel,
+		})
+		_node.Level = value
 	}
 	if value, ok := cc.mutation.Tuition(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

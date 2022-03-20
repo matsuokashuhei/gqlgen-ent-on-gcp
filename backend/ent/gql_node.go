@@ -56,7 +56,7 @@ func (c *Class) Node(ctx context.Context) (node *Node, err error) {
 	node = &Node{
 		ID:     c.ID,
 		Type:   "Class",
-		Fields: make([]*Field, 6),
+		Fields: make([]*Field, 7),
 		Edges:  make([]*Edge, 2),
 	}
 	var buf []byte
@@ -84,10 +84,18 @@ func (c *Class) Node(ctx context.Context) (node *Node, err error) {
 		Name:  "name",
 		Value: string(buf),
 	}
-	if buf, err = json.Marshal(c.Tuition); err != nil {
+	if buf, err = json.Marshal(c.Level); err != nil {
 		return nil, err
 	}
 	node.Fields[3] = &Field{
+		Type:  "string",
+		Name:  "level",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(c.Tuition); err != nil {
+		return nil, err
+	}
+	node.Fields[4] = &Field{
 		Type:  "int",
 		Name:  "tuition",
 		Value: string(buf),
@@ -95,7 +103,7 @@ func (c *Class) Node(ctx context.Context) (node *Node, err error) {
 	if buf, err = json.Marshal(c.StartDate); err != nil {
 		return nil, err
 	}
-	node.Fields[4] = &Field{
+	node.Fields[5] = &Field{
 		Type:  "time.Time",
 		Name:  "start_date",
 		Value: string(buf),
@@ -103,7 +111,7 @@ func (c *Class) Node(ctx context.Context) (node *Node, err error) {
 	if buf, err = json.Marshal(c.EndDate); err != nil {
 		return nil, err
 	}
-	node.Fields[5] = &Field{
+	node.Fields[6] = &Field{
 		Type:  "time.Time",
 		Name:  "end_date",
 		Value: string(buf),
@@ -276,7 +284,7 @@ func (s *Schedule) Node(ctx context.Context) (node *Node, err error) {
 		ID:     s.ID,
 		Type:   "Schedule",
 		Fields: make([]*Field, 5),
-		Edges:  make([]*Edge, 3),
+		Edges:  make([]*Edge, 2),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(s.CreateTime); err != nil {
@@ -336,16 +344,6 @@ func (s *Schedule) Node(ctx context.Context) (node *Node, err error) {
 	err = s.QueryClasses().
 		Select(class.FieldID).
 		Scan(ctx, &node.Edges[1].IDs)
-	if err != nil {
-		return nil, err
-	}
-	node.Edges[2] = &Edge{
-		Type: "Class",
-		Name: "class",
-	}
-	err = s.QueryClass().
-		Select(class.FieldID).
-		Scan(ctx, &node.Edges[2].IDs)
 	if err != nil {
 		return nil, err
 	}

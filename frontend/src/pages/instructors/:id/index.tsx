@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Layout } from "../../../components";
 import {
   DeleteInstructorInput,
-  Instructor,
+  GetInstructorQuery,
   UpdateInstructorInput,
   useDeleteInstructorMutation,
   useGetInstructorLazyQuery,
@@ -50,7 +50,7 @@ export const InstructorPage: VFC = () => {
       .then(() => setEditable(false));
   };
 
-  const renderInstructor = (instructor: Instructor) => {
+  const renderInstructor = (instructor: GetInstructorQuery["instructor"]) => {
     if (editable) {
       return (
         <form className="flex flex-col">
@@ -92,8 +92,6 @@ export const InstructorPage: VFC = () => {
           <div>{instructor.biography}</div>
           <div>{instructor.phoneNumber}</div>
           <div>{instructor.email}</div>
-          <div>{instructor.createTime}</div>
-          <div>{instructor.updateTime}</div>
         </div>
       );
     }
@@ -116,10 +114,9 @@ export const InstructorPage: VFC = () => {
     }
   };
 
-  const renderDeleteButton = () => {
+  const renderDeleteButton = (instructor: GetInstructorQuery["instructor"]) => {
     if (editable) return <></>;
-    if (!data) return <></>;
-    const { id }: Instructor = data?.instructor;
+    const { id } = instructor;
 
     return (
       <button
@@ -144,7 +141,7 @@ export const InstructorPage: VFC = () => {
     <Layout>
       {renderInstructor(instructor)}
       {renderEditButton()}
-      {renderDeleteButton()}
+      {renderDeleteButton(instructor)}
     </Layout>
   );
 };

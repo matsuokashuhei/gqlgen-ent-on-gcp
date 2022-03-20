@@ -14,6 +14,7 @@ var (
 		{Name: "create_time", Type: field.TypeTime},
 		{Name: "update_time", Type: field.TypeTime},
 		{Name: "name", Type: field.TypeString},
+		{Name: "level", Type: field.TypeString},
 		{Name: "tuition", Type: field.TypeInt},
 		{Name: "start_date", Type: field.TypeTime},
 		{Name: "end_date", Type: field.TypeTime, Nullable: true},
@@ -28,13 +29,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "classes_instructors_classes",
-				Columns:    []*schema.Column{ClassesColumns[7]},
+				Columns:    []*schema.Column{ClassesColumns[8]},
 				RefColumns: []*schema.Column{InstructorsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "classes_schedules_classes",
-				Columns:    []*schema.Column{ClassesColumns[8]},
+				Columns:    []*schema.Column{ClassesColumns[9]},
 				RefColumns: []*schema.Column{SchedulesColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -89,7 +90,6 @@ var (
 		{Name: "start_time", Type: field.TypeString},
 		{Name: "end_time", Type: field.TypeString},
 		{Name: "room_schedules", Type: field.TypeInt},
-		{Name: "schedule_class", Type: field.TypeInt, Nullable: true},
 	}
 	// SchedulesTable holds the schema information for the "schedules" table.
 	SchedulesTable = &schema.Table{
@@ -102,12 +102,6 @@ var (
 				Columns:    []*schema.Column{SchedulesColumns[6]},
 				RefColumns: []*schema.Column{RoomsColumns[0]},
 				OnDelete:   schema.NoAction,
-			},
-			{
-				Symbol:     "schedules_classes_class",
-				Columns:    []*schema.Column{SchedulesColumns[7]},
-				RefColumns: []*schema.Column{ClassesColumns[0]},
-				OnDelete:   schema.SetNull,
 			},
 		},
 	}
@@ -178,6 +172,5 @@ func init() {
 	ClassesTable.ForeignKeys[1].RefTable = SchedulesTable
 	RoomsTable.ForeignKeys[0].RefTable = StudiosTable
 	SchedulesTable.ForeignKeys[0].RefTable = RoomsTable
-	SchedulesTable.ForeignKeys[1].RefTable = ClassesTable
 	StudiosTable.ForeignKeys[0].RefTable = SchoolsTable
 }

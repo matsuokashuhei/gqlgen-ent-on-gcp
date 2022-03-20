@@ -60,14 +60,6 @@ func (s *Schedule) Classes(ctx context.Context) ([]*Class, error) {
 	return result, err
 }
 
-func (s *Schedule) Class(ctx context.Context) (*Class, error) {
-	result, err := s.Edges.ClassOrErr()
-	if IsNotLoaded(err) {
-		result, err = s.QueryClass().Only(ctx)
-	}
-	return result, MaskNotFound(err)
-}
-
 func (s *School) Studios(ctx context.Context) ([]*Studio, error) {
 	result, err := s.Edges.StudiosOrErr()
 	if IsNotLoaded(err) {

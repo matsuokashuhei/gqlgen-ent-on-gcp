@@ -22,6 +22,7 @@ func (Class) Mixin() []ent.Mixin {
 func (Class) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("name"),
+		field.String("level"),
 		field.Int("tuition"),
 		field.Time("start_date"),
 		field.Time("end_date").Optional(),

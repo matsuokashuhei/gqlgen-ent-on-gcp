@@ -1,11 +1,43 @@
 type Class implements Node {
-    id: ID!
-    name: String!
-    tuition: Int!
-    schedule: Schedule!
-    instructor: Instructor!
-    startDate: Time!
-    endDate: Time
-    createTime: Time!
-    updateTime: Time!
+  id: ID!
+  name: String!
+  level: String!
+  tuition: Int!
+  schedule: Schedule!
+  instructor: Instructor!
+  startDate: Time!
+  endDate: Time
+  createTime: Time!
+  updateTime: Time!
+}
+
+input CreateClassInput {
+  name: String!
+  level: String!
+  tuition: Int!
+  scheduleId: ID!
+  instructorId: ID!
+  startDate: Time!
+  endDate: Time
+}
+
+input UpdateClassInput {
+  id: ID!
+  name: String
+  level: String
+  tuition: Int
+  scheduleId: ID
+  instructorId: ID
+  startDate: Time
+  endDate: Time
+}
+
+extend type Query {
+  class(id: ID!): Class!
+}
+
+extend type Mutation {
+  createClass(input: CreateClassInput!): Class!
+  updateClass(input: UpdateClassInput!): Class!
+  deleteClass(id: ID!): Class!
 }

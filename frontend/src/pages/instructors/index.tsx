@@ -2,7 +2,7 @@ import { useEffect, VFC } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Layout, PaginationLinks } from "../../components";
 import {
-  InstructorEdge,
+  GetInstructorsQuery,
   useGetInstructorsLazyQuery,
 } from "../../generated/graphql";
 
@@ -24,7 +24,9 @@ export const InstructorsPage: VFC = () => {
     }
   }, [getInstructors, searchParams]);
 
-  const renderInstructors = (edges: InstructorEdge[]) => {
+  const renderInstructors = (
+    edges: GetInstructorsQuery["instructors"]["edges"]
+  ) => {
     return edges.map(({ cursor, node }) => (
       <tr key={cursor} onClick={() => navigate(`/instructors/${node.id}`)}>
         <td>{node.id}</td>

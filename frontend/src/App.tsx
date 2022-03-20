@@ -9,6 +9,8 @@ import { InstructorPage } from "./pages/instructors/:id";
 import { SignIn } from "./pages/sign-in";
 import { SignUp } from "./pages/sign-up";
 import { Public, Private } from "./routes";
+import { NewClassPage } from "./pages/schedules/:id/classes/new";
+import { ClassPage } from "./pages/classes/:id";
 
 const client = new ApolloClient({
   uri: "http://localhost:8080/query",
@@ -74,6 +76,22 @@ function App() {
               element={
                 <Private>
                   <ClassesPage />
+                </Private>
+              }
+            />
+            <Route
+              path="classes/:id"
+              element={
+                <Private>
+                  <ClassPage />
+                </Private>
+              }
+            />
+            <Route
+              path="schedules/:id/classes/new"
+              element={
+                <Private>
+                  <NewClassPage />
                 </Private>
               }
             />
