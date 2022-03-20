@@ -120,6 +120,7 @@ type ComplexityRoot struct {
 		Nodes       func(childComplexity int, ids []int) int
 		Room        func(childComplexity int, id int) int
 		Rooms       func(childComplexity int) int
+		Schedule    func(childComplexity int, id int) int
 		School      func(childComplexity int, id int) int
 		Schools     func(childComplexity int) int
 		Studio      func(childComplexity int, id int) int
@@ -203,6 +204,7 @@ type QueryResolver interface {
 	Nodes(ctx context.Context, ids []int) ([]ent.Noder, error)
 	Room(ctx context.Context, id int) (*ent.Room, error)
 	Rooms(ctx context.Context) ([]*ent.Room, error)
+	Schedule(ctx context.Context, id int) (*ent.Schedule, error)
 	School(ctx context.Context, id int) (*ent.School, error)
 	Schools(ctx context.Context) ([]*ent.School, error)
 	Studio(ctx context.Context, id int) (*ent.Studio, error)
@@ -721,6 +723,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.Rooms(childComplexity), true
+
+	case "Query.schedule":
+		if e.complexity.Query.Schedule == nil {
+			break
+		}
+
+		args, err := ec.field_Query_schedule_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Schedule(childComplexity, args["id"].(int)), true
 
 	case "Query.school":
 		if e.complexity.Query.School == nil {
@@ -1249,6 +1263,10 @@ enum ScheduleField {
   DAY_OF_WEEK
   START_TIME
 }
+
+extend type Query {
+  schedule(id: ID!): Schedule!
+}
 `, BuiltIn: false},
 	{Name: "graph/schema/school.graphql", Input: `# GraphQL schema example
 #
@@ -1759,6 +1777,21 @@ func (ec *executionContext) field_Query_nodes_args(ctx context.Context, rawArgs 
 }
 
 func (ec *executionContext) field_Query_room_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 int
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_schedule_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 int
@@ -3871,6 +3904,48 @@ func (ec *executionContext) _Query_rooms(ctx context.Context, field graphql.Coll
 	res := resTmp.([]*ent.Room)
 	fc.Result = res
 	return ec.marshalNRoom2ᚕᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋentᚐRoomᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_schedule(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_schedule_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Schedule(rctx, args["id"].(int))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.Schedule)
+	fc.Result = res
+	return ec.marshalNSchedule2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋentᚐSchedule(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_school(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -7895,6 +7970,29 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			out.Concurrently(i, func() graphql.Marshaler {
 				return rrm(innerCtx)
 			})
+		case "schedule":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_schedule(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
 		case "school":
 			field := field
 
@@ -9272,6 +9370,10 @@ func (ec *executionContext) marshalNRoom2ᚖgithubᚗcomᚋmatsuokashuheiᚋland
 		return graphql.Null
 	}
 	return ec._Room(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNSchedule2githubᚗcomᚋmatsuokashuheiᚋlandinᚋentᚐSchedule(ctx context.Context, sel ast.SelectionSet, v ent.Schedule) graphql.Marshaler {
+	return ec._Schedule(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalNSchedule2ᚕᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋentᚐScheduleᚄ(ctx context.Context, sel ast.SelectionSet, v []*ent.Schedule) graphql.Marshaler {

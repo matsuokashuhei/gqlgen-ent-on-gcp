@@ -247,6 +247,7 @@ export type Query = {
   nodes: Array<Node>;
   room: Room;
   rooms: Array<Room>;
+  schedule: Schedule;
   school: School;
   schools: Array<School>;
   studio: Studio;
@@ -285,6 +286,11 @@ export type QueryNodesArgs = {
 
 
 export type QueryRoomArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryScheduleArgs = {
   id: Scalars['ID'];
 };
 
@@ -485,6 +491,13 @@ export type GetClassQueryVariables = Exact<{
 
 
 export type GetClassQuery = { __typename?: 'Query', class: { __typename?: 'Class', id: string, name: string, level: string, tuition: number, startDate: any, endDate?: any | null, instructor: { __typename?: 'Instructor', id: string, name: string }, schedule: { __typename?: 'Schedule', id: string } } };
+
+export type GetScheduleAndInstructorsToRegisterNewClassQueryVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type GetScheduleAndInstructorsToRegisterNewClassQuery = { __typename?: 'Query', schedule: { __typename?: 'Schedule', id: string, dayOfWeek: number, startTime: string, endTime: string }, instructors: { __typename?: 'InstructorConnection', totalCount: number, edges: Array<{ __typename?: 'InstructorEdge', node: { __typename?: 'Instructor', id: string, name: string } }> } };
 
 
 export const CreateInstructorDocument = gql`
@@ -930,3 +943,50 @@ export function useGetClassLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<G
 export type GetClassQueryHookResult = ReturnType<typeof useGetClassQuery>;
 export type GetClassLazyQueryHookResult = ReturnType<typeof useGetClassLazyQuery>;
 export type GetClassQueryResult = Apollo.QueryResult<GetClassQuery, GetClassQueryVariables>;
+export const GetScheduleAndInstructorsToRegisterNewClassDocument = gql`
+    query getScheduleAndInstructorsToRegisterNewClass($id: ID!) {
+  schedule(id: $id) {
+    id
+    dayOfWeek
+    startTime
+    endTime
+  }
+  instructors(first: 100) {
+    totalCount
+    edges {
+      node {
+        id
+        name
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetScheduleAndInstructorsToRegisterNewClassQuery__
+ *
+ * To run a query within a React component, call `useGetScheduleAndInstructorsToRegisterNewClassQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetScheduleAndInstructorsToRegisterNewClassQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetScheduleAndInstructorsToRegisterNewClassQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetScheduleAndInstructorsToRegisterNewClassQuery(baseOptions: Apollo.QueryHookOptions<GetScheduleAndInstructorsToRegisterNewClassQuery, GetScheduleAndInstructorsToRegisterNewClassQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetScheduleAndInstructorsToRegisterNewClassQuery, GetScheduleAndInstructorsToRegisterNewClassQueryVariables>(GetScheduleAndInstructorsToRegisterNewClassDocument, options);
+      }
+export function useGetScheduleAndInstructorsToRegisterNewClassLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetScheduleAndInstructorsToRegisterNewClassQuery, GetScheduleAndInstructorsToRegisterNewClassQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetScheduleAndInstructorsToRegisterNewClassQuery, GetScheduleAndInstructorsToRegisterNewClassQueryVariables>(GetScheduleAndInstructorsToRegisterNewClassDocument, options);
+        }
+export type GetScheduleAndInstructorsToRegisterNewClassQueryHookResult = ReturnType<typeof useGetScheduleAndInstructorsToRegisterNewClassQuery>;
+export type GetScheduleAndInstructorsToRegisterNewClassLazyQueryHookResult = ReturnType<typeof useGetScheduleAndInstructorsToRegisterNewClassLazyQuery>;
+export type GetScheduleAndInstructorsToRegisterNewClassQueryResult = Apollo.QueryResult<GetScheduleAndInstructorsToRegisterNewClassQuery, GetScheduleAndInstructorsToRegisterNewClassQueryVariables>;

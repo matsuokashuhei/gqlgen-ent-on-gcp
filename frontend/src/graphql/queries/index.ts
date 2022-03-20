@@ -99,3 +99,23 @@ gql`
     }
   }
 `;
+
+gql`
+  query getScheduleAndInstructorsToRegisterNewClass($id: ID!) {
+    schedule(id: $id) {
+      id
+      dayOfWeek
+      startTime
+      endTime
+    }
+    instructors(first: 100) {
+      totalCount
+      edges {
+        node {
+          id
+          name
+        }
+      }
+    }
+  }
+`;

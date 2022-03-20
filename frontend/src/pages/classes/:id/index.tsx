@@ -116,7 +116,7 @@ export const ClassPage: VFC = () => {
             clazz.endDate && format(parseISO(clazz.endDate), "yyyy-MM-dd")
           }
           disabled={!editable}
-          {...register("endDate", { required: true })}
+          {...register("endDate", { required: false })}
         />
         <label htmlFor="instructorId">インストラクター</label>
         <select {...register("instructorId")}>

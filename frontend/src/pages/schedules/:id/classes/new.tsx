@@ -6,7 +6,7 @@ import { Layout } from "../../../../components";
 import {
   CreateClassInput,
   useCreateClassMutation,
-  useGetInstructorsLazyQuery,
+  useGetScheduleAndInstructorsToRegisterNewClassLazyQuery,
 } from "../../../../generated/graphql";
 
 type Inputs = {
@@ -22,13 +22,16 @@ export const NewClassPage: VFC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { register, handleSubmit } = useForm<Inputs>();
-  const [getInstructors, { data, loading, error }] =
-    useGetInstructorsLazyQuery();
+  const [
+    getScheduleAndInstructorsToRegisterNewClass,
+    { data, loading, error },
+  ] = useGetScheduleAndInstructorsToRegisterNewClassLazyQuery();
   const [createClass] = useCreateClassMutation();
 
   useEffect(() => {
-    getInstructors({ variables: { first: 100 } });
-  }, [getInstructors]);
+    if (!id) return;
+    getScheduleAndInstructorsToRegisterNewClass({ variables: { id } });
+  }, [id, getScheduleAndInstructorsToRegisterNewClass]);
 
   const onSubmit: SubmitHandler<Inputs> = (data) => {
     console.log("data", data);
@@ -44,14 +47,24 @@ export const NewClassPage: VFC = () => {
     createClass({ variables: { input } }).then((data) => navigate("/classes"));
   };
 
+  if (!data) return <Layout></Layout>;
+
+  const {
+    schedule,
+    instructors: { edges: instructors },
+  } = data;
+
   return (
     <Layout>
       <h1>クラス</h1>
       <form className="flex flex-col">
+        <div>{schedule.dayOfWeek}</div>
+        <div>{schedule.startTime}</div>
+        <div>{schedule.endTime}</div>
         <input
           type="hidden"
           {...register("scheduleId", { required: true })}
-          defaultValue={id}
+          defaultValue={schedule.id}
         />
         <label htmlFor="name">名前</label>
         <input type="text" {...register("name", { required: true })} />
@@ -66,8 +79,8 @@ export const NewClassPage: VFC = () => {
           <option disabled selected>
             --
           </option>
-          {data?.instructors.edges.map(({ node }) => (
-            <option value={node.id}>{node.name}</option>
+          {instructors.map(({ node: instructor }) => (
+            <option value={instructor.id}>{instructor.name}</option>
           ))}
         </select>
       </form>

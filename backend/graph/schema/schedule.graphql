@@ -12,3 +12,7 @@ enum ScheduleField {
   DAY_OF_WEEK
   START_TIME
 }
+
+extend type Query {
+  schedule(id: ID!): Schedule!
+}
