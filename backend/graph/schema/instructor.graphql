@@ -1,7 +1,7 @@
 type Instructor implements Node {
   id: ID!
   name: String!
-  syllabicCharacters: String!
+  kana: String!
   biography: String
   phoneNumber: String
   email: String
@@ -31,7 +31,7 @@ input InstructorOrder {
 
 input CreateInstructorInput {
   name: String!
-  syllabicCharacters: String!
+  kana: String!
   biography: String
   phoneNumber: String
   email: String
@@ -40,7 +40,7 @@ input CreateInstructorInput {
 input UpdateInstructorInput {
   id: ID!
   name: String
-  syllabicCharacters: String
+  kana: String
   biography: String
   phoneNumber: String
   email: String

@@ -23,9 +23,9 @@ func (Instructor) Mixin() []ent.Mixin {
 func (Instructor) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("name"),
-		field.String("syllabic_characters").
+		field.String("kana").
 			Annotations(
-				entgql.OrderField("SYLLABIC_CHARACTERS"),
+				entgql.OrderField("KANA"),
 			),
 		field.String("biography").Optional(),
 		field.String("phone_number").Optional(),

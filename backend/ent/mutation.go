@@ -863,23 +863,23 @@ func (m *ClassMutation) ResetEdge(name string) error {
 // InstructorMutation represents an operation that mutates the Instructor nodes in the graph.
 type InstructorMutation struct {
 	config
-	op                  Op
-	typ                 string
-	id                  *int
-	create_time         *time.Time
-	update_time         *time.Time
-	name                *string
-	syllabic_characters *string
-	biography           *string
-	phone_number        *string
-	email               *string
-	clearedFields       map[string]struct{}
-	classes             map[int]struct{}
-	removedclasses      map[int]struct{}
-	clearedclasses      bool
-	done                bool
-	oldValue            func(context.Context) (*Instructor, error)
-	predicates          []predicate.Instructor
+	op             Op
+	typ            string
+	id             *int
+	create_time    *time.Time
+	update_time    *time.Time
+	name           *string
+	kana           *string
+	biography      *string
+	phone_number   *string
+	email          *string
+	clearedFields  map[string]struct{}
+	classes        map[int]struct{}
+	removedclasses map[int]struct{}
+	clearedclasses bool
+	done           bool
+	oldValue       func(context.Context) (*Instructor, error)
+	predicates     []predicate.Instructor
 }
 
 var _ ent.Mutation = (*InstructorMutation)(nil)
@@ -1088,40 +1088,40 @@ func (m *InstructorMutation) ResetName() {
 	m.name = nil
 }
 
-// SetSyllabicCharacters sets the "syllabic_characters" field.
-func (m *InstructorMutation) SetSyllabicCharacters(s string) {
-	m.syllabic_characters = &s
+// SetKana sets the "kana" field.
+func (m *InstructorMutation) SetKana(s string) {
+	m.kana = &s
 }
 
-// SyllabicCharacters returns the value of the "syllabic_characters" field in the mutation.
-func (m *InstructorMutation) SyllabicCharacters() (r string, exists bool) {
-	v := m.syllabic_characters
+// Kana returns the value of the "kana" field in the mutation.
+func (m *InstructorMutation) Kana() (r string, exists bool) {
+	v := m.kana
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldSyllabicCharacters returns the old "syllabic_characters" field's value of the Instructor entity.
+// OldKana returns the old "kana" field's value of the Instructor entity.
 // If the Instructor object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *InstructorMutation) OldSyllabicCharacters(ctx context.Context) (v string, err error) {
+func (m *InstructorMutation) OldKana(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldSyllabicCharacters is only allowed on UpdateOne operations")
+		return v, errors.New("OldKana is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldSyllabicCharacters requires an ID field in the mutation")
+		return v, errors.New("OldKana requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldSyllabicCharacters: %w", err)
+		return v, fmt.Errorf("querying old value for OldKana: %w", err)
 	}
-	return oldValue.SyllabicCharacters, nil
+	return oldValue.Kana, nil
 }
 
-// ResetSyllabicCharacters resets all changes to the "syllabic_characters" field.
-func (m *InstructorMutation) ResetSyllabicCharacters() {
-	m.syllabic_characters = nil
+// ResetKana resets all changes to the "kana" field.
+func (m *InstructorMutation) ResetKana() {
+	m.kana = nil
 }
 
 // SetBiography sets the "biography" field.
@@ -1354,8 +1354,8 @@ func (m *InstructorMutation) Fields() []string {
 	if m.name != nil {
 		fields = append(fields, instructor.FieldName)
 	}
-	if m.syllabic_characters != nil {
-		fields = append(fields, instructor.FieldSyllabicCharacters)
+	if m.kana != nil {
+		fields = append(fields, instructor.FieldKana)
 	}
 	if m.biography != nil {
 		fields = append(fields, instructor.FieldBiography)
@@ -1380,8 +1380,8 @@ func (m *InstructorMutation) Field(name string) (ent.Value, bool) {
 		return m.UpdateTime()
 	case instructor.FieldName:
 		return m.Name()
-	case instructor.FieldSyllabicCharacters:
-		return m.SyllabicCharacters()
+	case instructor.FieldKana:
+		return m.Kana()
 	case instructor.FieldBiography:
 		return m.Biography()
 	case instructor.FieldPhoneNumber:
@@ -1403,8 +1403,8 @@ func (m *InstructorMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldUpdateTime(ctx)
 	case instructor.FieldName:
 		return m.OldName(ctx)
-	case instructor.FieldSyllabicCharacters:
-		return m.OldSyllabicCharacters(ctx)
+	case instructor.FieldKana:
+		return m.OldKana(ctx)
 	case instructor.FieldBiography:
 		return m.OldBiography(ctx)
 	case instructor.FieldPhoneNumber:
@@ -1441,12 +1441,12 @@ func (m *InstructorMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetName(v)
 		return nil
-	case instructor.FieldSyllabicCharacters:
+	case instructor.FieldKana:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetSyllabicCharacters(v)
+		m.SetKana(v)
 		return nil
 	case instructor.FieldBiography:
 		v, ok := value.(string)
@@ -1548,8 +1548,8 @@ func (m *InstructorMutation) ResetField(name string) error {
 	case instructor.FieldName:
 		m.ResetName()
 		return nil
-	case instructor.FieldSyllabicCharacters:
-		m.ResetSyllabicCharacters()
+	case instructor.FieldKana:
+		m.ResetKana()
 		return nil
 	case instructor.FieldBiography:
 		m.ResetBiography()

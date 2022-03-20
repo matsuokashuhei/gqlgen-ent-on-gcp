@@ -171,12 +171,12 @@ func (i *Instructor) Node(ctx context.Context) (node *Node, err error) {
 		Name:  "name",
 		Value: string(buf),
 	}
-	if buf, err = json.Marshal(i.SyllabicCharacters); err != nil {
+	if buf, err = json.Marshal(i.Kana); err != nil {
 		return nil, err
 	}
 	node.Fields[3] = &Field{
 		Type:  "string",
-		Name:  "syllabic_characters",
+		Name:  "kana",
 		Value: string(buf),
 	}
 	if buf, err = json.Marshal(i.Biography); err != nil {

@@ -41,9 +41,9 @@ func (iu *InstructorUpdate) SetName(s string) *InstructorUpdate {
 	return iu
 }
 
-// SetSyllabicCharacters sets the "syllabic_characters" field.
-func (iu *InstructorUpdate) SetSyllabicCharacters(s string) *InstructorUpdate {
-	iu.mutation.SetSyllabicCharacters(s)
+// SetKana sets the "kana" field.
+func (iu *InstructorUpdate) SetKana(s string) *InstructorUpdate {
+	iu.mutation.SetKana(s)
 	return iu
 }
 
@@ -243,11 +243,11 @@ func (iu *InstructorUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: instructor.FieldName,
 		})
 	}
-	if value, ok := iu.mutation.SyllabicCharacters(); ok {
+	if value, ok := iu.mutation.Kana(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: instructor.FieldSyllabicCharacters,
+			Column: instructor.FieldKana,
 		})
 	}
 	if value, ok := iu.mutation.Biography(); ok {
@@ -374,9 +374,9 @@ func (iuo *InstructorUpdateOne) SetName(s string) *InstructorUpdateOne {
 	return iuo
 }
 
-// SetSyllabicCharacters sets the "syllabic_characters" field.
-func (iuo *InstructorUpdateOne) SetSyllabicCharacters(s string) *InstructorUpdateOne {
-	iuo.mutation.SetSyllabicCharacters(s)
+// SetKana sets the "kana" field.
+func (iuo *InstructorUpdateOne) SetKana(s string) *InstructorUpdateOne {
+	iuo.mutation.SetKana(s)
 	return iuo
 }
 
@@ -600,11 +600,11 @@ func (iuo *InstructorUpdateOne) sqlSave(ctx context.Context) (_node *Instructor,
 			Column: instructor.FieldName,
 		})
 	}
-	if value, ok := iuo.mutation.SyllabicCharacters(); ok {
+	if value, ok := iuo.mutation.Kana(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: instructor.FieldSyllabicCharacters,
+			Column: instructor.FieldKana,
 		})
 	}
 	if value, ok := iuo.mutation.Biography(); ok {

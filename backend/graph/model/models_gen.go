@@ -20,11 +20,11 @@ type CreateClassInput struct {
 }
 
 type CreateInstructorInput struct {
-	Name               string  `json:"name"`
-	SyllabicCharacters string  `json:"syllabicCharacters"`
-	Biography          *string `json:"biography"`
-	PhoneNumber        *string `json:"phoneNumber"`
-	Email              *string `json:"email"`
+	Name        string  `json:"name"`
+	Kana        string  `json:"kana"`
+	Biography   *string `json:"biography"`
+	PhoneNumber *string `json:"phoneNumber"`
+	Email       *string `json:"email"`
 }
 
 type CreateRoomInput struct {
@@ -69,12 +69,12 @@ type UpdateClassInput struct {
 }
 
 type UpdateInstructorInput struct {
-	ID                 int     `json:"id"`
-	Name               *string `json:"name"`
-	SyllabicCharacters *string `json:"syllabicCharacters"`
-	Biography          *string `json:"biography"`
-	PhoneNumber        *string `json:"phoneNumber"`
-	Email              *string `json:"email"`
+	ID          int     `json:"id"`
+	Name        *string `json:"name"`
+	Kana        *string `json:"kana"`
+	Biography   *string `json:"biography"`
+	PhoneNumber *string `json:"phoneNumber"`
+	Email       *string `json:"email"`
 }
 
 type UpdateRoomInput struct {

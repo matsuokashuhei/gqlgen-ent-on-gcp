@@ -62,14 +62,14 @@ type ComplexityRoot struct {
 	}
 
 	Instructor struct {
-		Biography          func(childComplexity int) int
-		CreateTime         func(childComplexity int) int
-		Email              func(childComplexity int) int
-		ID                 func(childComplexity int) int
-		Name               func(childComplexity int) int
-		PhoneNumber        func(childComplexity int) int
-		SyllabicCharacters func(childComplexity int) int
-		UpdateTime         func(childComplexity int) int
+		Biography   func(childComplexity int) int
+		CreateTime  func(childComplexity int) int
+		Email       func(childComplexity int) int
+		ID          func(childComplexity int) int
+		Kana        func(childComplexity int) int
+		Name        func(childComplexity int) int
+		PhoneNumber func(childComplexity int) int
+		UpdateTime  func(childComplexity int) int
 	}
 
 	InstructorConnection struct {
@@ -331,6 +331,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Instructor.ID(childComplexity), true
 
+	case "Instructor.kana":
+		if e.complexity.Instructor.Kana == nil {
+			break
+		}
+
+		return e.complexity.Instructor.Kana(childComplexity), true
+
 	case "Instructor.name":
 		if e.complexity.Instructor.Name == nil {
 			break
@@ -344,13 +351,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Instructor.PhoneNumber(childComplexity), true
-
-	case "Instructor.syllabicCharacters":
-		if e.complexity.Instructor.SyllabicCharacters == nil {
-			break
-		}
-
-		return e.complexity.Instructor.SyllabicCharacters(childComplexity), true
 
 	case "Instructor.updateTime":
 		if e.complexity.Instructor.UpdateTime == nil {
@@ -1132,7 +1132,7 @@ extend type Mutation {
 	{Name: "graph/schema/instructor.graphql", Input: `type Instructor implements Node {
   id: ID!
   name: String!
-  syllabicCharacters: String!
+  kana: String!
   biography: String
   phoneNumber: String
   email: String
@@ -1162,7 +1162,7 @@ input InstructorOrder {
 
 input CreateInstructorInput {
   name: String!
-  syllabicCharacters: String!
+  kana: String!
   biography: String
   phoneNumber: String
   email: String
@@ -1171,7 +1171,7 @@ input CreateInstructorInput {
 input UpdateInstructorInput {
   id: ID!
   name: String
-  syllabicCharacters: String
+  kana: String
   biography: String
   phoneNumber: String
   email: String
@@ -2321,7 +2321,7 @@ func (ec *executionContext) _Instructor_name(ctx context.Context, field graphql.
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Instructor_syllabicCharacters(ctx context.Context, field graphql.CollectedField, obj *ent.Instructor) (ret graphql.Marshaler) {
+func (ec *executionContext) _Instructor_kana(ctx context.Context, field graphql.CollectedField, obj *ent.Instructor) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -2339,7 +2339,7 @@ func (ec *executionContext) _Instructor_syllabicCharacters(ctx context.Context, 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.SyllabicCharacters, nil
+		return obj.Kana, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -6578,11 +6578,11 @@ func (ec *executionContext) unmarshalInputCreateInstructorInput(ctx context.Cont
 			if err != nil {
 				return it, err
 			}
-		case "syllabicCharacters":
+		case "kana":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("syllabicCharacters"))
-			it.SyllabicCharacters, err = ec.unmarshalNString2string(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("kana"))
+			it.Kana, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -6937,11 +6937,11 @@ func (ec *executionContext) unmarshalInputUpdateInstructorInput(ctx context.Cont
 			if err != nil {
 				return it, err
 			}
-		case "syllabicCharacters":
+		case "kana":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("syllabicCharacters"))
-			it.SyllabicCharacters, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("kana"))
+			it.Kana, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -7351,9 +7351,9 @@ func (ec *executionContext) _Instructor(ctx context.Context, sel ast.SelectionSe
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "syllabicCharacters":
+		case "kana":
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Instructor_syllabicCharacters(ctx, field, obj)
+				return ec._Instructor_kana(ctx, field, obj)
 			}
 
 			out.Values[i] = innerFunc(ctx)

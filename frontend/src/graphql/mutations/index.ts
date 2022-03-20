@@ -5,7 +5,7 @@ gql`
     createInstructor(input: $input) {
       id
       name
-      syllabicCharacters
+      kana
       biography
       phoneNumber
       email
@@ -18,7 +18,7 @@ gql`
     updateInstructor(input: $input) {
       id
       name
-      syllabicCharacters
+      kana
       biography
       phoneNumber
       email
@@ -31,7 +31,7 @@ gql`
     deleteInstructor(input: $input) {
       id
       name
-      syllabicCharacters
+      kana
       biography
       phoneNumber
       email

@@ -114,10 +114,10 @@ func Name(v string) predicate.Instructor {
 	})
 }
 
-// SyllabicCharacters applies equality check predicate on the "syllabic_characters" field. It's identical to SyllabicCharactersEQ.
-func SyllabicCharacters(v string) predicate.Instructor {
+// Kana applies equality check predicate on the "kana" field. It's identical to KanaEQ.
+func Kana(v string) predicate.Instructor {
 	return predicate.Instructor(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSyllabicCharacters), v))
+		s.Where(sql.EQ(s.C(FieldKana), v))
 	})
 }
 
@@ -405,22 +405,22 @@ func NameContainsFold(v string) predicate.Instructor {
 	})
 }
 
-// SyllabicCharactersEQ applies the EQ predicate on the "syllabic_characters" field.
-func SyllabicCharactersEQ(v string) predicate.Instructor {
+// KanaEQ applies the EQ predicate on the "kana" field.
+func KanaEQ(v string) predicate.Instructor {
 	return predicate.Instructor(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSyllabicCharacters), v))
+		s.Where(sql.EQ(s.C(FieldKana), v))
 	})
 }
 
-// SyllabicCharactersNEQ applies the NEQ predicate on the "syllabic_characters" field.
-func SyllabicCharactersNEQ(v string) predicate.Instructor {
+// KanaNEQ applies the NEQ predicate on the "kana" field.
+func KanaNEQ(v string) predicate.Instructor {
 	return predicate.Instructor(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldSyllabicCharacters), v))
+		s.Where(sql.NEQ(s.C(FieldKana), v))
 	})
 }
 
-// SyllabicCharactersIn applies the In predicate on the "syllabic_characters" field.
-func SyllabicCharactersIn(vs ...string) predicate.Instructor {
+// KanaIn applies the In predicate on the "kana" field.
+func KanaIn(vs ...string) predicate.Instructor {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -432,12 +432,12 @@ func SyllabicCharactersIn(vs ...string) predicate.Instructor {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.In(s.C(FieldSyllabicCharacters), v...))
+		s.Where(sql.In(s.C(FieldKana), v...))
 	})
 }
 
-// SyllabicCharactersNotIn applies the NotIn predicate on the "syllabic_characters" field.
-func SyllabicCharactersNotIn(vs ...string) predicate.Instructor {
+// KanaNotIn applies the NotIn predicate on the "kana" field.
+func KanaNotIn(vs ...string) predicate.Instructor {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -449,70 +449,70 @@ func SyllabicCharactersNotIn(vs ...string) predicate.Instructor {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.NotIn(s.C(FieldSyllabicCharacters), v...))
+		s.Where(sql.NotIn(s.C(FieldKana), v...))
 	})
 }
 
-// SyllabicCharactersGT applies the GT predicate on the "syllabic_characters" field.
-func SyllabicCharactersGT(v string) predicate.Instructor {
+// KanaGT applies the GT predicate on the "kana" field.
+func KanaGT(v string) predicate.Instructor {
 	return predicate.Instructor(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldSyllabicCharacters), v))
+		s.Where(sql.GT(s.C(FieldKana), v))
 	})
 }
 
-// SyllabicCharactersGTE applies the GTE predicate on the "syllabic_characters" field.
-func SyllabicCharactersGTE(v string) predicate.Instructor {
+// KanaGTE applies the GTE predicate on the "kana" field.
+func KanaGTE(v string) predicate.Instructor {
 	return predicate.Instructor(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldSyllabicCharacters), v))
+		s.Where(sql.GTE(s.C(FieldKana), v))
 	})
 }
 
-// SyllabicCharactersLT applies the LT predicate on the "syllabic_characters" field.
-func SyllabicCharactersLT(v string) predicate.Instructor {
+// KanaLT applies the LT predicate on the "kana" field.
+func KanaLT(v string) predicate.Instructor {
 	return predicate.Instructor(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldSyllabicCharacters), v))
+		s.Where(sql.LT(s.C(FieldKana), v))
 	})
 }
 
-// SyllabicCharactersLTE applies the LTE predicate on the "syllabic_characters" field.
-func SyllabicCharactersLTE(v string) predicate.Instructor {
+// KanaLTE applies the LTE predicate on the "kana" field.
+func KanaLTE(v string) predicate.Instructor {
 	return predicate.Instructor(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldSyllabicCharacters), v))
+		s.Where(sql.LTE(s.C(FieldKana), v))
 	})
 }
 
-// SyllabicCharactersContains applies the Contains predicate on the "syllabic_characters" field.
-func SyllabicCharactersContains(v string) predicate.Instructor {
+// KanaContains applies the Contains predicate on the "kana" field.
+func KanaContains(v string) predicate.Instructor {
 	return predicate.Instructor(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldSyllabicCharacters), v))
+		s.Where(sql.Contains(s.C(FieldKana), v))
 	})
 }
 
-// SyllabicCharactersHasPrefix applies the HasPrefix predicate on the "syllabic_characters" field.
-func SyllabicCharactersHasPrefix(v string) predicate.Instructor {
+// KanaHasPrefix applies the HasPrefix predicate on the "kana" field.
+func KanaHasPrefix(v string) predicate.Instructor {
 	return predicate.Instructor(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldSyllabicCharacters), v))
+		s.Where(sql.HasPrefix(s.C(FieldKana), v))
 	})
 }
 
-// SyllabicCharactersHasSuffix applies the HasSuffix predicate on the "syllabic_characters" field.
-func SyllabicCharactersHasSuffix(v string) predicate.Instructor {
+// KanaHasSuffix applies the HasSuffix predicate on the "kana" field.
+func KanaHasSuffix(v string) predicate.Instructor {
 	return predicate.Instructor(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldSyllabicCharacters), v))
+		s.Where(sql.HasSuffix(s.C(FieldKana), v))
 	})
 }
 
-// SyllabicCharactersEqualFold applies the EqualFold predicate on the "syllabic_characters" field.
-func SyllabicCharactersEqualFold(v string) predicate.Instructor {
+// KanaEqualFold applies the EqualFold predicate on the "kana" field.
+func KanaEqualFold(v string) predicate.Instructor {
 	return predicate.Instructor(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldSyllabicCharacters), v))
+		s.Where(sql.EqualFold(s.C(FieldKana), v))
 	})
 }
 
-// SyllabicCharactersContainsFold applies the ContainsFold predicate on the "syllabic_characters" field.
-func SyllabicCharactersContainsFold(v string) predicate.Instructor {
+// KanaContainsFold applies the ContainsFold predicate on the "kana" field.
+func KanaContainsFold(v string) predicate.Instructor {
 	return predicate.Instructor(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldSyllabicCharacters), v))
+		s.Where(sql.ContainsFold(s.C(FieldKana), v))
 	})
 }
 

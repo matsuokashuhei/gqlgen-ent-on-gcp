@@ -44,9 +44,9 @@ export type CreateClassInput = {
 export type CreateInstructorInput = {
   biography?: InputMaybe<Scalars['String']>;
   email?: InputMaybe<Scalars['String']>;
+  kana: Scalars['String'];
   name: Scalars['String'];
   phoneNumber?: InputMaybe<Scalars['String']>;
-  syllabicCharacters: Scalars['String'];
 };
 
 export type CreateRoomInput = {
@@ -80,9 +80,9 @@ export type Instructor = Node & {
   createTime: Scalars['Time'];
   email?: Maybe<Scalars['String']>;
   id: Scalars['ID'];
+  kana: Scalars['String'];
   name: Scalars['String'];
   phoneNumber?: Maybe<Scalars['String']>;
-  syllabicCharacters: Scalars['String'];
   updateTime: Scalars['Time'];
 };
 
@@ -381,9 +381,9 @@ export type UpdateInstructorInput = {
   biography?: InputMaybe<Scalars['String']>;
   email?: InputMaybe<Scalars['String']>;
   id: Scalars['ID'];
+  kana?: InputMaybe<Scalars['String']>;
   name?: InputMaybe<Scalars['String']>;
   phoneNumber?: InputMaybe<Scalars['String']>;
-  syllabicCharacters?: InputMaybe<Scalars['String']>;
 };
 
 export type UpdateRoomInput = {
@@ -424,21 +424,21 @@ export type CreateInstructorMutationVariables = Exact<{
 }>;
 
 
-export type CreateInstructorMutation = { __typename?: 'Mutation', createInstructor: { __typename?: 'Instructor', id: string, name: string, syllabicCharacters: string, biography?: string | null, phoneNumber?: string | null, email?: string | null } };
+export type CreateInstructorMutation = { __typename?: 'Mutation', createInstructor: { __typename?: 'Instructor', id: string, name: string, kana: string, biography?: string | null, phoneNumber?: string | null, email?: string | null } };
 
 export type UpdateInstructorMutationVariables = Exact<{
   input: UpdateInstructorInput;
 }>;
 
 
-export type UpdateInstructorMutation = { __typename?: 'Mutation', updateInstructor: { __typename?: 'Instructor', id: string, name: string, syllabicCharacters: string, biography?: string | null, phoneNumber?: string | null, email?: string | null } };
+export type UpdateInstructorMutation = { __typename?: 'Mutation', updateInstructor: { __typename?: 'Instructor', id: string, name: string, kana: string, biography?: string | null, phoneNumber?: string | null, email?: string | null } };
 
 export type DeleteInstructorMutationVariables = Exact<{
   input: DeleteInstructorInput;
 }>;
 
 
-export type DeleteInstructorMutation = { __typename?: 'Mutation', deleteInstructor: { __typename?: 'Instructor', id: string, name: string, syllabicCharacters: string, biography?: string | null, phoneNumber?: string | null, email?: string | null } };
+export type DeleteInstructorMutation = { __typename?: 'Mutation', deleteInstructor: { __typename?: 'Instructor', id: string, name: string, kana: string, biography?: string | null, phoneNumber?: string | null, email?: string | null } };
 
 export type CreateClassMutationVariables = Exact<{
   input: CreateClassInput;
@@ -469,14 +469,14 @@ export type GetInstructorsQueryVariables = Exact<{
 }>;
 
 
-export type GetInstructorsQuery = { __typename?: 'Query', instructors: { __typename?: 'InstructorConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', startCursor?: any | null, endCursor?: any | null, hasNextPage: boolean, hasPreviousPage: boolean }, edges: Array<{ __typename?: 'InstructorEdge', cursor: any, node: { __typename?: 'Instructor', id: string, name: string, syllabicCharacters: string, biography?: string | null, phoneNumber?: string | null, email?: string | null } }> } };
+export type GetInstructorsQuery = { __typename?: 'Query', instructors: { __typename?: 'InstructorConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', startCursor?: any | null, endCursor?: any | null, hasNextPage: boolean, hasPreviousPage: boolean }, edges: Array<{ __typename?: 'InstructorEdge', cursor: any, node: { __typename?: 'Instructor', id: string, name: string, kana: string, biography?: string | null, phoneNumber?: string | null, email?: string | null } }> } };
 
 export type GetInstructorQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
 
 
-export type GetInstructorQuery = { __typename?: 'Query', instructor: { __typename?: 'Instructor', id: string, name: string, syllabicCharacters: string, biography?: string | null, phoneNumber?: string | null, email?: string | null } };
+export type GetInstructorQuery = { __typename?: 'Query', instructor: { __typename?: 'Instructor', id: string, name: string, kana: string, biography?: string | null, phoneNumber?: string | null, email?: string | null } };
 
 export type GetSchoolQueryVariables = Exact<{
   id: Scalars['ID'];
@@ -505,7 +505,7 @@ export const CreateInstructorDocument = gql`
   createInstructor(input: $input) {
     id
     name
-    syllabicCharacters
+    kana
     biography
     phoneNumber
     email
@@ -543,7 +543,7 @@ export const UpdateInstructorDocument = gql`
   updateInstructor(input: $input) {
     id
     name
-    syllabicCharacters
+    kana
     biography
     phoneNumber
     email
@@ -581,7 +581,7 @@ export const DeleteInstructorDocument = gql`
   deleteInstructor(input: $input) {
     id
     name
-    syllabicCharacters
+    kana
     biography
     phoneNumber
     email
@@ -752,7 +752,7 @@ export const GetInstructorsDocument = gql`
       node {
         id
         name
-        syllabicCharacters
+        kana
         biography
         phoneNumber
         email
@@ -797,7 +797,7 @@ export const GetInstructorDocument = gql`
   instructor(id: $id) {
     id
     name
-    syllabicCharacters
+    kana
     biography
     phoneNumber
     email

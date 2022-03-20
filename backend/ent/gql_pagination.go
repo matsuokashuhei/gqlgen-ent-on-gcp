@@ -659,13 +659,13 @@ func (i *InstructorQuery) Paginate(
 }
 
 var (
-	// InstructorOrderFieldSyllabicCharacters orders Instructor by syllabic_characters.
-	InstructorOrderFieldSyllabicCharacters = &InstructorOrderField{
-		field: instructor.FieldSyllabicCharacters,
+	// InstructorOrderFieldKana orders Instructor by kana.
+	InstructorOrderFieldKana = &InstructorOrderField{
+		field: instructor.FieldKana,
 		toCursor: func(i *Instructor) Cursor {
 			return Cursor{
 				ID:    i.ID,
-				Value: i.SyllabicCharacters,
+				Value: i.Kana,
 			}
 		},
 	}
@@ -675,8 +675,8 @@ var (
 func (f InstructorOrderField) String() string {
 	var str string
 	switch f.field {
-	case instructor.FieldSyllabicCharacters:
-		str = "SYLLABIC_CHARACTERS"
+	case instructor.FieldKana:
+		str = "KANA"
 	}
 	return str
 }
@@ -693,8 +693,8 @@ func (f *InstructorOrderField) UnmarshalGQL(v interface{}) error {
 		return fmt.Errorf("InstructorOrderField %T must be a string", v)
 	}
 	switch str {
-	case "SYLLABIC_CHARACTERS":
-		*f = *InstructorOrderFieldSyllabicCharacters
+	case "KANA":
+		*f = *InstructorOrderFieldKana
 	default:
 		return fmt.Errorf("%s is not a valid InstructorOrderField", str)
 	}

@@ -17,8 +17,8 @@ const (
 	FieldUpdateTime = "update_time"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
-	// FieldSyllabicCharacters holds the string denoting the syllabic_characters field in the database.
-	FieldSyllabicCharacters = "syllabic_characters"
+	// FieldKana holds the string denoting the kana field in the database.
+	FieldKana = "kana"
 	// FieldBiography holds the string denoting the biography field in the database.
 	FieldBiography = "biography"
 	// FieldPhoneNumber holds the string denoting the phone_number field in the database.
@@ -44,7 +44,7 @@ var Columns = []string{
 	FieldCreateTime,
 	FieldUpdateTime,
 	FieldName,
-	FieldSyllabicCharacters,
+	FieldKana,
 	FieldBiography,
 	FieldPhoneNumber,
 	FieldEmail,

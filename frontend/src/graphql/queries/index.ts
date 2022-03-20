@@ -20,7 +20,7 @@ gql`
         node {
           id
           name
-          syllabicCharacters
+          kana
           biography
           phoneNumber
           email
@@ -35,7 +35,7 @@ gql`
     instructor(id: $id) {
       id
       name
-      syllabicCharacters
+      kana
       biography
       phoneNumber
       email
