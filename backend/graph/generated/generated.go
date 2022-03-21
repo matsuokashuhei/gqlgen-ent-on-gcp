@@ -119,7 +119,7 @@ type ComplexityRoot struct {
 		CreateUser       func(childComplexity int, input model.CreateUserInput) int
 		DeleteClass      func(childComplexity int, id int) int
 		DeleteInstructor func(childComplexity int, input model.DeleteInstructorInput) int
-		DeleteMember     func(childComplexity int, inpt model.DeleteMemberInput) int
+		DeleteMember     func(childComplexity int, input model.DeleteMemberInput) int
 		DeleteRoom       func(childComplexity int, id int) int
 		DeleteSchool     func(childComplexity int, id int) int
 		DeleteStudio     func(childComplexity int, id int) int
@@ -219,7 +219,7 @@ type MutationResolver interface {
 	DeleteInstructor(ctx context.Context, input model.DeleteInstructorInput) (*ent.Instructor, error)
 	CreateMember(ctx context.Context, input model.CreateMemberInput) (*ent.Member, error)
 	UpdateMember(ctx context.Context, input model.UpdateMemberInput) (*ent.Member, error)
-	DeleteMember(ctx context.Context, inpt model.DeleteMemberInput) (*ent.Member, error)
+	DeleteMember(ctx context.Context, input model.DeleteMemberInput) (*ent.Member, error)
 	CreateRoom(ctx context.Context, input model.CreateRoomInput) (*ent.Room, error)
 	UpdateRoom(ctx context.Context, input model.UpdateRoomInput) (*ent.Room, error)
 	DeleteRoom(ctx context.Context, id int) (*ent.Room, error)
@@ -663,7 +663,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.DeleteMember(childComplexity, args["inpt"].(model.DeleteMemberInput)), true
+		return e.complexity.Mutation.DeleteMember(childComplexity, args["input"].(model.DeleteMemberInput)), true
 
 	case "Mutation.deleteRoom":
 		if e.complexity.Mutation.DeleteRoom == nil {
@@ -1484,7 +1484,7 @@ extend type Query {
 extend type Mutation {
   createMember(input: CreateMemberInput!): Member!
   updateMember(input: UpdateMemberInput!): Member!
-  deleteMember(inpt: DeleteMemberInput!): Member!
+  deleteMember(input: DeleteMemberInput!): Member!
 }
 `, BuiltIn: false},
 	{Name: "graph/schema/node.graphql", Input: `interface Node {
@@ -1814,14 +1814,14 @@ func (ec *executionContext) field_Mutation_deleteMember_args(ctx context.Context
 	var err error
 	args := map[string]interface{}{}
 	var arg0 model.DeleteMemberInput
-	if tmp, ok := rawArgs["inpt"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("inpt"))
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNDeleteMemberInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐDeleteMemberInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["inpt"] = arg0
+	args["input"] = arg0
 	return args, nil
 }
 
@@ -4054,7 +4054,7 @@ func (ec *executionContext) _Mutation_deleteMember(ctx context.Context, field gr
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().DeleteMember(rctx, args["inpt"].(model.DeleteMemberInput))
+		return ec.resolvers.Mutation().DeleteMember(rctx, args["input"].(model.DeleteMemberInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)

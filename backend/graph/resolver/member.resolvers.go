@@ -27,7 +27,7 @@ func (r *mutationResolver) UpdateMember(ctx context.Context, input model.UpdateM
 	return repository.Update(ctx, input)
 }
 
-func (r *mutationResolver) DeleteMember(ctx context.Context, inpt model.DeleteMemberInput) (*ent.Member, error) {
+func (r *mutationResolver) DeleteMember(ctx context.Context, input model.DeleteMemberInput) (*ent.Member, error) {
 	repository := repositories.NewMemberRepsitory(r.client)
 	return repository.Delete(ctx, input)
 }
