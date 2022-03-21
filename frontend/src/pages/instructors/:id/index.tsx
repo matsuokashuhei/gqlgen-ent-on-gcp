@@ -1,7 +1,6 @@
 import { useEffect, useState, VFC } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
-import { Layout } from "../../../components";
 import {
   DeleteInstructorInput,
   GetInstructorQuery,
@@ -138,10 +137,10 @@ export const InstructorPage: VFC = () => {
   const { instructor } = data;
 
   return (
-    <Layout>
+    <>
       {renderInstructor(instructor)}
       {renderEditButton()}
       {renderDeleteButton(instructor)}
-    </Layout>
+    </>
   );
 };

@@ -1,7 +1,6 @@
 import { VFC } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { Layout } from "../../components";
 import {
   CreateInstructorInput,
   useCreateInstructorMutation,
@@ -35,7 +34,7 @@ export const NewInstructorPage: VFC = () => {
   };
 
   return (
-    <Layout>
+    <>
       <form className="flex flex-col">
         <label htmlFor="name">名前</label>
         <input {...register("name", { required: true })} />
@@ -51,6 +50,6 @@ export const NewInstructorPage: VFC = () => {
       <button type="submit" onClick={handleSubmit(onSubmit)}>
         登録
       </button>
-    </Layout>
+    </>
   );
 };

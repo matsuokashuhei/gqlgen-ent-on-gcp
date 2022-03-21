@@ -11,6 +11,7 @@ import { SignUp } from "./pages/sign-up";
 import { Public, Private } from "./routes";
 import { NewClassPage } from "./pages/schedules/:id/classes/new";
 import { ClassPage } from "./pages/classes/:id";
+import { Layout } from "./components";
 
 const client = new ApolloClient({
   uri: "http://localhost:8080/query",
@@ -43,10 +44,10 @@ function App() {
               path="/"
               element={
                 <Private>
-                  <Home />
+                  <Layout />
                 </Private>
               }
-            />
+            >
             <Route
               path="instructors/new"
               element={

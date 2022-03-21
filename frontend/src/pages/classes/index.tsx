@@ -1,7 +1,6 @@
 import { PlusSmIcon } from "@heroicons/react/solid";
 import { useEffect, VFC } from "react";
 import { Link } from "react-router-dom";
-import { Layout } from "../../components";
 import {
   GetClassSchedulesBySchoolQuery,
   useGetClassSchedulesBySchoolLazyQuery,
@@ -120,9 +119,9 @@ export const ClassesPage: VFC = () => {
   } = data;
 
   return (
-    <Layout>
+    <>
       <h1>クラス</h1>
       {renderStudios(studios)}
-    </Layout>
+    </>
   );
 };

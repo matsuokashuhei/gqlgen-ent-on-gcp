@@ -2,12 +2,11 @@ import { format, formatRFC3339, parseISO } from "date-fns";
 import { useEffect, useState, VFC } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
-import { Layout } from "../../../components";
 import {
   GetClassQuery,
   UpdateClassInput,
-  useGetClassLazyQuery,
   useDeleteClassMutation,
+  useGetClassLazyQuery,
   useUpdateClassMutation,
 } from "../../../generated/graphql";
 
@@ -73,7 +72,7 @@ export const ClassPage: VFC = () => {
   console.log(clazz);
 
   return (
-    <Layout>
+    <>
       <h1>クラス</h1>
       <form className="flex flex-col">
         <input
@@ -149,6 +148,6 @@ export const ClassPage: VFC = () => {
           </button>
         </div>
       )}
-    </Layout>
+    </>
   );
 };
