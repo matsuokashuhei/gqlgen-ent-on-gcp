@@ -5,7 +5,6 @@ package resolver
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/matsuokashuhei/landin/ent"
 	"github.com/matsuokashuhei/landin/graph/generated"
@@ -14,7 +13,8 @@ import (
 )
 
 func (r *memberResolver) Gender(ctx context.Context, obj *ent.Member) (model.Gender, error) {
-	panic(fmt.Errorf("not implemented"))
+	m := map[string]model.Gender{"FEMALE": model.GenderFemale, "MALE": model.GenderMale, "OTHER": model.GenderOther}
+	return m[obj.Gender.String()], nil
 }
 
 func (r *mutationResolver) CreateMember(ctx context.Context, input model.CreateMemberInput) (*ent.Member, error) {

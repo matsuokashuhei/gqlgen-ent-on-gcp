@@ -18,6 +18,7 @@ func (r *MemberRepository) Find(ctx context.Context, id int) (*ent.Member, error
 
 func (r *MemberRepository) Create(ctx context.Context, input model.CreateMemberInput) (*ent.Member, error) {
 	return r.client.Member.Create().
+		SetNumber(input.Number).
 		SetName(input.Name).
 		SetKana(input.Kana).
 		SetGender(member.Gender(input.Gender)).

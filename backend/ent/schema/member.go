@@ -25,7 +25,7 @@ func (Member) Fields() []ent.Field {
 		field.Int("number").Unique().Annotations(entgql.OrderField("NUMBER")),
 		field.String("name"),
 		field.String("kana").Annotations(entgql.OrderField("KANA")),
-		field.Enum("gender").Values("male", "female", "other"),
+		field.Enum("gender").Values("MALE", "FEMALE", "OTHER"),
 		field.Time("date_of_birth").Optional(),
 		field.String("phone_number").Optional(),
 		field.String("email").Optional(),

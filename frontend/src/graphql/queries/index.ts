@@ -119,3 +119,46 @@ gql`
     }
   }
 `;
+
+gql`
+  query getMembers($first: Int, $after: Cursor, $last: Int, $before: Cursor) {
+    members(first: $first, after: $after, last: $last, before: $before) {
+      totalCount
+      pageInfo {
+        startCursor
+        endCursor
+        hasNextPage
+        hasPreviousPage
+      }
+      edges {
+        cursor
+        node {
+          id
+          number
+          name
+          kana
+          gender
+          dateOfAdmission
+        }
+      }
+    }
+  }
+`;
+
+gql`
+  query getMember($id: ID!) {
+    member(id: $id) {
+      id
+      number
+      name
+      kana
+      gender
+      dateOfBirth
+      phoneNumber
+      email
+      dateOfAdmission
+      dateOfWithdrawal
+      memo
+    }
+  }
+`;

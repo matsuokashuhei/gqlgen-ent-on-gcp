@@ -8,6 +8,7 @@ import { InstructorsPage } from "./pages/instructors";
 import { InstructorPage } from "./pages/instructors/:id";
 import { NewInstructorPage } from "./pages/instructors/new";
 import { MembersPage } from "./pages/members";
+import { MemberPage } from "./pages/members/:id";
 import { NewMemberPage } from "./pages/members/new";
 import { NewClassPage } from "./pages/schedules/:id/classes/new";
 import { SignIn } from "./pages/sign-in";
@@ -65,6 +66,7 @@ export function App() {
               <Route path="members" element={<Outlet />}>
                 <Route path="new" element={<NewMemberPage />} />
                 <Route index element={<MembersPage />} />
+                <Route path=":id" element={<MemberPage />} />
               </Route>
             </Route>
           </Routes>

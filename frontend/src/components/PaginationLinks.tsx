@@ -69,7 +69,8 @@ export const PaginationLinks: VFC<Props> = ({ path, pageInfo }) => {
     }
     if (
       searchParams.get("first") === null &&
-      searchParams.get("last") === null
+      searchParams.get("last") === null &&
+      pageInfo.hasNextPage
     ) {
       return (
         <div>
@@ -78,6 +79,8 @@ export const PaginationLinks: VFC<Props> = ({ path, pageInfo }) => {
           </Link>
         </div>
       );
+    } else {
+      <></>;
     }
   };
   return (

@@ -27,7 +27,9 @@ export const SideBar: VFC = () => {
       </div>
       <div className="flex items-center gap-1">
         <UsersIcon className="h-5" />
-        <div>会員</div>
+        <div>
+          <Link to="/members">会員</Link>
+        </div>
       </div>
       <div className="flex items-center gap-1">
         <UserIcon className="h-5" />

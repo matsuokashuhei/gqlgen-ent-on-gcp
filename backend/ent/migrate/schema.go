@@ -66,7 +66,7 @@ var (
 		{Name: "number", Type: field.TypeInt, Unique: true},
 		{Name: "name", Type: field.TypeString},
 		{Name: "kana", Type: field.TypeString},
-		{Name: "gender", Type: field.TypeEnum, Enums: []string{"male", "female", "other"}},
+		{Name: "gender", Type: field.TypeEnum, Enums: []string{"MALE", "FEMALE", "OTHER"}},
 		{Name: "date_of_birth", Type: field.TypeTime, Nullable: true},
 		{Name: "phone_number", Type: field.TypeString, Nullable: true},
 		{Name: "email", Type: field.TypeString, Nullable: true},

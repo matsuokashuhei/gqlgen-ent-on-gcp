@@ -86,3 +86,39 @@ gql`
     }
   }
 `;
+
+gql`
+  mutation CreateMember($input: CreateMemberInput!) {
+    createMember(input: $input) {
+      id
+      number
+      name
+      kana
+      gender
+      dateOfBirth
+      phoneNumber
+      email
+      dateOfAdmission
+      dateOfWithdrawal
+      memo
+    }
+  }
+`;
+
+gql`
+  mutation UpdateMember($input: UpdateMemberInput!) {
+    updateMember(input: $input) {
+      id
+      number
+      name
+      kana
+      gender
+      dateOfBirth
+      phoneNumber
+      email
+      dateOfAdmission
+      dateOfWithdrawal
+      memo
+    }
+  }
+`;
