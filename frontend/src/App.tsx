@@ -1,24 +1,25 @@
 import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
+import { Layout } from "./components";
 import { AuthProvider } from "./contexts/AuthContext";
-import { Home } from "./pages/home";
-import { NewInstructorPage } from "./pages/instructors/new";
-import { InstructorsPage } from "./pages/instructors";
 import { ClassesPage } from "./pages/classes";
+import { ClassPage } from "./pages/classes/:id";
+import { InstructorsPage } from "./pages/instructors";
 import { InstructorPage } from "./pages/instructors/:id";
+import { NewInstructorPage } from "./pages/instructors/new";
+import { MembersPage } from "./pages/members";
+import { NewMemberPage } from "./pages/members/new";
+import { NewClassPage } from "./pages/schedules/:id/classes/new";
 import { SignIn } from "./pages/sign-in";
 import { SignUp } from "./pages/sign-up";
-import { Public, Private } from "./routes";
-import { NewClassPage } from "./pages/schedules/:id/classes/new";
-import { ClassPage } from "./pages/classes/:id";
-import { Layout } from "./components";
+import { Private, Public } from "./routes";
 
 const client = new ApolloClient({
   uri: "http://localhost:8080/query",
   cache: new InMemoryCache(),
 });
 
-function App() {
+export function App() {
   return (
     <ApolloProvider client={client}>
       <BrowserRouter>
@@ -48,59 +49,27 @@ function App() {
                 </Private>
               }
             >
-            <Route
-              path="instructors/new"
-              element={
-                <Private>
-                  <NewInstructorPage />
-                </Private>
-              }
-            />
-            <Route
-              path="instructors/:id"
-              element={
-                <Private>
-                  <InstructorPage />
-                </Private>
-              }
-            />
-            <Route
-              path="instructors"
-              element={
-                <Private>
-                  <InstructorsPage />
-                </Private>
-              }
-            />
-            <Route
-              path="classes"
-              element={
-                <Private>
-                  <ClassesPage />
-                </Private>
-              }
-            />
-            <Route
-              path="classes/:id"
-              element={
-                <Private>
-                  <ClassPage />
-                </Private>
-              }
-            />
-            <Route
-              path="schedules/:id/classes/new"
-              element={
-                <Private>
-                  <NewClassPage />
-                </Private>
-              }
-            />
+              <Route path="instructors" element={<Outlet />}>
+                <Route path="new" element={<NewInstructorPage />} />
+                <Route path=":id" element={<InstructorPage />} />
+                <Route index element={<InstructorsPage />} />
+              </Route>
+              <Route path="classes" element={<Outlet />}>
+                <Route index element={<ClassesPage />} />
+                <Route path=":id" element={<ClassPage />} />
+              </Route>
+              <Route
+                path="schedules/:id/classes/new"
+                element={<NewClassPage />}
+              />
+              <Route path="members" element={<Outlet />}>
+                <Route path="new" element={<NewMemberPage />} />
+                <Route index element={<MembersPage />} />
+              </Route>
+            </Route>
           </Routes>
         </AuthProvider>
       </BrowserRouter>
     </ApolloProvider>
   );
 }
-
-export default App;
