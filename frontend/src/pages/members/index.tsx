@@ -1,3 +1,4 @@
+import { format, parseISO } from "date-fns";
 import { useEffect, VFC } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { PaginationLinks } from "../../components";
@@ -30,7 +31,7 @@ export const MembersPage: VFC = () => {
           <td>{node.number}</td>
           <td>{node.name}</td>
           <td>{node.gender}</td>
-          <td>{node.dateOfAdmission}</td>
+          <td>{format(parseISO(node.dateOfAdmission), "yyyy-MM-dd")}</td>
         </tr>
       );
     });

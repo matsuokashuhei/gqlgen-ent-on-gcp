@@ -1,7 +1,7 @@
 import { format, formatRFC3339, parseISO } from "date-fns";
-import { useCallback, useEffect, useMemo, useState, VFC } from "react";
+import { useCallback, useEffect, useState, VFC } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import {
   Gender,
   UpdateMemberInput,

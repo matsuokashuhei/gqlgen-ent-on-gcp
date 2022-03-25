@@ -604,6 +604,7 @@ export type GetInstructorQuery = { __typename?: 'Query', instructor: { __typenam
 
 export type GetClassSchedulesBySchoolQueryVariables = Exact<{
   id: Scalars['ID'];
+  date?: InputMaybe<Scalars['Time']>;
 }>;
 
 
@@ -1060,7 +1061,7 @@ export type GetInstructorQueryHookResult = ReturnType<typeof useGetInstructorQue
 export type GetInstructorLazyQueryHookResult = ReturnType<typeof useGetInstructorLazyQuery>;
 export type GetInstructorQueryResult = Apollo.QueryResult<GetInstructorQuery, GetInstructorQueryVariables>;
 export const GetClassSchedulesBySchoolDocument = gql`
-    query getClassSchedulesBySchool($id: ID!) {
+    query getClassSchedulesBySchool($id: ID!, $date: Time) {
   school(id: $id) {
     id
     name
@@ -1077,7 +1078,7 @@ export const GetClassSchedulesBySchoolDocument = gql`
           dayOfWeek
           startTime
           endTime
-          class {
+          class(date: $date) {
             id
             name
             level
@@ -1109,6 +1110,7 @@ export const GetClassSchedulesBySchoolDocument = gql`
  * const { data, loading, error } = useGetClassSchedulesBySchoolQuery({
  *   variables: {
  *      id: // value for 'id'
+ *      date: // value for 'date'
  *   },
  * });
  */

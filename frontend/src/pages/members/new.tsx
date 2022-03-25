@@ -30,9 +30,7 @@ export const NewMemberPage: VFC = () => {
       dateOfBirth: formatRFC3339(parseISO(data.dateOfBirth)),
       dateOfAdmission: formatRFC3339(parseISO(data.dateOfAdmission)),
     };
-    createMember({ variables: { input } }).then((member) =>
-      navigate("/members")
-    );
+    createMember({ variables: { input } }).then(() => navigate("/members"));
   };
 
   return (

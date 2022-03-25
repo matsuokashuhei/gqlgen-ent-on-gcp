@@ -44,7 +44,7 @@ gql`
 `;
 
 gql`
-  query getClassSchedulesBySchool($id: ID!) {
+  query getClassSchedulesBySchool($id: ID!, $date: Time) {
     school(id: $id) {
       id
       name
@@ -61,7 +61,7 @@ gql`
             dayOfWeek
             startTime
             endTime
-            class {
+            class(date: $date) {
               id
               name
               level

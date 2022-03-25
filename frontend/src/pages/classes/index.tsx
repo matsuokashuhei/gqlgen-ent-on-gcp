@@ -1,6 +1,7 @@
 import { PlusSmIcon } from "@heroicons/react/solid";
+import { format, formatRFC3339, parse } from "date-fns";
 import { useEffect, VFC } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
   GetClassSchedulesBySchoolQuery,
   useGetClassSchedulesBySchoolLazyQuery,
@@ -15,12 +16,24 @@ type ClassType = NonNullable<SchedulesType[number]["class"]>;
 type InstructorType = ClassType["instructor"];
 
 export const ClassesPage: VFC = () => {
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const [getClassSchedulesBySchool, { data, loading, error }] =
     useGetClassSchedulesBySchoolLazyQuery();
 
   useEffect(() => {
-    getClassSchedulesBySchool({ variables: { id: "1" } });
-  }, [getClassSchedulesBySchool]);
+    const date = searchParams.get("date");
+    if (!date) {
+      navigate(`/classes?date=${format(new Date(), "yyyyMMdd")}`);
+      return;
+    }
+    getClassSchedulesBySchool({
+      variables: {
+        id: "1",
+        date: formatRFC3339(parse(date, "yyyyMMdd", new Date())),
+      },
+    });
+  }, [searchParams, navigate, getClassSchedulesBySchool]);
 
   const renderStudios = (studios: StdiosType) => {
     return studios.map((studio) => renderStudio(studio));
@@ -78,12 +91,16 @@ export const ClassesPage: VFC = () => {
           (schedule) =>
             schedule.dayOfWeek === dayOfWeek && schedule.startTime === startTime
         );
-        if (!schedule) return <div></div>;
+        if (!schedule) return <div key={`${dayOfWeek}-none`}></div>;
         if (schedule.class) {
-          return <div key={schedule.id}>{renderClass(schedule.class)}</div>;
+          return (
+            <div key={`${dayOfWeek}-${schedule.id}`}>
+              {renderClass(schedule.class)}
+            </div>
+          );
         } else {
           return (
-            <div>
+            <div key={`${dayOfWeek}-${schedule.id}`}>
               <Link to={`/schedules/${schedule.id}/classes/new`}>
                 <PlusSmIcon className="h-4 w-4" />
               </Link>
