@@ -44,7 +44,7 @@ gql`
 `;
 
 gql`
-  query getClassSchedulesBySchool($id: ID!, $date: Time) {
+  query getClassesBySchool($id: ID!, $date: Time) {
     school(id: $id) {
       id
       name
@@ -159,6 +159,20 @@ gql`
       dateOfAdmission
       dateOfWithdrawal
       memo
+      membersClasses {
+        id
+        dateOfAdmission
+        dateOfWithdrawal
+        class {
+          id
+          name
+          level
+          instructor {
+            id
+            name
+          }
+        }
+      }
     }
   }
 `;

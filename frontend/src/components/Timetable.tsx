@@ -1,3 +1,4 @@
+import { Tab } from "@headlessui/react";
 import { PlusSmIcon } from "@heroicons/react/solid";
 import { formatRFC3339, parse } from "date-fns";
 import { useEffect, VFC } from "react";
@@ -14,9 +15,9 @@ type Props = {
   onClickNewClass?: (schedule: PartialDeep<SchedulesType[number]>) => void;
 };
 
-type StdiosType = GetClassesBySchoolQuery["school"]["studios"];
-type StdioType = StdiosType[number];
-type RoomsType = StdioType["rooms"];
+type StudiosType = GetClassesBySchoolQuery["school"]["studios"];
+type StudioType = StudiosType[number];
+type RoomsType = StudioType["rooms"];
 type RoomType = RoomsType[number];
 type SchedulesType = RoomType["schedules"];
 type ClassType = NonNullable<SchedulesType[number]["class"]>;
@@ -35,31 +36,37 @@ export const Timetable: VFC<Props> = ({ date, onClickClass }) => {
     });
   }, [date, getClassesBySchool]);
 
-  const renderStudios = (studios: StdiosType) => {
-    return studios.map((studio) => renderStudio(studio));
-  };
+  const renderTabGroupForStudios = (studios: StudiosType) => (
+    <Tab.Group>
+      <Tab.List>
+        {studios.map((studio) => (
+          <Tab key={studio.id}>{studio.name}</Tab>
+        ))}
+      </Tab.List>
+      <Tab.Panels>
+        {studios.map((studio) => (
+          <Tab.Panel key={studio.id}>
+            {renderTabGroupForRooms(studio.rooms)}
+          </Tab.Panel>
+        ))}
+      </Tab.Panels>
+    </Tab.Group>
+  );
 
-  const renderStudio = (studio: StdioType) => {
-    return (
-      <div key={studio.id}>
-        {studio.name}
-        {renderRooms(studio.rooms)}
-      </div>
-    );
-  };
-
-  const renderRooms = (rooms: RoomsType) => {
-    return rooms.map((room) => renderRoom(room));
-  };
-
-  const renderRoom = (room: RoomType) => {
-    return (
-      <div key={room.id}>
-        {room.name}
-        {renderSchedules(room.schedules)}
-      </div>
-    );
-  };
+  const renderTabGroupForRooms = (rooms: RoomsType) => (
+    <Tab.Group>
+      <Tab.List>
+        {rooms.map((room) => (
+          <Tab key={room.id}>{room.name}</Tab>
+        ))}
+      </Tab.List>
+      <Tab.Panels>
+        {rooms.map((room) => (
+          <Tab.Panel key={room.id}>{renderSchedules(room.schedules)}</Tab.Panel>
+        ))}
+      </Tab.Panels>
+    </Tab.Group>
+  );
 
   const renderSchedules = (schedules: SchedulesType) => {
     return (
@@ -74,22 +81,31 @@ export const Timetable: VFC<Props> = ({ date, onClickClass }) => {
 
   const renderTimeslots = (schedules: SchedulesType) => {
     return [
-      "13:00",
-      "14:15",
-      "15:30",
-      "16:45",
-      "18:00",
-      "19:15",
-      "20:30",
-      "21:45",
-    ].map((startTime) => {
+      { startTime: "13:00", endTime: "14:00" },
+      { startTime: "14:15", endTime: "15:25" },
+      { startTime: "15:30", endTime: "16:40" },
+      { startTime: "16:45", endTime: "17:55" },
+      { startTime: "18:00", endTime: "19:10" },
+      { startTime: "19:15", endTime: "20:25" },
+      { startTime: "20:30", endTime: "21:40" },
+      { startTime: "21:45", endTime: "22:55" },
+    ].map((slot) => {
       return [0, 1, 2, 3, 4, 5, 6, 7].map((dayOfWeek) => {
         if (dayOfWeek === 0) {
-          return <div key={dayOfWeek}>{startTime}</div>;
+          return (
+            <div
+              key={dayOfWeek}
+              className="text-md flex flex-col px-4 py-2 font-bold text-gray-700"
+            >
+              <div>{slot.startTime}</div>
+              <div>~ {slot.endTime}</div>
+            </div>
+          );
         }
         const schedule = schedules.find(
           (schedule) =>
-            schedule.dayOfWeek === dayOfWeek && schedule.startTime === startTime
+            schedule.dayOfWeek === dayOfWeek &&
+            schedule.startTime === slot.startTime
         );
         if (!schedule) return <div key={`${dayOfWeek}-none`}></div>;
         if (schedule.class) {
@@ -121,7 +137,7 @@ export const Timetable: VFC<Props> = ({ date, onClickClass }) => {
   };
 
   const renderInstructor = (instructor: InstructorType) => {
-    return <div>{instructor.name}</div>;
+    return <div className="text-md text-gray-700">{instructor.name}</div>;
   };
 
   const renderNewClassButton = (
@@ -145,7 +161,7 @@ export const Timetable: VFC<Props> = ({ date, onClickClass }) => {
   return (
     <>
       <h1>クラス</h1>
-      {renderStudios(studios)}
+      <div className="bg-white">{renderTabGroupForStudios(studios)}</div>
     </>
   );
 };

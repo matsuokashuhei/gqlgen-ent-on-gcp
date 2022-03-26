@@ -62,6 +62,13 @@ export type CreateMemberInput = {
   phoneNumber?: InputMaybe<Scalars['String']>;
 };
 
+export type CreateMembersClassInput = {
+  classId: Scalars['ID'];
+  dateOfAdmission: Scalars['Time'];
+  dateOfWithdrawal?: InputMaybe<Scalars['Time']>;
+  memberId: Scalars['ID'];
+};
+
 export type CreateRoomInput = {
   capacity: Scalars['Int'];
   name: Scalars['String'];
@@ -88,6 +95,10 @@ export type DeleteInstructorInput = {
 };
 
 export type DeleteMemberInput = {
+  id: Scalars['ID'];
+};
+
+export type DeleteMembersClassInput = {
   id: Scalars['ID'];
 };
 
@@ -140,6 +151,7 @@ export type Member = Node & {
   gender: Gender;
   id: Scalars['ID'];
   kana: Scalars['String'];
+  membersClasses: Array<MembersClass>;
   memo: Scalars['String'];
   name: Scalars['String'];
   number: Scalars['Int'];
@@ -170,11 +182,21 @@ export enum MemberOrderField {
   Number = 'NUMBER'
 }
 
+export type MembersClass = Node & {
+  __typename?: 'MembersClass';
+  class: Class;
+  dateOfAdmission: Scalars['Time'];
+  dateOfWithdrawal?: Maybe<Scalars['Time']>;
+  id: Scalars['ID'];
+  member: Member;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   createClass: Class;
   createInstructor: Instructor;
   createMember: Member;
+  createMembersClass: MembersClass;
   createRoom: Room;
   createSchool: School;
   createStudio: Studio;
@@ -182,6 +204,7 @@ export type Mutation = {
   deleteClass: Class;
   deleteInstructor: Instructor;
   deleteMember: Member;
+  deleteMembersClass: MembersClass;
   deleteRoom: Room;
   deleteSchool: School;
   deleteStudio: Studio;
@@ -189,6 +212,7 @@ export type Mutation = {
   updateClass: Class;
   updateInstructor: Instructor;
   updateMember: Member;
+  updateMembersClass: MembersClass;
   updateRoom: Room;
   updateSchool: School;
   updateStudio: Studio;
@@ -208,6 +232,11 @@ export type MutationCreateInstructorArgs = {
 
 export type MutationCreateMemberArgs = {
   input: CreateMemberInput;
+};
+
+
+export type MutationCreateMembersClassArgs = {
+  input: CreateMembersClassInput;
 };
 
 
@@ -246,6 +275,11 @@ export type MutationDeleteMemberArgs = {
 };
 
 
+export type MutationDeleteMembersClassArgs = {
+  input: DeleteMembersClassInput;
+};
+
+
 export type MutationDeleteRoomArgs = {
   id: Scalars['ID'];
 };
@@ -278,6 +312,11 @@ export type MutationUpdateInstructorArgs = {
 
 export type MutationUpdateMemberArgs = {
   input: UpdateMemberInput;
+};
+
+
+export type MutationUpdateMembersClassArgs = {
+  input: UpdateMembersClassInput;
 };
 
 
@@ -496,6 +535,14 @@ export type UpdateMemberInput = {
   phoneNumber?: InputMaybe<Scalars['String']>;
 };
 
+export type UpdateMembersClassInput = {
+  classId?: InputMaybe<Scalars['ID']>;
+  dateOfAdmission?: InputMaybe<Scalars['Time']>;
+  dateOfWithdrawal?: InputMaybe<Scalars['Time']>;
+  id: Scalars['ID'];
+  memberId?: InputMaybe<Scalars['ID']>;
+};
+
 export type UpdateRoomInput = {
   capacity?: InputMaybe<Scalars['Int']>;
   id: Scalars['ID'];
@@ -585,6 +632,13 @@ export type UpdateMemberMutationVariables = Exact<{
 
 export type UpdateMemberMutation = { __typename?: 'Mutation', updateMember: { __typename?: 'Member', id: string, number: number, name: string, kana: string, gender: Gender, dateOfBirth?: any | null, phoneNumber?: string | null, email?: string | null, dateOfAdmission: any, dateOfWithdrawal?: any | null, memo: string } };
 
+export type CreateMembersClassMutationVariables = Exact<{
+  input: CreateMembersClassInput;
+}>;
+
+
+export type CreateMembersClassMutation = { __typename?: 'Mutation', createMembersClass: { __typename?: 'MembersClass', id: string, dateOfAdmission: any, dateOfWithdrawal?: any | null, member: { __typename?: 'Member', id: string }, class: { __typename?: 'Class', id: string } } };
+
 export type GetInstructorsQueryVariables = Exact<{
   first?: InputMaybe<Scalars['Int']>;
   after?: InputMaybe<Scalars['Cursor']>;
@@ -602,13 +656,13 @@ export type GetInstructorQueryVariables = Exact<{
 
 export type GetInstructorQuery = { __typename?: 'Query', instructor: { __typename?: 'Instructor', id: string, name: string, kana: string, biography?: string | null, phoneNumber?: string | null, email?: string | null } };
 
-export type GetClassSchedulesBySchoolQueryVariables = Exact<{
+export type GetClassesBySchoolQueryVariables = Exact<{
   id: Scalars['ID'];
   date?: InputMaybe<Scalars['Time']>;
 }>;
 
 
-export type GetClassSchedulesBySchoolQuery = { __typename?: 'Query', school: { __typename?: 'School', id: string, name: string, studios: Array<{ __typename?: 'Studio', id: string, name: string, location: string, rooms: Array<{ __typename?: 'Room', id: string, name: string, capacity: number, schedules: Array<{ __typename?: 'Schedule', id: string, dayOfWeek: number, startTime: string, endTime: string, class?: { __typename?: 'Class', id: string, name: string, level: string, tuition: number, startDate: any, endDate?: any | null, instructor: { __typename?: 'Instructor', id: string, name: string } } | null }> }> }> } };
+export type GetClassesBySchoolQuery = { __typename?: 'Query', school: { __typename?: 'School', id: string, name: string, studios: Array<{ __typename?: 'Studio', id: string, name: string, location: string, rooms: Array<{ __typename?: 'Room', id: string, name: string, capacity: number, schedules: Array<{ __typename?: 'Schedule', id: string, dayOfWeek: number, startTime: string, endTime: string, class?: { __typename?: 'Class', id: string, name: string, level: string, tuition: number, startDate: any, endDate?: any | null, instructor: { __typename?: 'Instructor', id: string, name: string } } | null }> }> }> } };
 
 export type GetClassQueryVariables = Exact<{
   id: Scalars['ID'];
@@ -639,7 +693,7 @@ export type GetMemberQueryVariables = Exact<{
 }>;
 
 
-export type GetMemberQuery = { __typename?: 'Query', member: { __typename?: 'Member', id: string, number: number, name: string, kana: string, gender: Gender, dateOfBirth?: any | null, phoneNumber?: string | null, email?: string | null, dateOfAdmission: any, dateOfWithdrawal?: any | null, memo: string } };
+export type GetMemberQuery = { __typename?: 'Query', member: { __typename?: 'Member', id: string, number: number, name: string, kana: string, gender: Gender, dateOfBirth?: any | null, phoneNumber?: string | null, email?: string | null, dateOfAdmission: any, dateOfWithdrawal?: any | null, memo: string, membersClasses: Array<{ __typename?: 'MembersClass', id: string, dateOfAdmission: any, dateOfWithdrawal?: any | null, class: { __typename?: 'Class', id: string, name: string, level: string, instructor: { __typename?: 'Instructor', id: string, name: string } } }> } };
 
 
 export const CreateInstructorDocument = gql`
@@ -965,6 +1019,47 @@ export function useUpdateMemberMutation(baseOptions?: Apollo.MutationHookOptions
 export type UpdateMemberMutationHookResult = ReturnType<typeof useUpdateMemberMutation>;
 export type UpdateMemberMutationResult = Apollo.MutationResult<UpdateMemberMutation>;
 export type UpdateMemberMutationOptions = Apollo.BaseMutationOptions<UpdateMemberMutation, UpdateMemberMutationVariables>;
+export const CreateMembersClassDocument = gql`
+    mutation CreateMembersClass($input: CreateMembersClassInput!) {
+  createMembersClass(input: $input) {
+    id
+    member {
+      id
+    }
+    class {
+      id
+    }
+    dateOfAdmission
+    dateOfWithdrawal
+  }
+}
+    `;
+export type CreateMembersClassMutationFn = Apollo.MutationFunction<CreateMembersClassMutation, CreateMembersClassMutationVariables>;
+
+/**
+ * __useCreateMembersClassMutation__
+ *
+ * To run a mutation, you first call `useCreateMembersClassMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateMembersClassMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createMembersClassMutation, { data, loading, error }] = useCreateMembersClassMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateMembersClassMutation(baseOptions?: Apollo.MutationHookOptions<CreateMembersClassMutation, CreateMembersClassMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateMembersClassMutation, CreateMembersClassMutationVariables>(CreateMembersClassDocument, options);
+      }
+export type CreateMembersClassMutationHookResult = ReturnType<typeof useCreateMembersClassMutation>;
+export type CreateMembersClassMutationResult = Apollo.MutationResult<CreateMembersClassMutation>;
+export type CreateMembersClassMutationOptions = Apollo.BaseMutationOptions<CreateMembersClassMutation, CreateMembersClassMutationVariables>;
 export const GetInstructorsDocument = gql`
     query getInstructors($first: Int, $after: Cursor, $last: Int, $before: Cursor) {
   instructors(first: $first, after: $after, last: $last, before: $before) {
@@ -1060,8 +1155,8 @@ export function useGetInstructorLazyQuery(baseOptions?: Apollo.LazyQueryHookOpti
 export type GetInstructorQueryHookResult = ReturnType<typeof useGetInstructorQuery>;
 export type GetInstructorLazyQueryHookResult = ReturnType<typeof useGetInstructorLazyQuery>;
 export type GetInstructorQueryResult = Apollo.QueryResult<GetInstructorQuery, GetInstructorQueryVariables>;
-export const GetClassSchedulesBySchoolDocument = gql`
-    query getClassSchedulesBySchool($id: ID!, $date: Time) {
+export const GetClassesBySchoolDocument = gql`
+    query getClassesBySchool($id: ID!, $date: Time) {
   school(id: $id) {
     id
     name
@@ -1098,33 +1193,33 @@ export const GetClassSchedulesBySchoolDocument = gql`
     `;
 
 /**
- * __useGetClassSchedulesBySchoolQuery__
+ * __useGetClassesBySchoolQuery__
  *
- * To run a query within a React component, call `useGetClassSchedulesBySchoolQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetClassSchedulesBySchoolQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useGetClassesBySchoolQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetClassesBySchoolQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useGetClassSchedulesBySchoolQuery({
+ * const { data, loading, error } = useGetClassesBySchoolQuery({
  *   variables: {
  *      id: // value for 'id'
  *      date: // value for 'date'
  *   },
  * });
  */
-export function useGetClassSchedulesBySchoolQuery(baseOptions: Apollo.QueryHookOptions<GetClassSchedulesBySchoolQuery, GetClassSchedulesBySchoolQueryVariables>) {
+export function useGetClassesBySchoolQuery(baseOptions: Apollo.QueryHookOptions<GetClassesBySchoolQuery, GetClassesBySchoolQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetClassSchedulesBySchoolQuery, GetClassSchedulesBySchoolQueryVariables>(GetClassSchedulesBySchoolDocument, options);
+        return Apollo.useQuery<GetClassesBySchoolQuery, GetClassesBySchoolQueryVariables>(GetClassesBySchoolDocument, options);
       }
-export function useGetClassSchedulesBySchoolLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetClassSchedulesBySchoolQuery, GetClassSchedulesBySchoolQueryVariables>) {
+export function useGetClassesBySchoolLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetClassesBySchoolQuery, GetClassesBySchoolQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetClassSchedulesBySchoolQuery, GetClassSchedulesBySchoolQueryVariables>(GetClassSchedulesBySchoolDocument, options);
+          return Apollo.useLazyQuery<GetClassesBySchoolQuery, GetClassesBySchoolQueryVariables>(GetClassesBySchoolDocument, options);
         }
-export type GetClassSchedulesBySchoolQueryHookResult = ReturnType<typeof useGetClassSchedulesBySchoolQuery>;
-export type GetClassSchedulesBySchoolLazyQueryHookResult = ReturnType<typeof useGetClassSchedulesBySchoolLazyQuery>;
-export type GetClassSchedulesBySchoolQueryResult = Apollo.QueryResult<GetClassSchedulesBySchoolQuery, GetClassSchedulesBySchoolQueryVariables>;
+export type GetClassesBySchoolQueryHookResult = ReturnType<typeof useGetClassesBySchoolQuery>;
+export type GetClassesBySchoolLazyQueryHookResult = ReturnType<typeof useGetClassesBySchoolLazyQuery>;
+export type GetClassesBySchoolQueryResult = Apollo.QueryResult<GetClassesBySchoolQuery, GetClassesBySchoolQueryVariables>;
 export const GetClassDocument = gql`
     query getClass($id: ID!) {
   class(id: $id) {
@@ -1288,6 +1383,20 @@ export const GetMemberDocument = gql`
     dateOfAdmission
     dateOfWithdrawal
     memo
+    membersClasses {
+      id
+      dateOfAdmission
+      dateOfWithdrawal
+      class {
+        id
+        name
+        level
+        instructor {
+          id
+          name
+        }
+      }
+    }
   }
 }
     `;

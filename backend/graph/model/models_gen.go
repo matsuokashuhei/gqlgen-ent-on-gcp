@@ -40,6 +40,13 @@ type CreateMemberInput struct {
 	Memo             *string    `json:"memo"`
 }
 
+type CreateMembersClassInput struct {
+	MemberID         int        `json:"memberId"`
+	ClassID          int        `json:"classId"`
+	DateOfAdmission  time.Time  `json:"dateOfAdmission"`
+	DateOfWithdrawal *time.Time `json:"dateOfWithdrawal"`
+}
+
 type CreateRoomInput struct {
 	Name     string `json:"name"`
 	Capacity int    `json:"capacity"`
@@ -66,6 +73,10 @@ type DeleteInstructorInput struct {
 }
 
 type DeleteMemberInput struct {
+	ID int `json:"id"`
+}
+
+type DeleteMembersClassInput struct {
 	ID int `json:"id"`
 }
 
@@ -106,6 +117,14 @@ type UpdateMemberInput struct {
 	DateOfAdmission  *time.Time `json:"dateOfAdmission"`
 	DateOfWithdrawal *time.Time `json:"dateOfWithdrawal"`
 	Memo             *string    `json:"memo"`
+}
+
+type UpdateMembersClassInput struct {
+	ID               int        `json:"id"`
+	MemberID         *int       `json:"memberId"`
+	ClassID          *int       `json:"classId"`
+	DateOfAdmission  *time.Time `json:"dateOfAdmission"`
+	DateOfWithdrawal *time.Time `json:"dateOfWithdrawal"`
 }
 
 type UpdateRoomInput struct {

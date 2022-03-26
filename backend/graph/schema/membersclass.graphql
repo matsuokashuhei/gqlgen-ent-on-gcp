@@ -1,0 +1,32 @@
+type MembersClass implements Node {
+  id: ID!
+  member: Member!
+  class: Class!
+  dateOfAdmission: Time!
+  dateOfWithdrawal: Time
+}
+
+input CreateMembersClassInput {
+  memberId: ID!
+  classId: ID!
+  dateOfAdmission: Time!
+  dateOfWithdrawal: Time
+}
+
+input UpdateMembersClassInput {
+  id: ID!
+  memberId: ID
+  classId: ID
+  dateOfAdmission: Time
+  dateOfWithdrawal: Time
+}
+
+input DeleteMembersClassInput {
+  id: ID!
+}
+
+extend type Mutation {
+  createMembersClass(input: CreateMembersClassInput!): MembersClass!
+  updateMembersClass(input: UpdateMembersClassInput!): MembersClass!
+  deleteMembersClass(input: DeleteMembersClassInput!): MembersClass!
+}

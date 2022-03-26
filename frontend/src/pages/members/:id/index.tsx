@@ -2,6 +2,8 @@ import { format, formatRFC3339, parseISO } from "date-fns";
 import { useCallback, useEffect, useState, VFC } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useParams } from "react-router-dom";
+import { MembersClassForm } from "../../../components/forms/MembersClassForm";
+import { MembersClassList } from "../../../components/MembersClassList";
 import {
   Gender,
   UpdateMemberInput,
@@ -29,6 +31,8 @@ export const MemberPage: VFC = () => {
   const [getMember, { data, loading, error }] = useGetMemberLazyQuery();
   const [updateMember] = useUpdateMemberMutation();
   const [editable, setEditable] = useState<boolean>(false);
+  const [showMembersClassForm, setShowMembersClassForm] =
+    useState<boolean>(false);
 
   useEffect(() => {
     if (!id) return;
@@ -135,7 +139,7 @@ export const MemberPage: VFC = () => {
     <>
       <h1>登録</h1>
       <form className="flex flex-col">
-        <label htmlFor="number">番号　</label>
+        <label htmlFor="number">番号</label>
         <input
           {...register("number", { required: true, disabled: !editable })}
         />
@@ -205,6 +209,15 @@ export const MemberPage: VFC = () => {
         <input type="text" {...register("memo", { disabled: !editable })} />
       </form>
       {renderButtons()}
+      <hr />
+      <h1>クラス</h1>
+      <button onClick={() => setShowMembersClassForm(true)}>登録</button>
+      <div className={showMembersClassForm ? "visible" : "invisible"}>
+        <MembersClassForm member={member} />
+      </div>
+      <div className={showMembersClassForm ? "invisible" : "visible"}>
+        <MembersClassList membersClasses={member.membersClasses} />
+      </div>
     </>
   );
 };

@@ -10,6 +10,7 @@ type Member implements Node {
   dateOfAdmission: Time!
   dateOfWithdrawal: Time
   memo: String!
+  membersClasses: [MembersClass!]!
 }
 
 type MemberConnection {

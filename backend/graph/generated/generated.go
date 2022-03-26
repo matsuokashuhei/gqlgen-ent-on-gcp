@@ -92,6 +92,7 @@ type ComplexityRoot struct {
 		Gender           func(childComplexity int) int
 		ID               func(childComplexity int) int
 		Kana             func(childComplexity int) int
+		MembersClasses   func(childComplexity int) int
 		Memo             func(childComplexity int) int
 		Name             func(childComplexity int) int
 		Number           func(childComplexity int) int
@@ -109,28 +110,39 @@ type ComplexityRoot struct {
 		Node   func(childComplexity int) int
 	}
 
+	MembersClass struct {
+		Class            func(childComplexity int) int
+		DateOfAdmission  func(childComplexity int) int
+		DateOfWithdrawal func(childComplexity int) int
+		ID               func(childComplexity int) int
+		Member           func(childComplexity int) int
+	}
+
 	Mutation struct {
-		CreateClass      func(childComplexity int, input model.CreateClassInput) int
-		CreateInstructor func(childComplexity int, input model.CreateInstructorInput) int
-		CreateMember     func(childComplexity int, input model.CreateMemberInput) int
-		CreateRoom       func(childComplexity int, input model.CreateRoomInput) int
-		CreateSchool     func(childComplexity int, input model.CreateSchoolInput) int
-		CreateStudio     func(childComplexity int, input model.CreateStudioInput) int
-		CreateUser       func(childComplexity int, input model.CreateUserInput) int
-		DeleteClass      func(childComplexity int, id int) int
-		DeleteInstructor func(childComplexity int, input model.DeleteInstructorInput) int
-		DeleteMember     func(childComplexity int, input model.DeleteMemberInput) int
-		DeleteRoom       func(childComplexity int, id int) int
-		DeleteSchool     func(childComplexity int, id int) int
-		DeleteStudio     func(childComplexity int, id int) int
-		SignUp           func(childComplexity int, input model.SignUpInput) int
-		UpdateClass      func(childComplexity int, input model.UpdateClassInput) int
-		UpdateInstructor func(childComplexity int, input model.UpdateInstructorInput) int
-		UpdateMember     func(childComplexity int, input model.UpdateMemberInput) int
-		UpdateRoom       func(childComplexity int, input model.UpdateRoomInput) int
-		UpdateSchool     func(childComplexity int, input model.UpdateSchoolInput) int
-		UpdateStudio     func(childComplexity int, input model.UpdateStudioInput) int
-		UpdateUser       func(childComplexity int, input model.UpdateUserInput) int
+		CreateClass        func(childComplexity int, input model.CreateClassInput) int
+		CreateInstructor   func(childComplexity int, input model.CreateInstructorInput) int
+		CreateMember       func(childComplexity int, input model.CreateMemberInput) int
+		CreateMembersClass func(childComplexity int, input model.CreateMembersClassInput) int
+		CreateRoom         func(childComplexity int, input model.CreateRoomInput) int
+		CreateSchool       func(childComplexity int, input model.CreateSchoolInput) int
+		CreateStudio       func(childComplexity int, input model.CreateStudioInput) int
+		CreateUser         func(childComplexity int, input model.CreateUserInput) int
+		DeleteClass        func(childComplexity int, id int) int
+		DeleteInstructor   func(childComplexity int, input model.DeleteInstructorInput) int
+		DeleteMember       func(childComplexity int, input model.DeleteMemberInput) int
+		DeleteMembersClass func(childComplexity int, input model.DeleteMembersClassInput) int
+		DeleteRoom         func(childComplexity int, id int) int
+		DeleteSchool       func(childComplexity int, id int) int
+		DeleteStudio       func(childComplexity int, id int) int
+		SignUp             func(childComplexity int, input model.SignUpInput) int
+		UpdateClass        func(childComplexity int, input model.UpdateClassInput) int
+		UpdateInstructor   func(childComplexity int, input model.UpdateInstructorInput) int
+		UpdateMember       func(childComplexity int, input model.UpdateMemberInput) int
+		UpdateMembersClass func(childComplexity int, input model.UpdateMembersClassInput) int
+		UpdateRoom         func(childComplexity int, input model.UpdateRoomInput) int
+		UpdateSchool       func(childComplexity int, input model.UpdateSchoolInput) int
+		UpdateStudio       func(childComplexity int, input model.UpdateStudioInput) int
+		UpdateUser         func(childComplexity int, input model.UpdateUserInput) int
 	}
 
 	PageInfo struct {
@@ -220,6 +232,9 @@ type MutationResolver interface {
 	CreateMember(ctx context.Context, input model.CreateMemberInput) (*ent.Member, error)
 	UpdateMember(ctx context.Context, input model.UpdateMemberInput) (*ent.Member, error)
 	DeleteMember(ctx context.Context, input model.DeleteMemberInput) (*ent.Member, error)
+	CreateMembersClass(ctx context.Context, input model.CreateMembersClassInput) (*ent.MembersClass, error)
+	UpdateMembersClass(ctx context.Context, input model.UpdateMembersClassInput) (*ent.MembersClass, error)
+	DeleteMembersClass(ctx context.Context, input model.DeleteMembersClassInput) (*ent.MembersClass, error)
 	CreateRoom(ctx context.Context, input model.CreateRoomInput) (*ent.Room, error)
 	UpdateRoom(ctx context.Context, input model.UpdateRoomInput) (*ent.Room, error)
 	DeleteRoom(ctx context.Context, id int) (*ent.Room, error)
@@ -482,6 +497,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Member.Kana(childComplexity), true
 
+	case "Member.membersClasses":
+		if e.complexity.Member.MembersClasses == nil {
+			break
+		}
+
+		return e.complexity.Member.MembersClasses(childComplexity), true
+
 	case "Member.memo":
 		if e.complexity.Member.Memo == nil {
 			break
@@ -545,6 +567,41 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.MemberEdge.Node(childComplexity), true
 
+	case "MembersClass.class":
+		if e.complexity.MembersClass.Class == nil {
+			break
+		}
+
+		return e.complexity.MembersClass.Class(childComplexity), true
+
+	case "MembersClass.dateOfAdmission":
+		if e.complexity.MembersClass.DateOfAdmission == nil {
+			break
+		}
+
+		return e.complexity.MembersClass.DateOfAdmission(childComplexity), true
+
+	case "MembersClass.dateOfWithdrawal":
+		if e.complexity.MembersClass.DateOfWithdrawal == nil {
+			break
+		}
+
+		return e.complexity.MembersClass.DateOfWithdrawal(childComplexity), true
+
+	case "MembersClass.id":
+		if e.complexity.MembersClass.ID == nil {
+			break
+		}
+
+		return e.complexity.MembersClass.ID(childComplexity), true
+
+	case "MembersClass.member":
+		if e.complexity.MembersClass.Member == nil {
+			break
+		}
+
+		return e.complexity.MembersClass.Member(childComplexity), true
+
 	case "Mutation.createClass":
 		if e.complexity.Mutation.CreateClass == nil {
 			break
@@ -580,6 +637,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.CreateMember(childComplexity, args["input"].(model.CreateMemberInput)), true
+
+	case "Mutation.createMembersClass":
+		if e.complexity.Mutation.CreateMembersClass == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createMembersClass_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateMembersClass(childComplexity, args["input"].(model.CreateMembersClassInput)), true
 
 	case "Mutation.createRoom":
 		if e.complexity.Mutation.CreateRoom == nil {
@@ -665,6 +734,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.DeleteMember(childComplexity, args["input"].(model.DeleteMemberInput)), true
 
+	case "Mutation.deleteMembersClass":
+		if e.complexity.Mutation.DeleteMembersClass == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteMembersClass_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteMembersClass(childComplexity, args["input"].(model.DeleteMembersClassInput)), true
+
 	case "Mutation.deleteRoom":
 		if e.complexity.Mutation.DeleteRoom == nil {
 			break
@@ -748,6 +829,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.UpdateMember(childComplexity, args["input"].(model.UpdateMemberInput)), true
+
+	case "Mutation.updateMembersClass":
+		if e.complexity.Mutation.UpdateMembersClass == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateMembersClass_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateMembersClass(childComplexity, args["input"].(model.UpdateMembersClassInput)), true
 
 	case "Mutation.updateRoom":
 		if e.complexity.Mutation.UpdateRoom == nil {
@@ -1415,6 +1508,7 @@ extend type Mutation {
   dateOfAdmission: Time!
   dateOfWithdrawal: Time
   memo: String!
+  membersClasses: [MembersClass!]!
 }
 
 type MemberConnection {
@@ -1485,6 +1579,39 @@ extend type Mutation {
   createMember(input: CreateMemberInput!): Member!
   updateMember(input: UpdateMemberInput!): Member!
   deleteMember(input: DeleteMemberInput!): Member!
+}
+`, BuiltIn: false},
+	{Name: "graph/schema/membersclass.graphql", Input: `type MembersClass implements Node {
+  id: ID!
+  member: Member!
+  class: Class!
+  dateOfAdmission: Time!
+  dateOfWithdrawal: Time
+}
+
+input CreateMembersClassInput {
+  memberId: ID!
+  classId: ID!
+  dateOfAdmission: Time!
+  dateOfWithdrawal: Time
+}
+
+input UpdateMembersClassInput {
+  id: ID!
+  memberId: ID
+  classId: ID
+  dateOfAdmission: Time
+  dateOfWithdrawal: Time
+}
+
+input DeleteMembersClassInput {
+  id: ID!
+}
+
+extend type Mutation {
+  createMembersClass(input: CreateMembersClassInput!): MembersClass!
+  updateMembersClass(input: UpdateMembersClassInput!): MembersClass!
+  deleteMembersClass(input: DeleteMembersClassInput!): MembersClass!
 }
 `, BuiltIn: false},
 	{Name: "graph/schema/node.graphql", Input: `interface Node {
@@ -1720,6 +1847,21 @@ func (ec *executionContext) field_Mutation_createMember_args(ctx context.Context
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_createMembersClass_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.CreateMembersClassInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNCreateMembersClassInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐCreateMembersClassInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_createRoom_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -1825,6 +1967,21 @@ func (ec *executionContext) field_Mutation_deleteMember_args(ctx context.Context
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_deleteMembersClass_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.DeleteMembersClassInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNDeleteMembersClassInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐDeleteMembersClassInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_deleteRoom_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -1922,6 +2079,21 @@ func (ec *executionContext) field_Mutation_updateMember_args(ctx context.Context
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNUpdateMemberInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐUpdateMemberInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateMembersClass_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.UpdateMembersClassInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNUpdateMembersClassInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐUpdateMembersClassInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -3476,6 +3648,41 @@ func (ec *executionContext) _Member_memo(ctx context.Context, field graphql.Coll
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Member_membersClasses(ctx context.Context, field graphql.CollectedField, obj *ent.Member) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Member",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.MembersClasses(ctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*ent.MembersClass)
+	fc.Result = res
+	return ec.marshalNMembersClass2ᚕᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋentᚐMembersClassᚄ(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _MemberConnection_totalCount(ctx context.Context, field graphql.CollectedField, obj *ent.MemberConnection) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -3649,6 +3856,178 @@ func (ec *executionContext) _MemberEdge_cursor(ctx context.Context, field graphq
 	res := resTmp.(ent.Cursor)
 	fc.Result = res
 	return ec.marshalNCursor2githubᚗcomᚋmatsuokashuheiᚋlandinᚋentᚐCursor(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _MembersClass_id(ctx context.Context, field graphql.CollectedField, obj *ent.MembersClass) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "MembersClass",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNID2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _MembersClass_member(ctx context.Context, field graphql.CollectedField, obj *ent.MembersClass) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "MembersClass",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Member(ctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.Member)
+	fc.Result = res
+	return ec.marshalNMember2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋentᚐMember(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _MembersClass_class(ctx context.Context, field graphql.CollectedField, obj *ent.MembersClass) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "MembersClass",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Class(ctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.Class)
+	fc.Result = res
+	return ec.marshalNClass2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋentᚐClass(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _MembersClass_dateOfAdmission(ctx context.Context, field graphql.CollectedField, obj *ent.MembersClass) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "MembersClass",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DateOfAdmission, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _MembersClass_dateOfWithdrawal(ctx context.Context, field graphql.CollectedField, obj *ent.MembersClass) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "MembersClass",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DateOfWithdrawal, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalOTime2timeᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_signUp(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -4069,6 +4448,132 @@ func (ec *executionContext) _Mutation_deleteMember(ctx context.Context, field gr
 	res := resTmp.(*ent.Member)
 	fc.Result = res
 	return ec.marshalNMember2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋentᚐMember(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_createMembersClass(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_createMembersClass_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateMembersClass(rctx, args["input"].(model.CreateMembersClassInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.MembersClass)
+	fc.Result = res
+	return ec.marshalNMembersClass2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋentᚐMembersClass(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_updateMembersClass(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_updateMembersClass_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateMembersClass(rctx, args["input"].(model.UpdateMembersClassInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.MembersClass)
+	fc.Result = res
+	return ec.marshalNMembersClass2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋentᚐMembersClass(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_deleteMembersClass(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_deleteMembersClass_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteMembersClass(rctx, args["input"].(model.DeleteMembersClassInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.MembersClass)
+	fc.Result = res
+	return ec.marshalNMembersClass2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋentᚐMembersClass(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_createRoom(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -7875,6 +8380,53 @@ func (ec *executionContext) unmarshalInputCreateMemberInput(ctx context.Context,
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputCreateMembersClassInput(ctx context.Context, obj interface{}) (model.CreateMembersClassInput, error) {
+	var it model.CreateMembersClassInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "memberId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("memberId"))
+			it.MemberID, err = ec.unmarshalNID2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "classId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("classId"))
+			it.ClassID, err = ec.unmarshalNID2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "dateOfAdmission":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("dateOfAdmission"))
+			it.DateOfAdmission, err = ec.unmarshalNTime2timeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "dateOfWithdrawal":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("dateOfWithdrawal"))
+			it.DateOfWithdrawal, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputCreateRoomInput(ctx context.Context, obj interface{}) (model.CreateRoomInput, error) {
 	var it model.CreateRoomInput
 	asMap := map[string]interface{}{}
@@ -8032,6 +8584,29 @@ func (ec *executionContext) unmarshalInputDeleteInstructorInput(ctx context.Cont
 
 func (ec *executionContext) unmarshalInputDeleteMemberInput(ctx context.Context, obj interface{}) (model.DeleteMemberInput, error) {
 	var it model.DeleteMemberInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalNID2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputDeleteMembersClassInput(ctx context.Context, obj interface{}) (model.DeleteMembersClassInput, error) {
+	var it model.DeleteMembersClassInput
 	asMap := map[string]interface{}{}
 	for k, v := range obj.(map[string]interface{}) {
 		asMap[k] = v
@@ -8391,6 +8966,61 @@ func (ec *executionContext) unmarshalInputUpdateMemberInput(ctx context.Context,
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputUpdateMembersClassInput(ctx context.Context, obj interface{}) (model.UpdateMembersClassInput, error) {
+	var it model.UpdateMembersClassInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalNID2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "memberId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("memberId"))
+			it.MemberID, err = ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "classId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("classId"))
+			it.ClassID, err = ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "dateOfAdmission":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("dateOfAdmission"))
+			it.DateOfAdmission, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "dateOfWithdrawal":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("dateOfWithdrawal"))
+			it.DateOfWithdrawal, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputUpdateRoomInput(ctx context.Context, obj interface{}) (model.UpdateRoomInput, error) {
 	var it model.UpdateRoomInput
 	asMap := map[string]interface{}{}
@@ -8570,6 +9200,11 @@ func (ec *executionContext) _Node(ctx context.Context, sel ast.SelectionSet, obj
 			return graphql.Null
 		}
 		return ec._Member(ctx, sel, obj)
+	case *ent.MembersClass:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._MembersClass(ctx, sel, obj)
 	case *ent.Room:
 		if obj == nil {
 			return graphql.Null
@@ -9044,6 +9679,26 @@ func (ec *executionContext) _Member(ctx context.Context, sel ast.SelectionSet, o
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
+		case "membersClasses":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Member_membersClasses(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return innerFunc(ctx)
+
+			})
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -9136,6 +9791,94 @@ func (ec *executionContext) _MemberEdge(ctx context.Context, sel ast.SelectionSe
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var membersClassImplementors = []string{"MembersClass", "Node"}
+
+func (ec *executionContext) _MembersClass(ctx context.Context, sel ast.SelectionSet, obj *ent.MembersClass) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, membersClassImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("MembersClass")
+		case "id":
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._MembersClass_id(ctx, field, obj)
+			}
+
+			out.Values[i] = innerFunc(ctx)
+
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "member":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._MembersClass_member(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return innerFunc(ctx)
+
+			})
+		case "class":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._MembersClass_class(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return innerFunc(ctx)
+
+			})
+		case "dateOfAdmission":
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._MembersClass_dateOfAdmission(ctx, field, obj)
+			}
+
+			out.Values[i] = innerFunc(ctx)
+
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "dateOfWithdrawal":
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._MembersClass_dateOfWithdrawal(ctx, field, obj)
+			}
+
+			out.Values[i] = innerFunc(ctx)
+
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -9259,6 +10002,36 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		case "deleteMember":
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_deleteMember(ctx, field)
+			}
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, innerFunc)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "createMembersClass":
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_createMembersClass(ctx, field)
+			}
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, innerFunc)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "updateMembersClass":
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_updateMembersClass(ctx, field)
+			}
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, innerFunc)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "deleteMembersClass":
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_deleteMembersClass(ctx, field)
 			}
 
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, innerFunc)
@@ -10790,6 +11563,11 @@ func (ec *executionContext) unmarshalNCreateMemberInput2githubᚗcomᚋmatsuokas
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) unmarshalNCreateMembersClassInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐCreateMembersClassInput(ctx context.Context, v interface{}) (model.CreateMembersClassInput, error) {
+	res, err := ec.unmarshalInputCreateMembersClassInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNCreateRoomInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐCreateRoomInput(ctx context.Context, v interface{}) (model.CreateRoomInput, error) {
 	res, err := ec.unmarshalInputCreateRoomInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -10827,6 +11605,11 @@ func (ec *executionContext) unmarshalNDeleteInstructorInput2githubᚗcomᚋmatsu
 
 func (ec *executionContext) unmarshalNDeleteMemberInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐDeleteMemberInput(ctx context.Context, v interface{}) (model.DeleteMemberInput, error) {
 	res, err := ec.unmarshalInputDeleteMemberInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNDeleteMembersClassInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐDeleteMembersClassInput(ctx context.Context, v interface{}) (model.DeleteMembersClassInput, error) {
+	res, err := ec.unmarshalInputDeleteMembersClassInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -11064,6 +11847,64 @@ func (ec *executionContext) marshalNMemberEdge2ᚖgithubᚗcomᚋmatsuokashuhei�
 		return graphql.Null
 	}
 	return ec._MemberEdge(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNMembersClass2githubᚗcomᚋmatsuokashuheiᚋlandinᚋentᚐMembersClass(ctx context.Context, sel ast.SelectionSet, v ent.MembersClass) graphql.Marshaler {
+	return ec._MembersClass(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNMembersClass2ᚕᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋentᚐMembersClassᚄ(ctx context.Context, sel ast.SelectionSet, v []*ent.MembersClass) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNMembersClass2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋentᚐMembersClass(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNMembersClass2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋentᚐMembersClass(ctx context.Context, sel ast.SelectionSet, v *ent.MembersClass) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._MembersClass(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNNode2githubᚗcomᚋmatsuokashuheiᚋlandinᚋentᚐNoder(ctx context.Context, sel ast.SelectionSet, v ent.Noder) graphql.Marshaler {
@@ -11413,6 +12254,11 @@ func (ec *executionContext) unmarshalNUpdateInstructorInput2githubᚗcomᚋmatsu
 
 func (ec *executionContext) unmarshalNUpdateMemberInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐUpdateMemberInput(ctx context.Context, v interface{}) (model.UpdateMemberInput, error) {
 	res, err := ec.unmarshalInputUpdateMemberInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNUpdateMembersClassInput2githubᚗcomᚋmatsuokashuheiᚋlandinᚋgraphᚋmodelᚐUpdateMembersClassInput(ctx context.Context, v interface{}) (model.UpdateMembersClassInput, error) {
+	res, err := ec.unmarshalInputUpdateMembersClassInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 

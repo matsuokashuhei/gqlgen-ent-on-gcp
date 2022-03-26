@@ -122,3 +122,19 @@ gql`
     }
   }
 `;
+
+gql`
+  mutation CreateMembersClass($input: CreateMembersClassInput!) {
+    createMembersClass(input: $input) {
+      id
+      member {
+        id
+      }
+      class {
+        id
+      }
+      dateOfAdmission
+      dateOfWithdrawal
+    }
+  }
+`;
