@@ -2,7 +2,6 @@ package repositories
 
 import (
 	"context"
-	"time"
 
 	"github.com/matsuokashuhei/landin/ent"
 	"github.com/matsuokashuhei/landin/graph/model"
@@ -21,7 +20,7 @@ func (r *ClassRepository) Create(ctx context.Context, input model.CreateClassInp
 		SetName(input.Name).
 		SetLevel(input.Level).
 		SetTuition(input.Tuition).
-		SetStartDate(time.Now()).
+		SetStartDate(input.StartDate).
 		SetInstructorID(input.InstructorID).
 		SetScheduleID(input.ScheduleID).
 		SetNillableEndDate(input.EndDate).
