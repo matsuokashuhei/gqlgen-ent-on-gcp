@@ -32,5 +32,13 @@ func (r *queryResolver) Instructor(ctx context.Context, id int) (*ent.Instructor
 }
 
 func (r *queryResolver) Instructors(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.InstructorOrder) (*ent.InstructorConnection, error) {
-	return r.client.Instructor.Query().Paginate(ctx, after, first, before, last, ent.WithInstructorOrder(orderBy))
+	return r.client.Instructor.Query().
+		Paginate(
+			ctx,
+			after,
+			first,
+			before,
+			last,
+			ent.WithInstructorOrder(orderBy),
+		)
 }

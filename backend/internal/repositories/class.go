@@ -2,7 +2,6 @@ package repositories
 
 import (
 	"context"
-	"time"
 
 	"github.com/matsuokashuhei/landin/ent"
 	"github.com/matsuokashuhei/landin/graph/model"
@@ -17,17 +16,15 @@ func (r *ClassRepository) Find(ctx context.Context, id int) (*ent.Class, error) 
 }
 
 func (r *ClassRepository) Create(ctx context.Context, input model.CreateClassInput) (*ent.Class, error) {
-	creation := r.client.Class.Create().
+	return r.client.Class.Create().
 		SetName(input.Name).
 		SetLevel(input.Level).
 		SetTuition(input.Tuition).
-		SetStartDate(time.Now()).
+		SetStartDate(input.StartDate).
 		SetInstructorID(input.InstructorID).
-		SetScheduleID(input.ScheduleID)
-	if input.EndDate != nil {
-		creation = creation.SetEndDate(*input.EndDate)
-	}
-	return creation.Save(ctx)
+		SetScheduleID(input.ScheduleID).
+		SetNillableEndDate(input.EndDate).
+		Save(ctx)
 }
 
 func (r *ClassRepository) Update(ctx context.Context, input model.UpdateClassInput) (*ent.Class, error) {

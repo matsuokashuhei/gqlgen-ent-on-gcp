@@ -12,6 +12,12 @@ type Class func(*sql.Selector)
 // Instructor is the predicate function for instructor builders.
 type Instructor func(*sql.Selector)
 
+// Member is the predicate function for member builders.
+type Member func(*sql.Selector)
+
+// MembersClass is the predicate function for membersclass builders.
+type MembersClass func(*sql.Selector)
+
 // Room is the predicate function for room builders.
 type Room func(*sql.Selector)
 

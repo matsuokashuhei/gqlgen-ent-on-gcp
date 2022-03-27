@@ -5,7 +5,7 @@ gql`
     createInstructor(input: $input) {
       id
       name
-      syllabicCharacters
+      kana
       biography
       phoneNumber
       email
@@ -18,7 +18,7 @@ gql`
     updateInstructor(input: $input) {
       id
       name
-      syllabicCharacters
+      kana
       biography
       phoneNumber
       email
@@ -31,7 +31,7 @@ gql`
     deleteInstructor(input: $input) {
       id
       name
-      syllabicCharacters
+      kana
       biography
       phoneNumber
       email
@@ -83,6 +83,80 @@ gql`
       level
       startDate
       endDate
+    }
+  }
+`;
+
+gql`
+  mutation CreateMember($input: CreateMemberInput!) {
+    createMember(input: $input) {
+      id
+      number
+      name
+      kana
+      gender
+      dateOfBirth
+      phoneNumber
+      email
+      dateOfAdmission
+      dateOfWithdrawal
+      memo
+    }
+  }
+`;
+
+gql`
+  mutation UpdateMember($input: UpdateMemberInput!) {
+    updateMember(input: $input) {
+      id
+      number
+      name
+      kana
+      gender
+      dateOfBirth
+      phoneNumber
+      email
+      dateOfAdmission
+      dateOfWithdrawal
+      memo
+    }
+  }
+`;
+
+gql`
+  mutation CreateMembersClass($input: CreateMembersClassInput!) {
+    createMembersClass(input: $input) {
+      id
+      member {
+        id
+      }
+      class {
+        id
+      }
+      dateOfAdmission
+      dateOfWithdrawal
+    }
+  }
+`;
+
+gql`
+  mutation UpdateMembersClass($input: UpdateMembersClassInput!) {
+    updateMembersClass(input: $input) {
+      id
+      member {
+        id
+      }
+      class {
+        id
+        name
+        level
+        instructor {
+          id
+          name
+        }
+      }
+      dateOfAdmission
+      dateOfWithdrawal
     }
   }
 `;

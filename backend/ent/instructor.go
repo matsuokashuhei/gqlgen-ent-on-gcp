@@ -22,8 +22,8 @@ type Instructor struct {
 	UpdateTime time.Time `json:"update_time,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
-	// SyllabicCharacters holds the value of the "syllabic_characters" field.
-	SyllabicCharacters string `json:"syllabic_characters,omitempty"`
+	// Kana holds the value of the "kana" field.
+	Kana string `json:"kana,omitempty"`
 	// Biography holds the value of the "biography" field.
 	Biography string `json:"biography,omitempty"`
 	// PhoneNumber holds the value of the "phone_number" field.
@@ -60,7 +60,7 @@ func (*Instructor) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case instructor.FieldID:
 			values[i] = new(sql.NullInt64)
-		case instructor.FieldName, instructor.FieldSyllabicCharacters, instructor.FieldBiography, instructor.FieldPhoneNumber, instructor.FieldEmail:
+		case instructor.FieldName, instructor.FieldKana, instructor.FieldBiography, instructor.FieldPhoneNumber, instructor.FieldEmail:
 			values[i] = new(sql.NullString)
 		case instructor.FieldCreateTime, instructor.FieldUpdateTime:
 			values[i] = new(sql.NullTime)
@@ -103,11 +103,11 @@ func (i *Instructor) assignValues(columns []string, values []interface{}) error 
 			} else if value.Valid {
 				i.Name = value.String
 			}
-		case instructor.FieldSyllabicCharacters:
+		case instructor.FieldKana:
 			if value, ok := values[j].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field syllabic_characters", values[j])
+				return fmt.Errorf("unexpected type %T for field kana", values[j])
 			} else if value.Valid {
-				i.SyllabicCharacters = value.String
+				i.Kana = value.String
 			}
 		case instructor.FieldBiography:
 			if value, ok := values[j].(*sql.NullString); !ok {
@@ -166,8 +166,8 @@ func (i *Instructor) String() string {
 	builder.WriteString(i.UpdateTime.Format(time.ANSIC))
 	builder.WriteString(", name=")
 	builder.WriteString(i.Name)
-	builder.WriteString(", syllabic_characters=")
-	builder.WriteString(i.SyllabicCharacters)
+	builder.WriteString(", kana=")
+	builder.WriteString(i.Kana)
 	builder.WriteString(", biography=")
 	builder.WriteString(i.Biography)
 	builder.WriteString(", phone_number=")

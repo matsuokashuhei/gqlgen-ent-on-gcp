@@ -12,19 +12,13 @@ type InstructorRepository struct {
 }
 
 func (r *InstructorRepository) Create(ctx context.Context, input model.CreateInstructorInput) (*ent.Instructor, error) {
-	create := r.client.Instructor.Create().
+	return r.client.Instructor.Create().
 		SetName(input.Name).
-		SetSyllabicCharacters(input.SyllabicCharacters)
-	if input.Biography != nil {
-		create = create.SetBiography(*input.Biography)
-	}
-	if input.PhoneNumber != nil {
-		create = create.SetPhoneNumber(*input.PhoneNumber)
-	}
-	if input.Email != nil {
-		create = create.SetEmail(*input.Email)
-	}
-	return create.Save(ctx)
+		SetKana(input.Kana).
+		SetNillableBiography(input.Biography).
+		SetNillablePhoneNumber(input.PhoneNumber).
+		SetNillableEmail(input.Email).
+		Save(ctx)
 }
 
 func (r *InstructorRepository) Update(ctx context.Context, input model.UpdateInstructorInput) (*ent.Instructor, error) {
@@ -32,8 +26,8 @@ func (r *InstructorRepository) Update(ctx context.Context, input model.UpdateIns
 	if input.Name != nil {
 		update = update.SetName(*input.Name)
 	}
-	if input.SyllabicCharacters != nil {
-		update = update.SetSyllabicCharacters(*input.SyllabicCharacters)
+	if input.Kana != nil {
+		update = update.SetKana(*input.Kana)
 	}
 	if input.Biography != nil {
 		update = update.SetBiography(*input.Biography)

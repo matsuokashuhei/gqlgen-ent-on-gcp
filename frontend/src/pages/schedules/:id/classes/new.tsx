@@ -2,7 +2,6 @@ import { formatRFC3339, parseISO } from "date-fns";
 import { useEffect, VFC } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
-import { Layout } from "../../../../components";
 import {
   CreateClassInput,
   useCreateClassMutation,
@@ -47,7 +46,7 @@ export const NewClassPage: VFC = () => {
     createClass({ variables: { input } }).then((data) => navigate("/classes"));
   };
 
-  if (!data) return <Layout></Layout>;
+  if (!data) return <></>;
 
   const {
     schedule,
@@ -55,7 +54,7 @@ export const NewClassPage: VFC = () => {
   } = data;
 
   return (
-    <Layout>
+    <>
       <h1>クラス</h1>
       <form className="flex flex-col">
         <div>{schedule.dayOfWeek}</div>
@@ -87,6 +86,6 @@ export const NewClassPage: VFC = () => {
       <button type="submit" onClick={handleSubmit(onSubmit)}>
         登録
       </button>
-    </Layout>
+    </>
   );
 };

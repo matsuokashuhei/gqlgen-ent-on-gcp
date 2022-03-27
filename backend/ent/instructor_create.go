@@ -55,9 +55,9 @@ func (ic *InstructorCreate) SetName(s string) *InstructorCreate {
 	return ic
 }
 
-// SetSyllabicCharacters sets the "syllabic_characters" field.
-func (ic *InstructorCreate) SetSyllabicCharacters(s string) *InstructorCreate {
-	ic.mutation.SetSyllabicCharacters(s)
+// SetKana sets the "kana" field.
+func (ic *InstructorCreate) SetKana(s string) *InstructorCreate {
+	ic.mutation.SetKana(s)
 	return ic
 }
 
@@ -210,8 +210,8 @@ func (ic *InstructorCreate) check() error {
 	if _, ok := ic.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Instructor.name"`)}
 	}
-	if _, ok := ic.mutation.SyllabicCharacters(); !ok {
-		return &ValidationError{Name: "syllabic_characters", err: errors.New(`ent: missing required field "Instructor.syllabic_characters"`)}
+	if _, ok := ic.mutation.Kana(); !ok {
+		return &ValidationError{Name: "kana", err: errors.New(`ent: missing required field "Instructor.kana"`)}
 	}
 	return nil
 }
@@ -264,13 +264,13 @@ func (ic *InstructorCreate) createSpec() (*Instructor, *sqlgraph.CreateSpec) {
 		})
 		_node.Name = value
 	}
-	if value, ok := ic.mutation.SyllabicCharacters(); ok {
+	if value, ok := ic.mutation.Kana(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: instructor.FieldSyllabicCharacters,
+			Column: instructor.FieldKana,
 		})
-		_node.SyllabicCharacters = value
+		_node.Kana = value
 	}
 	if value, ok := ic.mutation.Biography(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

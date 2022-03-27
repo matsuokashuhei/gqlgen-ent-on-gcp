@@ -19,7 +19,6 @@ func (r *queryResolver) Schedule(ctx context.Context, id int) (*ent.Schedule, er
 }
 
 func (r *scheduleResolver) Class(ctx context.Context, obj *ent.Schedule, date *time.Time) (*ent.Class, error) {
-	// TODO: Move to repository
 	var start time.Time
 	if date != nil {
 		start = *date

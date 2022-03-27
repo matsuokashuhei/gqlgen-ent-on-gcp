@@ -2,12 +2,11 @@ import { format, formatRFC3339, parseISO } from "date-fns";
 import { useEffect, useState, VFC } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
-import { Layout } from "../../../components";
 import {
   GetClassQuery,
   UpdateClassInput,
-  useGetClassLazyQuery,
   useDeleteClassMutation,
+  useGetClassLazyQuery,
   useUpdateClassMutation,
 } from "../../../generated/graphql";
 
@@ -25,7 +24,7 @@ type Inputs = {
 };
 
 export const ClassPage: VFC = () => {
-  const { id } = useParams();
+  const { classId } = useParams();
   const navigate = useNavigate();
   const { register, handleSubmit } = useForm<Inputs>();
   const [getClass, { data, loading, error }] = useGetClassLazyQuery();
@@ -35,10 +34,10 @@ export const ClassPage: VFC = () => {
   const [editable, setEditable] = useState<boolean>(false);
 
   useEffect(() => {
-    if (id) {
-      getClass({ variables: { id } });
+    if (classId) {
+      getClass({ variables: { id: classId } });
     }
-  }, [id, getClass]);
+  }, [classId, getClass]);
 
   useEffect(() => {
     if (data) {
@@ -73,7 +72,7 @@ export const ClassPage: VFC = () => {
   console.log(clazz);
 
   return (
-    <Layout>
+    <>
       <h1>クラス</h1>
       <form className="flex flex-col">
         <input
@@ -149,6 +148,6 @@ export const ClassPage: VFC = () => {
           </button>
         </div>
       )}
-    </Layout>
+    </>
   );
 };

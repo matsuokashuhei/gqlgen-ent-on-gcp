@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"errors"
 	"fmt"
 	"math"
@@ -13,6 +14,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/matsuokashuhei/landin/ent/class"
 	"github.com/matsuokashuhei/landin/ent/instructor"
+	"github.com/matsuokashuhei/landin/ent/membersclass"
 	"github.com/matsuokashuhei/landin/ent/predicate"
 	"github.com/matsuokashuhei/landin/ent/schedule"
 )
@@ -27,9 +29,10 @@ type ClassQuery struct {
 	fields     []string
 	predicates []predicate.Class
 	// eager-loading edges.
-	withSchedule   *ScheduleQuery
-	withInstructor *InstructorQuery
-	withFKs        bool
+	withSchedule       *ScheduleQuery
+	withInstructor     *InstructorQuery
+	withMembersClasses *MembersClassQuery
+	withFKs            bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -103,6 +106,28 @@ func (cq *ClassQuery) QueryInstructor() *InstructorQuery {
 			sqlgraph.From(class.Table, class.FieldID, selector),
 			sqlgraph.To(instructor.Table, instructor.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, class.InstructorTable, class.InstructorColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryMembersClasses chains the current query on the "members_classes" edge.
+func (cq *ClassQuery) QueryMembersClasses() *MembersClassQuery {
+	query := &MembersClassQuery{config: cq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := cq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := cq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(class.Table, class.FieldID, selector),
+			sqlgraph.To(membersclass.Table, membersclass.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, class.MembersClassesTable, class.MembersClassesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
 		return fromU, nil
@@ -286,13 +311,14 @@ func (cq *ClassQuery) Clone() *ClassQuery {
 		return nil
 	}
 	return &ClassQuery{
-		config:         cq.config,
-		limit:          cq.limit,
-		offset:         cq.offset,
-		order:          append([]OrderFunc{}, cq.order...),
-		predicates:     append([]predicate.Class{}, cq.predicates...),
-		withSchedule:   cq.withSchedule.Clone(),
-		withInstructor: cq.withInstructor.Clone(),
+		config:             cq.config,
+		limit:              cq.limit,
+		offset:             cq.offset,
+		order:              append([]OrderFunc{}, cq.order...),
+		predicates:         append([]predicate.Class{}, cq.predicates...),
+		withSchedule:       cq.withSchedule.Clone(),
+		withInstructor:     cq.withInstructor.Clone(),
+		withMembersClasses: cq.withMembersClasses.Clone(),
 		// clone intermediate query.
 		sql:    cq.sql.Clone(),
 		path:   cq.path,
@@ -319,6 +345,17 @@ func (cq *ClassQuery) WithInstructor(opts ...func(*InstructorQuery)) *ClassQuery
 		opt(query)
 	}
 	cq.withInstructor = query
+	return cq
+}
+
+// WithMembersClasses tells the query-builder to eager-load the nodes that are connected to
+// the "members_classes" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *ClassQuery) WithMembersClasses(opts ...func(*MembersClassQuery)) *ClassQuery {
+	query := &MembersClassQuery{config: cq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	cq.withMembersClasses = query
 	return cq
 }
 
@@ -388,9 +425,10 @@ func (cq *ClassQuery) sqlAll(ctx context.Context) ([]*Class, error) {
 		nodes       = []*Class{}
 		withFKs     = cq.withFKs
 		_spec       = cq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
 			cq.withSchedule != nil,
 			cq.withInstructor != nil,
+			cq.withMembersClasses != nil,
 		}
 	)
 	if cq.withSchedule != nil || cq.withInstructor != nil {
@@ -474,6 +512,35 @@ func (cq *ClassQuery) sqlAll(ctx context.Context) ([]*Class, error) {
 			for i := range nodes {
 				nodes[i].Edges.Instructor = n
 			}
+		}
+	}
+
+	if query := cq.withMembersClasses; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[int]*Class)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.MembersClasses = []*MembersClass{}
+		}
+		query.withFKs = true
+		query.Where(predicate.MembersClass(func(s *sql.Selector) {
+			s.Where(sql.InValues(class.MembersClassesColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.class_members_classes
+			if fk == nil {
+				return nil, fmt.Errorf(`foreign-key "class_members_classes" is nil for node %v`, n.ID)
+			}
+			node, ok := nodeids[*fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "class_members_classes" returned %v for node %v`, *fk, n.ID)
+			}
+			node.Edges.MembersClasses = append(node.Edges.MembersClasses, n)
 		}
 	}
 

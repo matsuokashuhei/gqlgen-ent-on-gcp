@@ -10,6 +10,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/matsuokashuhei/landin/ent/class"
 	"github.com/matsuokashuhei/landin/ent/instructor"
+	"github.com/matsuokashuhei/landin/ent/member"
+	"github.com/matsuokashuhei/landin/ent/membersclass"
 	"github.com/matsuokashuhei/landin/ent/room"
 	"github.com/matsuokashuhei/landin/ent/schedule"
 	"github.com/matsuokashuhei/landin/ent/school"
@@ -35,13 +37,15 @@ type OrderFunc func(*sql.Selector)
 // columnChecker returns a function indicates if the column exists in the given column.
 func columnChecker(table string) func(string) error {
 	checks := map[string]func(string) bool{
-		class.Table:      class.ValidColumn,
-		instructor.Table: instructor.ValidColumn,
-		room.Table:       room.ValidColumn,
-		schedule.Table:   schedule.ValidColumn,
-		school.Table:     school.ValidColumn,
-		studio.Table:     studio.ValidColumn,
-		user.Table:       user.ValidColumn,
+		class.Table:        class.ValidColumn,
+		instructor.Table:   instructor.ValidColumn,
+		member.Table:       member.ValidColumn,
+		membersclass.Table: membersclass.ValidColumn,
+		room.Table:         room.ValidColumn,
+		schedule.Table:     schedule.ValidColumn,
+		school.Table:       school.ValidColumn,
+		studio.Table:       studio.ValidColumn,
+		user.Table:         user.ValidColumn,
 	}
 	check, ok := checks[table]
 	if !ok {

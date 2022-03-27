@@ -1,6 +1,6 @@
 import { useEffect, VFC } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Layout, PaginationLinks } from "../../components";
+import { PaginationLinks } from "../../components";
 import {
   GetInstructorsQuery,
   useGetInstructorsLazyQuery,
@@ -18,11 +18,11 @@ export const InstructorsPage: VFC = () => {
     if (!after && !before) {
       getInstructors({ variables: { first: 10 } });
     } else if (after) {
-      getInstructors({ variables: { first: 10, after: after } });
+      getInstructors({ variables: { first: 10, after } });
     } else {
-      getInstructors({ variables: { last: 10, before: before } });
+      getInstructors({ variables: { last: 10, before } });
     }
-  }, [getInstructors, searchParams]);
+  }, [searchParams, getInstructors]);
 
   const renderInstructors = (
     edges: GetInstructorsQuery["instructors"]["edges"]
@@ -42,19 +42,19 @@ export const InstructorsPage: VFC = () => {
   } = data;
 
   return (
-    <Layout>
+    <>
       <h1>インストラクター</h1>
       <button onClick={() => navigate("/instructors/new")}>登録</button>
       <table>
         <thead>
           <tr>
-            <td>ID</td>
-            <td>Name</td>
+            <th>ID</th>
+            <th>名前</th>
           </tr>
         </thead>
         <tbody>{renderInstructors(edges)}</tbody>
       </table>
       <PaginationLinks path="/instructors" pageInfo={pageInfo} />
-    </Layout>
+    </>
   );
 };

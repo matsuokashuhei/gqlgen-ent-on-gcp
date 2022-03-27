@@ -65,7 +65,7 @@ export const SignUp: VFC = () => {
   } = useForm<FormType>();
   const [state, dispatch] = useReducer(reducer, initialState);
   const { signIn } = useAuth();
-  const [signUp, { data, loading, error }] = useMutation(SIGN_UP);
+  const [signUp, { loading, error }] = useMutation(SIGN_UP);
 
   const { email, password, isSignUpButtonDisabled } = state;
 

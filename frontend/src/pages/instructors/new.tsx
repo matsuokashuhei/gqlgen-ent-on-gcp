@@ -1,7 +1,6 @@
 import { VFC } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { Layout } from "../../components";
 import {
   CreateInstructorInput,
   useCreateInstructorMutation,
@@ -9,7 +8,7 @@ import {
 
 type Inputs = {
   name: string;
-  syllabicCharacters: string;
+  kana: string;
   biography: string;
   phoneNumber: string;
   email: string;
@@ -21,10 +20,10 @@ export const NewInstructorPage: VFC = () => {
   const [createInstructor, { data, loading, error }] =
     useCreateInstructorMutation();
   const onSubmit: SubmitHandler<Inputs> = (data) => {
-    const { name, syllabicCharacters, biography, phoneNumber, email } = data;
+    const { name, kana, biography, phoneNumber, email } = data;
     const input: CreateInstructorInput = {
       name,
-      syllabicCharacters,
+      kana,
       biography,
       phoneNumber,
       email,
@@ -35,12 +34,12 @@ export const NewInstructorPage: VFC = () => {
   };
 
   return (
-    <Layout>
+    <>
       <form className="flex flex-col">
         <label htmlFor="name">名前</label>
         <input {...register("name", { required: true })} />
         <label htmlFor="syllabicCharacters">よみがな</label>
-        <input {...register("syllabicCharacters", { required: true })} />
+        <input {...register("kana", { required: true })} />
         <label htmlFor="biography">紹介文</label>
         <input {...register("biography")} />
         <label htmlFor="phoneNumber">電話番号</label>
@@ -51,6 +50,6 @@ export const NewInstructorPage: VFC = () => {
       <button type="submit" onClick={handleSubmit(onSubmit)}>
         登録
       </button>
-    </Layout>
+    </>
   );
 };

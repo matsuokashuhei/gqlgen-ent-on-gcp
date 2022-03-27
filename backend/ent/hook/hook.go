@@ -35,6 +35,32 @@ func (f InstructorFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, 
 	return f(ctx, mv)
 }
 
+// The MemberFunc type is an adapter to allow the use of ordinary
+// function as Member mutator.
+type MemberFunc func(context.Context, *ent.MemberMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f MemberFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.MemberMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.MemberMutation", m)
+	}
+	return f(ctx, mv)
+}
+
+// The MembersClassFunc type is an adapter to allow the use of ordinary
+// function as MembersClass mutator.
+type MembersClassFunc func(context.Context, *ent.MembersClassMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f MembersClassFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.MembersClassMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.MembersClassMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The RoomFunc type is an adapter to allow the use of ordinary
 // function as Room mutator.
 type RoomFunc func(context.Context, *ent.RoomMutation) (ent.Value, error)

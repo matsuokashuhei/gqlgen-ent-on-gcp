@@ -20,7 +20,7 @@ gql`
         node {
           id
           name
-          syllabicCharacters
+          kana
           biography
           phoneNumber
           email
@@ -35,7 +35,7 @@ gql`
     instructor(id: $id) {
       id
       name
-      syllabicCharacters
+      kana
       biography
       phoneNumber
       email
@@ -44,7 +44,7 @@ gql`
 `;
 
 gql`
-  query getSchool($id: ID!) {
+  query getClassesBySchool($id: ID!, $date: Time) {
     school(id: $id) {
       id
       name
@@ -61,7 +61,7 @@ gql`
             dayOfWeek
             startTime
             endTime
-            class {
+            class(date: $date) {
               id
               name
               level
@@ -116,6 +116,108 @@ gql`
           name
         }
       }
+    }
+  }
+`;
+
+gql`
+  query getMembers($first: Int, $after: Cursor, $last: Int, $before: Cursor) {
+    members(first: $first, after: $after, last: $last, before: $before) {
+      totalCount
+      pageInfo {
+        startCursor
+        endCursor
+        hasNextPage
+        hasPreviousPage
+      }
+      edges {
+        cursor
+        node {
+          id
+          number
+          name
+          kana
+          gender
+          dateOfAdmission
+        }
+      }
+    }
+  }
+`;
+
+gql`
+  query getMember($id: ID!) {
+    member(id: $id) {
+      id
+      number
+      name
+      kana
+      gender
+      dateOfBirth
+      phoneNumber
+      email
+      dateOfAdmission
+      dateOfWithdrawal
+      memo
+      membersClasses {
+        id
+        dateOfAdmission
+        dateOfWithdrawal
+        member {
+          id
+        }
+        class {
+          id
+          name
+          level
+          instructor {
+            id
+            name
+          }
+        }
+      }
+    }
+  }
+`;
+
+// gql`
+//   query getMembersClass($memberId: ID!, $classId: ID!) {
+//     membersClass(memberId: $memberId, classId: $classId) {
+//       id
+//       member {
+//         id
+//       }
+//       class {
+//         id
+//         name
+//         level
+//         instructor {
+//           name
+//         }
+//       }
+//       dateOfAdmission
+//       dateOfWithdrawal
+//     }
+//   }
+// `;
+
+gql`
+  query getMembersClass($id: ID!) {
+    membersClass(id: $id) {
+      id
+      member {
+        id
+      }
+      class {
+        id
+        name
+        level
+        instructor {
+          name
+        }
+      }
+      dateOfAdmission
+      dateOfWithdrawal
     }
   }
 `;

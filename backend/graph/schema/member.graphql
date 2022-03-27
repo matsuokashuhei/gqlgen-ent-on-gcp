@@ -1,0 +1,84 @@
+type Member implements Node {
+  id: ID!
+  number: Int!
+  name: String!
+  kana: String!
+  gender: Gender!
+  dateOfBirth: Time
+  phoneNumber: String
+  email: String
+  dateOfAdmission: Time!
+  dateOfWithdrawal: Time
+  memo: String!
+  membersClasses: [MembersClass!]!
+}
+
+type MemberConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  edges: [MemberEdge!]!
+}
+
+type MemberEdge {
+  node: Member!
+  cursor: Cursor!
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum MemberOrderField {
+  NUMBER
+  KANA
+  DATE_OF_ADMISSION
+}
+
+input MemberOrder {
+  direction: OrderDirection!
+  field: MemberOrderField
+}
+
+input CreateMemberInput {
+  name: String!
+  number: Int!
+  kana: String!
+  gender: Gender!
+  dateOfBirth: Time
+  phoneNumber: String
+  email: String
+  dateOfAdmission: Time!
+  dateOfWithdrawal: Time
+  memo: String
+}
+
+input UpdateMemberInput {
+  id: ID!
+  number: Int
+  name: String
+  kana: String
+  gender: Gender
+  dateOfBirth: Time
+  phoneNumber: String
+  email: String
+  dateOfAdmission: Time
+  dateOfWithdrawal: Time
+  memo: String
+}
+
+input DeleteMemberInput {
+  id: ID!
+}
+
+extend type Query {
+  member(id: ID!): Member!
+  members(after: Cursor, first: Int, before: Cursor, last: Int, orderBy: MemberOrder): MemberConnection!
+}
+
+extend type Mutation {
+  createMember(input: CreateMemberInput!): Member!
+  updateMember(input: UpdateMemberInput!): Member!
+  deleteMember(input: DeleteMemberInput!): Member!
+}

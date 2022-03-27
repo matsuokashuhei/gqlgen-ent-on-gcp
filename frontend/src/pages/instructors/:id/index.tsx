@@ -1,7 +1,6 @@
 import { useEffect, useState, VFC } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
-import { Layout } from "../../../components";
 import {
   DeleteInstructorInput,
   GetInstructorQuery,
@@ -14,14 +13,14 @@ import {
 type Inputs = {
   id: number;
   name: string;
-  syllabicCharacters: string;
+  kana: string;
   biography: string;
   phoneNumber: string;
   email: string;
 };
 
 export const InstructorPage: VFC = () => {
-  const { id } = useParams();
+  const { instructorId } = useParams();
   const navigate = useNavigate();
   const [editable, setEditable] = useState<Boolean>(false);
   const [getInstructor, { data, loading, error }] = useGetInstructorLazyQuery();
@@ -31,16 +30,16 @@ export const InstructorPage: VFC = () => {
   const { register, handleSubmit } = useForm<Inputs>();
 
   useEffect(() => {
-    if (id) {
-      getInstructor({ variables: { id } });
+    if (instructorId) {
+      getInstructor({ variables: { id: instructorId } });
     }
-  }, [id, getInstructor]);
+  }, [instructorId, getInstructor]);
 
   const onSubmit: SubmitHandler<Inputs> = (data) => {
     const input: UpdateInstructorInput = {
       id: data.id.toString(),
       name: data.name,
-      syllabicCharacters: data.syllabicCharacters,
+      kana: data.kana,
       biography: data.biography,
       phoneNumber: data.phoneNumber,
       email: data.email,
@@ -64,10 +63,10 @@ export const InstructorPage: VFC = () => {
             {...register("name", { required: true })}
             defaultValue={instructor.name}
           />
-          <label htmlFor="syllabicCharacters">よみがな</label>
+          <label htmlFor="kana">よみがな</label>
           <input
-            {...register("syllabicCharacters", { required: true })}
-            defaultValue={instructor.syllabicCharacters}
+            {...register("kana", { required: true })}
+            defaultValue={instructor.kana}
           />
           <label htmlFor="biography">紹介文</label>
           <input
@@ -88,7 +87,7 @@ export const InstructorPage: VFC = () => {
         <div className="flex flex-col">
           <div>{instructor.id}</div>
           <div>{instructor.name}</div>
-          <div>{instructor.syllabicCharacters}</div>
+          <div>{instructor.kana}</div>
           <div>{instructor.biography}</div>
           <div>{instructor.phoneNumber}</div>
           <div>{instructor.email}</div>
@@ -138,10 +137,10 @@ export const InstructorPage: VFC = () => {
   const { instructor } = data;
 
   return (
-    <Layout>
+    <>
       {renderInstructor(instructor)}
       {renderEditButton()}
       {renderDeleteButton(instructor)}
-    </Layout>
+    </>
   );
 };

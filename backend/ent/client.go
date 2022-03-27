@@ -11,6 +11,8 @@ import (
 
 	"github.com/matsuokashuhei/landin/ent/class"
 	"github.com/matsuokashuhei/landin/ent/instructor"
+	"github.com/matsuokashuhei/landin/ent/member"
+	"github.com/matsuokashuhei/landin/ent/membersclass"
 	"github.com/matsuokashuhei/landin/ent/room"
 	"github.com/matsuokashuhei/landin/ent/schedule"
 	"github.com/matsuokashuhei/landin/ent/school"
@@ -31,6 +33,10 @@ type Client struct {
 	Class *ClassClient
 	// Instructor is the client for interacting with the Instructor builders.
 	Instructor *InstructorClient
+	// Member is the client for interacting with the Member builders.
+	Member *MemberClient
+	// MembersClass is the client for interacting with the MembersClass builders.
+	MembersClass *MembersClassClient
 	// Room is the client for interacting with the Room builders.
 	Room *RoomClient
 	// Schedule is the client for interacting with the Schedule builders.
@@ -58,6 +64,8 @@ func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Class = NewClassClient(c.config)
 	c.Instructor = NewInstructorClient(c.config)
+	c.Member = NewMemberClient(c.config)
+	c.MembersClass = NewMembersClassClient(c.config)
 	c.Room = NewRoomClient(c.config)
 	c.Schedule = NewScheduleClient(c.config)
 	c.School = NewSchoolClient(c.config)
@@ -94,15 +102,17 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:        ctx,
-		config:     cfg,
-		Class:      NewClassClient(cfg),
-		Instructor: NewInstructorClient(cfg),
-		Room:       NewRoomClient(cfg),
-		Schedule:   NewScheduleClient(cfg),
-		School:     NewSchoolClient(cfg),
-		Studio:     NewStudioClient(cfg),
-		User:       NewUserClient(cfg),
+		ctx:          ctx,
+		config:       cfg,
+		Class:        NewClassClient(cfg),
+		Instructor:   NewInstructorClient(cfg),
+		Member:       NewMemberClient(cfg),
+		MembersClass: NewMembersClassClient(cfg),
+		Room:         NewRoomClient(cfg),
+		Schedule:     NewScheduleClient(cfg),
+		School:       NewSchoolClient(cfg),
+		Studio:       NewStudioClient(cfg),
+		User:         NewUserClient(cfg),
 	}, nil
 }
 
@@ -120,15 +130,17 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:        ctx,
-		config:     cfg,
-		Class:      NewClassClient(cfg),
-		Instructor: NewInstructorClient(cfg),
-		Room:       NewRoomClient(cfg),
-		Schedule:   NewScheduleClient(cfg),
-		School:     NewSchoolClient(cfg),
-		Studio:     NewStudioClient(cfg),
-		User:       NewUserClient(cfg),
+		ctx:          ctx,
+		config:       cfg,
+		Class:        NewClassClient(cfg),
+		Instructor:   NewInstructorClient(cfg),
+		Member:       NewMemberClient(cfg),
+		MembersClass: NewMembersClassClient(cfg),
+		Room:         NewRoomClient(cfg),
+		Schedule:     NewScheduleClient(cfg),
+		School:       NewSchoolClient(cfg),
+		Studio:       NewStudioClient(cfg),
+		User:         NewUserClient(cfg),
 	}, nil
 }
 
@@ -160,6 +172,8 @@ func (c *Client) Close() error {
 func (c *Client) Use(hooks ...Hook) {
 	c.Class.Use(hooks...)
 	c.Instructor.Use(hooks...)
+	c.Member.Use(hooks...)
+	c.MembersClass.Use(hooks...)
 	c.Room.Use(hooks...)
 	c.Schedule.Use(hooks...)
 	c.School.Use(hooks...)
@@ -284,6 +298,22 @@ func (c *ClassClient) QueryInstructor(cl *Class) *InstructorQuery {
 	return query
 }
 
+// QueryMembersClasses queries the members_classes edge of a Class.
+func (c *ClassClient) QueryMembersClasses(cl *Class) *MembersClassQuery {
+	query := &MembersClassQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := cl.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(class.Table, class.FieldID, id),
+			sqlgraph.To(membersclass.Table, membersclass.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, class.MembersClassesTable, class.MembersClassesColumn),
+		)
+		fromV = sqlgraph.Neighbors(cl.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *ClassClient) Hooks() []Hook {
 	return c.hooks.Class
@@ -393,6 +423,234 @@ func (c *InstructorClient) QueryClasses(i *Instructor) *ClassQuery {
 // Hooks returns the client hooks.
 func (c *InstructorClient) Hooks() []Hook {
 	return c.hooks.Instructor
+}
+
+// MemberClient is a client for the Member schema.
+type MemberClient struct {
+	config
+}
+
+// NewMemberClient returns a client for the Member from the given config.
+func NewMemberClient(c config) *MemberClient {
+	return &MemberClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `member.Hooks(f(g(h())))`.
+func (c *MemberClient) Use(hooks ...Hook) {
+	c.hooks.Member = append(c.hooks.Member, hooks...)
+}
+
+// Create returns a create builder for Member.
+func (c *MemberClient) Create() *MemberCreate {
+	mutation := newMemberMutation(c.config, OpCreate)
+	return &MemberCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Member entities.
+func (c *MemberClient) CreateBulk(builders ...*MemberCreate) *MemberCreateBulk {
+	return &MemberCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Member.
+func (c *MemberClient) Update() *MemberUpdate {
+	mutation := newMemberMutation(c.config, OpUpdate)
+	return &MemberUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *MemberClient) UpdateOne(m *Member) *MemberUpdateOne {
+	mutation := newMemberMutation(c.config, OpUpdateOne, withMember(m))
+	return &MemberUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *MemberClient) UpdateOneID(id int) *MemberUpdateOne {
+	mutation := newMemberMutation(c.config, OpUpdateOne, withMemberID(id))
+	return &MemberUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Member.
+func (c *MemberClient) Delete() *MemberDelete {
+	mutation := newMemberMutation(c.config, OpDelete)
+	return &MemberDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *MemberClient) DeleteOne(m *Member) *MemberDeleteOne {
+	return c.DeleteOneID(m.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *MemberClient) DeleteOneID(id int) *MemberDeleteOne {
+	builder := c.Delete().Where(member.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &MemberDeleteOne{builder}
+}
+
+// Query returns a query builder for Member.
+func (c *MemberClient) Query() *MemberQuery {
+	return &MemberQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Member entity by its id.
+func (c *MemberClient) Get(ctx context.Context, id int) (*Member, error) {
+	return c.Query().Where(member.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *MemberClient) GetX(ctx context.Context, id int) *Member {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryMembersClasses queries the members_classes edge of a Member.
+func (c *MemberClient) QueryMembersClasses(m *Member) *MembersClassQuery {
+	query := &MembersClassQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(member.Table, member.FieldID, id),
+			sqlgraph.To(membersclass.Table, membersclass.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, member.MembersClassesTable, member.MembersClassesColumn),
+		)
+		fromV = sqlgraph.Neighbors(m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *MemberClient) Hooks() []Hook {
+	return c.hooks.Member
+}
+
+// MembersClassClient is a client for the MembersClass schema.
+type MembersClassClient struct {
+	config
+}
+
+// NewMembersClassClient returns a client for the MembersClass from the given config.
+func NewMembersClassClient(c config) *MembersClassClient {
+	return &MembersClassClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `membersclass.Hooks(f(g(h())))`.
+func (c *MembersClassClient) Use(hooks ...Hook) {
+	c.hooks.MembersClass = append(c.hooks.MembersClass, hooks...)
+}
+
+// Create returns a create builder for MembersClass.
+func (c *MembersClassClient) Create() *MembersClassCreate {
+	mutation := newMembersClassMutation(c.config, OpCreate)
+	return &MembersClassCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of MembersClass entities.
+func (c *MembersClassClient) CreateBulk(builders ...*MembersClassCreate) *MembersClassCreateBulk {
+	return &MembersClassCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for MembersClass.
+func (c *MembersClassClient) Update() *MembersClassUpdate {
+	mutation := newMembersClassMutation(c.config, OpUpdate)
+	return &MembersClassUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *MembersClassClient) UpdateOne(mc *MembersClass) *MembersClassUpdateOne {
+	mutation := newMembersClassMutation(c.config, OpUpdateOne, withMembersClass(mc))
+	return &MembersClassUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *MembersClassClient) UpdateOneID(id int) *MembersClassUpdateOne {
+	mutation := newMembersClassMutation(c.config, OpUpdateOne, withMembersClassID(id))
+	return &MembersClassUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for MembersClass.
+func (c *MembersClassClient) Delete() *MembersClassDelete {
+	mutation := newMembersClassMutation(c.config, OpDelete)
+	return &MembersClassDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *MembersClassClient) DeleteOne(mc *MembersClass) *MembersClassDeleteOne {
+	return c.DeleteOneID(mc.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *MembersClassClient) DeleteOneID(id int) *MembersClassDeleteOne {
+	builder := c.Delete().Where(membersclass.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &MembersClassDeleteOne{builder}
+}
+
+// Query returns a query builder for MembersClass.
+func (c *MembersClassClient) Query() *MembersClassQuery {
+	return &MembersClassQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a MembersClass entity by its id.
+func (c *MembersClassClient) Get(ctx context.Context, id int) (*MembersClass, error) {
+	return c.Query().Where(membersclass.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *MembersClassClient) GetX(ctx context.Context, id int) *MembersClass {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryMember queries the member edge of a MembersClass.
+func (c *MembersClassClient) QueryMember(mc *MembersClass) *MemberQuery {
+	query := &MemberQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := mc.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(membersclass.Table, membersclass.FieldID, id),
+			sqlgraph.To(member.Table, member.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, membersclass.MemberTable, membersclass.MemberColumn),
+		)
+		fromV = sqlgraph.Neighbors(mc.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryClass queries the class edge of a MembersClass.
+func (c *MembersClassClient) QueryClass(mc *MembersClass) *ClassQuery {
+	query := &ClassQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := mc.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(membersclass.Table, membersclass.FieldID, id),
+			sqlgraph.To(class.Table, class.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, membersclass.ClassTable, membersclass.ClassColumn),
+		)
+		fromV = sqlgraph.Neighbors(mc.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *MembersClassClient) Hooks() []Hook {
+	return c.hooks.MembersClass
 }
 
 // RoomClient is a client for the Room schema.

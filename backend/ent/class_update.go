@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/matsuokashuhei/landin/ent/class"
 	"github.com/matsuokashuhei/landin/ent/instructor"
+	"github.com/matsuokashuhei/landin/ent/membersclass"
 	"github.com/matsuokashuhei/landin/ent/predicate"
 	"github.com/matsuokashuhei/landin/ent/schedule"
 )
@@ -109,6 +110,21 @@ func (cu *ClassUpdate) SetInstructor(i *Instructor) *ClassUpdate {
 	return cu.SetInstructorID(i.ID)
 }
 
+// AddMembersClassIDs adds the "members_classes" edge to the MembersClass entity by IDs.
+func (cu *ClassUpdate) AddMembersClassIDs(ids ...int) *ClassUpdate {
+	cu.mutation.AddMembersClassIDs(ids...)
+	return cu
+}
+
+// AddMembersClasses adds the "members_classes" edges to the MembersClass entity.
+func (cu *ClassUpdate) AddMembersClasses(m ...*MembersClass) *ClassUpdate {
+	ids := make([]int, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return cu.AddMembersClassIDs(ids...)
+}
+
 // Mutation returns the ClassMutation object of the builder.
 func (cu *ClassUpdate) Mutation() *ClassMutation {
 	return cu.mutation
@@ -124,6 +140,27 @@ func (cu *ClassUpdate) ClearSchedule() *ClassUpdate {
 func (cu *ClassUpdate) ClearInstructor() *ClassUpdate {
 	cu.mutation.ClearInstructor()
 	return cu
+}
+
+// ClearMembersClasses clears all "members_classes" edges to the MembersClass entity.
+func (cu *ClassUpdate) ClearMembersClasses() *ClassUpdate {
+	cu.mutation.ClearMembersClasses()
+	return cu
+}
+
+// RemoveMembersClassIDs removes the "members_classes" edge to MembersClass entities by IDs.
+func (cu *ClassUpdate) RemoveMembersClassIDs(ids ...int) *ClassUpdate {
+	cu.mutation.RemoveMembersClassIDs(ids...)
+	return cu
+}
+
+// RemoveMembersClasses removes "members_classes" edges to MembersClass entities.
+func (cu *ClassUpdate) RemoveMembersClasses(m ...*MembersClass) *ClassUpdate {
+	ids := make([]int, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return cu.RemoveMembersClassIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -349,6 +386,60 @@ func (cu *ClassUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if cu.mutation.MembersClassesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   class.MembersClassesTable,
+			Columns: []string{class.MembersClassesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: membersclass.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cu.mutation.RemovedMembersClassesIDs(); len(nodes) > 0 && !cu.mutation.MembersClassesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   class.MembersClassesTable,
+			Columns: []string{class.MembersClassesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: membersclass.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cu.mutation.MembersClassesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   class.MembersClassesTable,
+			Columns: []string{class.MembersClassesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: membersclass.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, cu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{class.Label}
@@ -447,6 +538,21 @@ func (cuo *ClassUpdateOne) SetInstructor(i *Instructor) *ClassUpdateOne {
 	return cuo.SetInstructorID(i.ID)
 }
 
+// AddMembersClassIDs adds the "members_classes" edge to the MembersClass entity by IDs.
+func (cuo *ClassUpdateOne) AddMembersClassIDs(ids ...int) *ClassUpdateOne {
+	cuo.mutation.AddMembersClassIDs(ids...)
+	return cuo
+}
+
+// AddMembersClasses adds the "members_classes" edges to the MembersClass entity.
+func (cuo *ClassUpdateOne) AddMembersClasses(m ...*MembersClass) *ClassUpdateOne {
+	ids := make([]int, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return cuo.AddMembersClassIDs(ids...)
+}
+
 // Mutation returns the ClassMutation object of the builder.
 func (cuo *ClassUpdateOne) Mutation() *ClassMutation {
 	return cuo.mutation
@@ -462,6 +568,27 @@ func (cuo *ClassUpdateOne) ClearSchedule() *ClassUpdateOne {
 func (cuo *ClassUpdateOne) ClearInstructor() *ClassUpdateOne {
 	cuo.mutation.ClearInstructor()
 	return cuo
+}
+
+// ClearMembersClasses clears all "members_classes" edges to the MembersClass entity.
+func (cuo *ClassUpdateOne) ClearMembersClasses() *ClassUpdateOne {
+	cuo.mutation.ClearMembersClasses()
+	return cuo
+}
+
+// RemoveMembersClassIDs removes the "members_classes" edge to MembersClass entities by IDs.
+func (cuo *ClassUpdateOne) RemoveMembersClassIDs(ids ...int) *ClassUpdateOne {
+	cuo.mutation.RemoveMembersClassIDs(ids...)
+	return cuo
+}
+
+// RemoveMembersClasses removes "members_classes" edges to MembersClass entities.
+func (cuo *ClassUpdateOne) RemoveMembersClasses(m ...*MembersClass) *ClassUpdateOne {
+	ids := make([]int, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return cuo.RemoveMembersClassIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -703,6 +830,60 @@ func (cuo *ClassUpdateOne) sqlSave(ctx context.Context) (_node *Class, err error
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: instructor.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if cuo.mutation.MembersClassesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   class.MembersClassesTable,
+			Columns: []string{class.MembersClassesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: membersclass.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cuo.mutation.RemovedMembersClassesIDs(); len(nodes) > 0 && !cuo.mutation.MembersClassesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   class.MembersClassesTable,
+			Columns: []string{class.MembersClassesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: membersclass.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cuo.mutation.MembersClassesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   class.MembersClassesTable,
+			Columns: []string{class.MembersClassesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: membersclass.FieldID,
 				},
 			},
 		}

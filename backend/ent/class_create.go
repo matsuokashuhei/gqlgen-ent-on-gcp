@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/matsuokashuhei/landin/ent/class"
 	"github.com/matsuokashuhei/landin/ent/instructor"
+	"github.com/matsuokashuhei/landin/ent/membersclass"
 	"github.com/matsuokashuhei/landin/ent/schedule"
 )
 
@@ -108,6 +109,21 @@ func (cc *ClassCreate) SetInstructorID(id int) *ClassCreate {
 // SetInstructor sets the "instructor" edge to the Instructor entity.
 func (cc *ClassCreate) SetInstructor(i *Instructor) *ClassCreate {
 	return cc.SetInstructorID(i.ID)
+}
+
+// AddMembersClassIDs adds the "members_classes" edge to the MembersClass entity by IDs.
+func (cc *ClassCreate) AddMembersClassIDs(ids ...int) *ClassCreate {
+	cc.mutation.AddMembersClassIDs(ids...)
+	return cc
+}
+
+// AddMembersClasses adds the "members_classes" edges to the MembersClass entity.
+func (cc *ClassCreate) AddMembersClasses(m ...*MembersClass) *ClassCreate {
+	ids := make([]int, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return cc.AddMembersClassIDs(ids...)
 }
 
 // Mutation returns the ClassMutation object of the builder.
@@ -338,6 +354,25 @@ func (cc *ClassCreate) createSpec() (*Class, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.instructor_classes = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := cc.mutation.MembersClassesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   class.MembersClassesTable,
+			Columns: []string{class.MembersClassesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: membersclass.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
