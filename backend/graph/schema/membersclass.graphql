@@ -25,6 +25,11 @@ input DeleteMembersClassInput {
   id: ID!
 }
 
+extend type Query {
+  # membersClass(memberId: ID!, classId: ID!): MembersClass!
+  membersClass(id: ID!): MembersClass!
+}
+
 extend type Mutation {
   createMembersClass(input: CreateMembersClassInput!): MembersClass!
   updateMembersClass(input: UpdateMembersClassInput!): MembersClass!

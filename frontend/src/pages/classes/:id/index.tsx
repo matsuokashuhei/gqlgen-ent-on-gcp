@@ -24,7 +24,7 @@ type Inputs = {
 };
 
 export const ClassPage: VFC = () => {
-  const { id } = useParams();
+  const { classId } = useParams();
   const navigate = useNavigate();
   const { register, handleSubmit } = useForm<Inputs>();
   const [getClass, { data, loading, error }] = useGetClassLazyQuery();
@@ -34,10 +34,10 @@ export const ClassPage: VFC = () => {
   const [editable, setEditable] = useState<boolean>(false);
 
   useEffect(() => {
-    if (id) {
-      getClass({ variables: { id } });
+    if (classId) {
+      getClass({ variables: { id: classId } });
     }
-  }, [id, getClass]);
+  }, [classId, getClass]);
 
   useEffect(() => {
     if (data) {

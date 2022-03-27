@@ -364,6 +364,7 @@ export type Query = {
   instructors: InstructorConnection;
   member: Member;
   members: MemberConnection;
+  membersClass: MembersClass;
   node?: Maybe<Node>;
   nodes: Array<Node>;
   room: Room;
@@ -407,6 +408,11 @@ export type QueryMembersArgs = {
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
   orderBy?: InputMaybe<MemberOrder>;
+};
+
+
+export type QueryMembersClassArgs = {
+  id: Scalars['ID'];
 };
 
 
@@ -639,6 +645,13 @@ export type CreateMembersClassMutationVariables = Exact<{
 
 export type CreateMembersClassMutation = { __typename?: 'Mutation', createMembersClass: { __typename?: 'MembersClass', id: string, dateOfAdmission: any, dateOfWithdrawal?: any | null, member: { __typename?: 'Member', id: string }, class: { __typename?: 'Class', id: string } } };
 
+export type UpdateMembersClassMutationVariables = Exact<{
+  input: UpdateMembersClassInput;
+}>;
+
+
+export type UpdateMembersClassMutation = { __typename?: 'Mutation', updateMembersClass: { __typename?: 'MembersClass', id: string, dateOfAdmission: any, dateOfWithdrawal?: any | null, member: { __typename?: 'Member', id: string }, class: { __typename?: 'Class', id: string, name: string, level: string, instructor: { __typename?: 'Instructor', id: string, name: string } } } };
+
 export type GetInstructorsQueryVariables = Exact<{
   first?: InputMaybe<Scalars['Int']>;
   after?: InputMaybe<Scalars['Cursor']>;
@@ -693,7 +706,14 @@ export type GetMemberQueryVariables = Exact<{
 }>;
 
 
-export type GetMemberQuery = { __typename?: 'Query', member: { __typename?: 'Member', id: string, number: number, name: string, kana: string, gender: Gender, dateOfBirth?: any | null, phoneNumber?: string | null, email?: string | null, dateOfAdmission: any, dateOfWithdrawal?: any | null, memo: string, membersClasses: Array<{ __typename?: 'MembersClass', id: string, dateOfAdmission: any, dateOfWithdrawal?: any | null, class: { __typename?: 'Class', id: string, name: string, level: string, instructor: { __typename?: 'Instructor', id: string, name: string } } }> } };
+export type GetMemberQuery = { __typename?: 'Query', member: { __typename?: 'Member', id: string, number: number, name: string, kana: string, gender: Gender, dateOfBirth?: any | null, phoneNumber?: string | null, email?: string | null, dateOfAdmission: any, dateOfWithdrawal?: any | null, memo: string, membersClasses: Array<{ __typename?: 'MembersClass', id: string, dateOfAdmission: any, dateOfWithdrawal?: any | null, member: { __typename?: 'Member', id: string }, class: { __typename?: 'Class', id: string, name: string, level: string, instructor: { __typename?: 'Instructor', id: string, name: string } } }> } };
+
+export type GetMembersClassQueryVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type GetMembersClassQuery = { __typename?: 'Query', membersClass: { __typename?: 'MembersClass', id: string, dateOfAdmission: any, dateOfWithdrawal?: any | null, member: { __typename?: 'Member', id: string }, class: { __typename?: 'Class', id: string, name: string, level: string, instructor: { __typename?: 'Instructor', name: string } } } };
 
 
 export const CreateInstructorDocument = gql`
@@ -1060,6 +1080,53 @@ export function useCreateMembersClassMutation(baseOptions?: Apollo.MutationHookO
 export type CreateMembersClassMutationHookResult = ReturnType<typeof useCreateMembersClassMutation>;
 export type CreateMembersClassMutationResult = Apollo.MutationResult<CreateMembersClassMutation>;
 export type CreateMembersClassMutationOptions = Apollo.BaseMutationOptions<CreateMembersClassMutation, CreateMembersClassMutationVariables>;
+export const UpdateMembersClassDocument = gql`
+    mutation UpdateMembersClass($input: UpdateMembersClassInput!) {
+  updateMembersClass(input: $input) {
+    id
+    member {
+      id
+    }
+    class {
+      id
+      name
+      level
+      instructor {
+        id
+        name
+      }
+    }
+    dateOfAdmission
+    dateOfWithdrawal
+  }
+}
+    `;
+export type UpdateMembersClassMutationFn = Apollo.MutationFunction<UpdateMembersClassMutation, UpdateMembersClassMutationVariables>;
+
+/**
+ * __useUpdateMembersClassMutation__
+ *
+ * To run a mutation, you first call `useUpdateMembersClassMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateMembersClassMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateMembersClassMutation, { data, loading, error }] = useUpdateMembersClassMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateMembersClassMutation(baseOptions?: Apollo.MutationHookOptions<UpdateMembersClassMutation, UpdateMembersClassMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateMembersClassMutation, UpdateMembersClassMutationVariables>(UpdateMembersClassDocument, options);
+      }
+export type UpdateMembersClassMutationHookResult = ReturnType<typeof useUpdateMembersClassMutation>;
+export type UpdateMembersClassMutationResult = Apollo.MutationResult<UpdateMembersClassMutation>;
+export type UpdateMembersClassMutationOptions = Apollo.BaseMutationOptions<UpdateMembersClassMutation, UpdateMembersClassMutationVariables>;
 export const GetInstructorsDocument = gql`
     query getInstructors($first: Int, $after: Cursor, $last: Int, $before: Cursor) {
   instructors(first: $first, after: $after, last: $last, before: $before) {
@@ -1387,6 +1454,9 @@ export const GetMemberDocument = gql`
       id
       dateOfAdmission
       dateOfWithdrawal
+      member {
+        id
+      }
       class {
         id
         name
@@ -1428,3 +1498,51 @@ export function useGetMemberLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<
 export type GetMemberQueryHookResult = ReturnType<typeof useGetMemberQuery>;
 export type GetMemberLazyQueryHookResult = ReturnType<typeof useGetMemberLazyQuery>;
 export type GetMemberQueryResult = Apollo.QueryResult<GetMemberQuery, GetMemberQueryVariables>;
+export const GetMembersClassDocument = gql`
+    query getMembersClass($id: ID!) {
+  membersClass(id: $id) {
+    id
+    member {
+      id
+    }
+    class {
+      id
+      name
+      level
+      instructor {
+        name
+      }
+    }
+    dateOfAdmission
+    dateOfWithdrawal
+  }
+}
+    `;
+
+/**
+ * __useGetMembersClassQuery__
+ *
+ * To run a query within a React component, call `useGetMembersClassQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetMembersClassQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetMembersClassQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetMembersClassQuery(baseOptions: Apollo.QueryHookOptions<GetMembersClassQuery, GetMembersClassQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetMembersClassQuery, GetMembersClassQueryVariables>(GetMembersClassDocument, options);
+      }
+export function useGetMembersClassLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetMembersClassQuery, GetMembersClassQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetMembersClassQuery, GetMembersClassQueryVariables>(GetMembersClassDocument, options);
+        }
+export type GetMembersClassQueryHookResult = ReturnType<typeof useGetMembersClassQuery>;
+export type GetMembersClassLazyQueryHookResult = ReturnType<typeof useGetMembersClassLazyQuery>;
+export type GetMembersClassQueryResult = Apollo.QueryResult<GetMembersClassQuery, GetMembersClassQueryVariables>;

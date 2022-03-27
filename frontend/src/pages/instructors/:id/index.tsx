@@ -20,7 +20,7 @@ type Inputs = {
 };
 
 export const InstructorPage: VFC = () => {
-  const { id } = useParams();
+  const { instructorId } = useParams();
   const navigate = useNavigate();
   const [editable, setEditable] = useState<Boolean>(false);
   const [getInstructor, { data, loading, error }] = useGetInstructorLazyQuery();
@@ -30,10 +30,10 @@ export const InstructorPage: VFC = () => {
   const { register, handleSubmit } = useForm<Inputs>();
 
   useEffect(() => {
-    if (id) {
-      getInstructor({ variables: { id } });
+    if (instructorId) {
+      getInstructor({ variables: { id: instructorId } });
     }
-  }, [id, getInstructor]);
+  }, [instructorId, getInstructor]);
 
   const onSubmit: SubmitHandler<Inputs> = (data) => {
     const input: UpdateInstructorInput = {

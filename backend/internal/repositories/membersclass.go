@@ -4,6 +4,9 @@ import (
 	"context"
 
 	"github.com/matsuokashuhei/landin/ent"
+	"github.com/matsuokashuhei/landin/ent/class"
+	"github.com/matsuokashuhei/landin/ent/member"
+	"github.com/matsuokashuhei/landin/ent/membersclass"
 	"github.com/matsuokashuhei/landin/graph/model"
 )
 
@@ -13,6 +16,13 @@ type MembersClassRepository struct {
 
 func (r *MembersClassRepository) Find(ctx context.Context, id int) (*ent.MembersClass, error) {
 	return r.client.MembersClass.Get(ctx, id)
+}
+
+func (r *MembersClassRepository) FindByMemberAndClass(ctx context.Context, memberId int, classId int) (*ent.MembersClass, error) {
+	return r.client.MembersClass.Query().
+		Where(membersclass.HasMemberWith(member.IDEQ(memberId))).
+		Where(membersclass.HasClassWith(class.IDEQ(classId))).
+		First(ctx)
 }
 
 func (r *MembersClassRepository) Create(ctx context.Context, input model.CreateMembersClassInput) (*ent.MembersClass, error) {

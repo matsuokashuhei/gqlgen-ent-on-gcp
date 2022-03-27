@@ -26,7 +26,7 @@ type Inputs = {
 };
 
 export const MemberPage: VFC = () => {
-  const { id } = useParams();
+  const { memberId } = useParams();
   const { register, handleSubmit, setValue } = useForm<Inputs>();
   const [getMember, { data, loading, error }] = useGetMemberLazyQuery();
   const [updateMember] = useUpdateMemberMutation();
@@ -35,10 +35,10 @@ export const MemberPage: VFC = () => {
     useState<boolean>(false);
 
   useEffect(() => {
-    if (!id) return;
+    if (!memberId) return;
 
-    getMember({ variables: { id } });
-  }, [id, getMember]);
+    getMember({ variables: { id: memberId } });
+  }, [memberId, getMember]);
 
   const setValueFromdata = useCallback(() => {
     if (!data) return;
@@ -211,11 +211,20 @@ export const MemberPage: VFC = () => {
       {renderButtons()}
       <hr />
       <h1>クラス</h1>
-      <button onClick={() => setShowMembersClassForm(true)}>登録</button>
-      <div className={showMembersClassForm ? "visible" : "invisible"}>
-        <MembersClassForm member={member} />
+      {showMembersClassForm ? (
+        <button onClick={() => setShowMembersClassForm(false)}>
+          キャンセル
+        </button>
+      ) : (
+        <button onClick={() => setShowMembersClassForm(true)}>登録</button>
+      )}
+      <div className={showMembersClassForm ? "" : "hidden"}>
+        <MembersClassForm
+          member={member}
+          onSubmitted={() => setShowMembersClassForm(false)}
+        />
       </div>
-      <div className={showMembersClassForm ? "invisible" : "visible"}>
+      <div className={showMembersClassForm ? "hidden" : ""}>
         <MembersClassList membersClasses={member.membersClasses} />
       </div>
     </>

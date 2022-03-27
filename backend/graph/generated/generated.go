@@ -153,22 +153,23 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Class       func(childComplexity int, id int) int
-		CurrentUser func(childComplexity int) int
-		Instructor  func(childComplexity int, id int) int
-		Instructors func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.InstructorOrder) int
-		Member      func(childComplexity int, id int) int
-		Members     func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.MemberOrder) int
-		Node        func(childComplexity int, id int) int
-		Nodes       func(childComplexity int, ids []int) int
-		Room        func(childComplexity int, id int) int
-		Rooms       func(childComplexity int) int
-		Schedule    func(childComplexity int, id int) int
-		School      func(childComplexity int, id int) int
-		Schools     func(childComplexity int) int
-		Studio      func(childComplexity int, id int) int
-		User        func(childComplexity int, id int) int
-		Users       func(childComplexity int) int
+		Class        func(childComplexity int, id int) int
+		CurrentUser  func(childComplexity int) int
+		Instructor   func(childComplexity int, id int) int
+		Instructors  func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.InstructorOrder) int
+		Member       func(childComplexity int, id int) int
+		Members      func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.MemberOrder) int
+		MembersClass func(childComplexity int, id int) int
+		Node         func(childComplexity int, id int) int
+		Nodes        func(childComplexity int, ids []int) int
+		Room         func(childComplexity int, id int) int
+		Rooms        func(childComplexity int) int
+		Schedule     func(childComplexity int, id int) int
+		School       func(childComplexity int, id int) int
+		Schools      func(childComplexity int) int
+		Studio       func(childComplexity int, id int) int
+		User         func(childComplexity int, id int) int
+		Users        func(childComplexity int) int
 	}
 
 	Room struct {
@@ -254,6 +255,7 @@ type QueryResolver interface {
 	Instructors(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.InstructorOrder) (*ent.InstructorConnection, error)
 	Member(ctx context.Context, id int) (*ent.Member, error)
 	Members(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.MemberOrder) (*ent.MemberConnection, error)
+	MembersClass(ctx context.Context, id int) (*ent.MembersClass, error)
 	Node(ctx context.Context, id int) (ent.Noder, error)
 	Nodes(ctx context.Context, ids []int) ([]ent.Noder, error)
 	Room(ctx context.Context, id int) (*ent.Room, error)
@@ -985,6 +987,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Members(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.MemberOrder)), true
 
+	case "Query.membersClass":
+		if e.complexity.Query.MembersClass == nil {
+			break
+		}
+
+		args, err := ec.field_Query_membersClass_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.MembersClass(childComplexity, args["id"].(int)), true
+
 	case "Query.node":
 		if e.complexity.Query.Node == nil {
 			break
@@ -1606,6 +1620,11 @@ input UpdateMembersClassInput {
 
 input DeleteMembersClassInput {
   id: ID!
+}
+
+extend type Query {
+  # membersClass(memberId: ID!, classId: ID!): MembersClass!
+  membersClass(id: ID!): MembersClass!
 }
 
 extend type Mutation {
@@ -2259,6 +2278,21 @@ func (ec *executionContext) field_Query_instructors_args(ctx context.Context, ra
 }
 
 func (ec *executionContext) field_Query_member_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 int
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_membersClass_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 int
@@ -5415,6 +5449,48 @@ func (ec *executionContext) _Query_members(ctx context.Context, field graphql.Co
 	res := resTmp.(*ent.MemberConnection)
 	fc.Result = res
 	return ec.marshalNMemberConnection2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋentᚐMemberConnection(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_membersClass(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_membersClass_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().MembersClass(rctx, args["id"].(int))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.MembersClass)
+	fc.Result = res
+	return ec.marshalNMembersClass2ᚖgithubᚗcomᚋmatsuokashuheiᚋlandinᚋentᚐMembersClass(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_node(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -10359,6 +10435,29 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_members(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
+		case "membersClass":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_membersClass(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}

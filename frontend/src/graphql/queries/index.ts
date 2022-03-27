@@ -163,6 +163,9 @@ gql`
         id
         dateOfAdmission
         dateOfWithdrawal
+        member {
+          id
+        }
         class {
           id
           name
@@ -173,6 +176,48 @@ gql`
           }
         }
       }
+    }
+  }
+`;
+
+// gql`
+//   query getMembersClass($memberId: ID!, $classId: ID!) {
+//     membersClass(memberId: $memberId, classId: $classId) {
+//       id
+//       member {
+//         id
+//       }
+//       class {
+//         id
+//         name
+//         level
+//         instructor {
+//           name
+//         }
+//       }
+//       dateOfAdmission
+//       dateOfWithdrawal
+//     }
+//   }
+// `;
+
+gql`
+  query getMembersClass($id: ID!) {
+    membersClass(id: $id) {
+      id
+      member {
+        id
+      }
+      class {
+        id
+        name
+        level
+        instructor {
+          name
+        }
+      }
+      dateOfAdmission
+      dateOfWithdrawal
     }
   }
 `;

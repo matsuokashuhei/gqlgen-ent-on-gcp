@@ -9,6 +9,7 @@ import { InstructorPage } from "./pages/instructors/:id";
 import { NewInstructorPage } from "./pages/instructors/new";
 import { MembersPage } from "./pages/members";
 import { MemberPage } from "./pages/members/:id";
+import { MembersClassPage } from "./pages/members_classes/:id";
 import { NewMemberPage } from "./pages/members/new";
 import { NewClassPage } from "./pages/schedules/:id/classes/new";
 import { SignIn } from "./pages/sign-in";
@@ -52,12 +53,12 @@ export function App() {
             >
               <Route path="instructors" element={<Outlet />}>
                 <Route path="new" element={<NewInstructorPage />} />
-                <Route path=":id" element={<InstructorPage />} />
+                <Route path=":instructorId" element={<InstructorPage />} />
                 <Route index element={<InstructorsPage />} />
               </Route>
               <Route path="classes" element={<Outlet />}>
                 <Route index element={<ClassesPage />} />
-                <Route path=":id" element={<ClassPage />} />
+                <Route path=":classId" element={<ClassPage />} />
               </Route>
               <Route
                 path="schedules/:id/classes/new"
@@ -66,8 +67,12 @@ export function App() {
               <Route path="members" element={<Outlet />}>
                 <Route path="new" element={<NewMemberPage />} />
                 <Route index element={<MembersPage />} />
-                <Route path=":id" element={<MemberPage />} />
+                <Route path=":memberId" element={<MemberPage />} />
               </Route>
+              <Route
+                path="members_classes/:membersClassId"
+                element={<MembersClassPage />}
+              />
             </Route>
           </Routes>
         </AuthProvider>

@@ -138,3 +138,25 @@ gql`
     }
   }
 `;
+
+gql`
+  mutation UpdateMembersClass($input: UpdateMembersClassInput!) {
+    updateMembersClass(input: $input) {
+      id
+      member {
+        id
+      }
+      class {
+        id
+        name
+        level
+        instructor {
+          id
+          name
+        }
+      }
+      dateOfAdmission
+      dateOfWithdrawal
+    }
+  }
+`;

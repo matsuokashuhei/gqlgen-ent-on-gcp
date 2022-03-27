@@ -1,4 +1,6 @@
+import { format, parseISO } from "date-fns";
 import { VFC } from "react";
+import { useNavigate } from "react-router-dom";
 import { GetMemberQuery } from "../generated/graphql";
 
 type Props = {
@@ -6,17 +8,26 @@ type Props = {
 };
 
 export const MembersClassList: VFC<Props> = ({ membersClasses }) => {
+  const navigate = useNavigate();
   const renderMembersClasses = (
     membersClasses: GetMemberQuery["member"]["membersClasses"]
   ) => {
     return membersClasses.map((membersClass) => (
-      <tr key={membersClass.id}>
+      <tr
+        key={membersClass.id}
+        onClick={() =>
+          navigate(
+            // `/members/${membersClass.member.id}/classes/${membersClass.class.id}`
+            `/members_classes/${membersClass.id}`
+          )
+        }
+      >
         <td>
           {membersClass.class.name}
           {membersClass.class.level}
         </td>
         <td>{membersClass.class.instructor.name}</td>
-        <td>{membersClass.dateOfAdmission}</td>
+        <td>{format(parseISO(membersClass.dateOfAdmission), "yyyy-MM-dd")}</td>
         <td>{membersClass.dateOfWithdrawal}</td>
       </tr>
     ));

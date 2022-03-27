@@ -25,3 +25,8 @@ func (r *mutationResolver) DeleteMembersClass(ctx context.Context, input model.D
 	repository := repositories.NewMembersClassRepository(r.client)
 	return repository.Delete(ctx, input)
 }
+
+func (r *queryResolver) MembersClass(ctx context.Context, id int) (*ent.MembersClass, error) {
+	repository := repositories.NewMembersClassRepository(r.client)
+	return repository.Find(ctx, id)
+}
