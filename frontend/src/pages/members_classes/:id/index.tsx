@@ -53,13 +53,19 @@ export const MembersClassPage: VFC = () => {
       "dateOfAdmission",
       format(parseISO(membersClass.dateOfAdmission), "yyyy-MM-dd")
     );
+    setValue(
+      "dateOfWithdrawal",
+      membersClass.dateOfWithdrawal
+        ? format(parseISO(membersClass.dateOfAdmission), "yyyy-MM-dd")
+        : ""
+    );
   }, [data, setValue]);
 
   const onSubmit: SubmitHandler<Inputs> = (data) => {
     const input: UpdateMembersClassInput = {
       id: data.id.toString(),
       memberId: data.memberId.toString(),
-      classId: data.memberId.toString(),
+      classId: data.classId.toString(),
       dateOfAdmission: data.dateOfAdmission
         ? formatRFC3339(parseISO(data.dateOfAdmission))
         : null,
