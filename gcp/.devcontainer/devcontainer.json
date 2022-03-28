@@ -9,9 +9,7 @@
     "extensions": [
         "HashiCorp.terraform"
     ],
-    "initializeCommand": "docker run -ti -v $HOME/.config/gcloud:/root/.config/gcloud google/cloud-sdk:latest gcloud auth application-default login",
-    // "onCreateCommand": "echo onCreateCommand",
-    // "postAttachCommand": "echo postAttachCommand",
+    "initializeCommand": "docker run --rm --platform linux/x86_64 -v $HOME/.config/gcloud:/root/.config/gcloud -ti gcr.io/google.com/cloudsdktool/cloud-sdk gcloud auth application-default login --no-launch-browser",
     "waitFor": "initializeCommand",
     "settings": {
         "editor.formatOnSave": true,
