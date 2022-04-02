@@ -1,8 +1,12 @@
 steps:
   - name: "gcr.io/cloud-builders/docker"
-    args: ['build', '-t',
-           'asia-northeast1-docker.pkg.dev/${PROJECT_ID}/backend/myimage',
-           '.']
+    args: [
+            'build',
+            '-f',
+            'backend/Dockerfile',
+            '-t',
+            'asia-northeast1-docker.pkg.dev/${PROJECT_ID}/backend/${SHORT_SHA}',
+            './backend'
+          ]
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push',
-           'asia-northeast1-docker.pkg.dev/${PROJECT_ID}/backend/myimage']
+    args: ['push', 'asia-northeast1-docker.pkg.dev/${PROJECT_ID}/backend/${SHORT_SHA}']
