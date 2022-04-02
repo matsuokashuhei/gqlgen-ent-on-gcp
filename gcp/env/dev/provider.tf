@@ -1,10 +1,10 @@
 provider "google" {
   project = var.project.id
-  region  = "asia-northeast1"
-  zone    = "asia-northeast1-a"
+  region  = var.project.region
+  zone    = var.project.zone
 }
 
 provider "google-beta" {
   project = var.project.id
-  region  = "asia-northeast1"
+  region  = var.project.region
 }

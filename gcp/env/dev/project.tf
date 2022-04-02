@@ -4,6 +4,8 @@ data "google_project" "landin" {
 
 locals {
   services = [
+    "artifactregistry.googleapis.com",
+    "cloudbuild.googleapis.com",
   ]
 }
 
