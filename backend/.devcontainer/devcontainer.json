@@ -9,6 +9,7 @@
     "extensions": [
         "apollographql.vscode-apollo",
         "golang.go",
+        "redhat.vscode-yaml",
     ],
     "shutdownAction": "stopCompose",
     "settings": {
@@ -16,5 +17,8 @@
         "files.trimFinalNewlines": true,
         "files.trimTrailingWhitespace": true,
         "workbench.tree.indent": 16,
+        "yaml.schemas": {
+            "https://json.schemastore.org/cloudbuild.json": "cloudbuild.yaml"
+        }
     }
 }
