@@ -14,7 +14,7 @@ terraform {
     }
   }
   backend "gcs" {
-    bucket = "landin-dev-tfstate"
+    bucket = "landin-dev-346809-tfstate"
     prefix = "env/dev"
   }
 }

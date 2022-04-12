@@ -10,4 +10,4 @@ spec:
         secretRef: slack-webhook-url
   secrets:
   - name: slack-webhook-url
-    value: projects/landin-dev/secrets/slack_webhook_url/versions/latest
+    value: projects/874250046469/secrets/slack_webhook_url/versions/latest
