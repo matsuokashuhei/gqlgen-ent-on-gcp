@@ -9,3 +9,7 @@ variable "github" {
 variable "secret_manager" {
   type = map(any)
 }
+
+variable "google_dns" {
+  type = map(any)
+}

@@ -1,9 +1,10 @@
-# resource "google_storage_bucket" "frontend" {
-#   name          = join("-", [var.project.id, "frontend"])
-#   force_destroy = true
-#   location      = "ASIA"
-#   storage_class = "MULTI_REGIONAL"
-# }
+resource "google_storage_bucket" "frontend" {
+  name                        = "landin.tk"
+  location                    = "ASIA"
+  storage_class               = "COLDLINE"
+  uniform_bucket_level_access = true
+  force_destroy               = true
+}
 
 # data "google_iam_policy" "frontend" {
 #   binding {
