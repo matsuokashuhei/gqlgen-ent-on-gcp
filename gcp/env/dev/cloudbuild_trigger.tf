@@ -14,4 +14,8 @@ resource "google_cloudbuild_trigger" "landin" {
   included_files = [
     "${each.key}/**/*"
   ]
+  substitutions = {
+    _NODE_VERSION = "16"
+    _BUCKET_NAME  = google_storage_bucket.frontend.name
+  }
 }
