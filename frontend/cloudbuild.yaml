@@ -7,8 +7,6 @@ steps:
     entrypoint: npm
     args: ["run", "build"]
     dir: "frontend"
-
-artifacts:
-  objects:
-    location: "gs://landin.tk"
-    paths: ["frontend/build/*"]
+  - name: 'gcr.io/cloud-builders/gsutil'
+    # https://cloud.google.com/storage/docs/gsutil/commands/rsync#options
+    args: ["-m", "rsync", "-r", "-c", "-d", "./build", "gs://landin.tk"]
