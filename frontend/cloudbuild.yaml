@@ -1,5 +1,5 @@
 steps:
-  - name: build
+  - name: node:16
     entrypoint: npm
     args: ["run", "build", "frontend"]
 
