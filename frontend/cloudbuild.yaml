@@ -1,0 +1,7 @@
+steps:
+  - id: deploy
+    name: gcr.io/cloud-builders/gcloud
+    args:
+      - --quiet
+      - app
+      - deploy
