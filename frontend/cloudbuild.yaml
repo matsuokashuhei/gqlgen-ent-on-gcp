@@ -1,7 +1,9 @@
 steps:
-  - id: deploy
-    name: gcr.io/cloud-builders/gcloud
-    args:
-      - --quiet
-      - app
-      - deploy
+  - name: node
+    entrypoint: npm
+    args: ["build"]
+
+artifacts:
+  objects:
+    location: "gs://landin.tk"
+    paths: ["build/*"]
