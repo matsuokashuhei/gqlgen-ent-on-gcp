@@ -1,9 +1,9 @@
 steps:
-  - name: node
+  - name: build
     entrypoint: npm
-    args: ["run", "build"]
+    args: ["run", "build", "frontend"]
 
 artifacts:
   objects:
     location: "gs://landin.tk"
-    paths: ["build/*"]
+    paths: ["frontend/build/*"]
