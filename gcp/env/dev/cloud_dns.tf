@@ -20,3 +20,11 @@ resource "google_dns_record_set" "frontend" {
   managed_zone = resource.google_dns_managed_zone.landin.name
   rrdatas      = [google_compute_global_address.frontend.address]
 }
+
+resource "google_dns_record_set" "backend" {
+  name         = join(".", ["graph", resource.google_dns_managed_zone.landin.dns_name])
+  type         = "A"
+  ttl          = 300
+  managed_zone = resource.google_dns_managed_zone.landin.name
+  rrdatas      = [google_compute_global_address.backend.address]
+}
