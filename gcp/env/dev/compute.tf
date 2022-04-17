@@ -12,7 +12,7 @@ resource "google_compute_managed_ssl_certificate" "frontend" {
   name = "frontend"
 
   managed {
-    domains = [var.google_dns.dns_name]
+    domains = [var.google_dns_managed_zone.dns_name]
   }
 }
 
@@ -23,12 +23,14 @@ resource "google_compute_target_https_proxy" "frontend" {
 }
 
 resource "google_compute_global_address" "frontend" {
-  name = "frontend"
+  name         = "frontend"
+  ip_version   = "IPV4"
+  address_type = "EXTERNAL"
 }
 
 resource "google_compute_global_forwarding_rule" "frontend" {
   name       = "frontend"
   target     = google_compute_target_https_proxy.frontend.self_link
-  port_range = "443-443"
   ip_address = google_compute_global_address.frontend.address
+  port_range = "443"
 }

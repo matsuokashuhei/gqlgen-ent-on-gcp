@@ -10,6 +10,14 @@ variable "secret_manager" {
   type = map(any)
 }
 
-variable "google_dns" {
+variable "google_dns_managed_zone" {
+  type = map(any)
+}
+
+variable "google_dns_record_set" {
+  type = map(any)
+}
+
+variable "google_sql_user" {
   type = map(any)
 }
