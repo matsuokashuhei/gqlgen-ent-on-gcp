@@ -15,7 +15,9 @@ resource "google_cloudbuild_trigger" "landin" {
     "${each.key}/**/*"
   ]
   substitutions = {
-    _NODE_VERSION = "16"
-    _BUCKET_NAME  = google_storage_bucket.frontend.name
+    _NODE_VERSION  = "16"
+    _BUCKET_NAME   = google_storage_bucket.frontend.name
+    _REPOSITORY_ID = google_artifact_registry_repository.landin.repository_id
+    _REGION        = var.project.region
   }
 }

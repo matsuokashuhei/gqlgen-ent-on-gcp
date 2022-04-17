@@ -14,18 +14,33 @@ resource "google_cloud_run_service" "slack_notifier" {
   }
 }
 
-data "google_iam_policy" "slack_notifier" {
-  binding {
-    role = "roles/run.invoker"
-    members = [
-      "serviceAccount:${google_service_account.slack_notifier.email}"
-    ]
-  }
-}
-
 resource "google_cloud_run_service_iam_policy" "slack_notifier" {
   location    = google_cloud_run_service.slack_notifier.location
   project     = google_cloud_run_service.slack_notifier.project
   service     = google_cloud_run_service.slack_notifier.name
   policy_data = data.google_iam_policy.slack_notifier.policy_data
+}
+
+resource "google_cloud_run_service" "backend" {
+  name     = "backend"
+  location = var.project.region
+  template {
+    spec {
+      containers {
+        image = "${var.project.region}-docker.pkg.dev/${var.project.id}/${google_artifact_registry_repository.landin.repository_id}/backend"
+      }
+    }
+  }
+  lifecycle {
+    ignore_changes = [
+      template[0].spec[0].containers[0].image
+    ]
+  }
+}
+
+resource "google_cloud_run_service_iam_policy" "backend" {
+  location    = google_cloud_run_service.backend.location
+  project     = google_cloud_run_service.backend.project
+  service     = google_cloud_run_service.backend.name
+  policy_data = data.google_iam_policy.backend.policy_data
 }

@@ -22,3 +22,11 @@ resource "google_project_service" "landin" {
   # disable_dependent_services = true
   # disable_on_destroy         = false
 }
+
+resource "google_project_iam_binding" "cloudbuild" {
+  project = data.google_project.landin.id
+  role    = "roles/run.admin"
+  members = [
+    "serviceAccount:${data.google_project.landin.number}@cloudbuild.gserviceaccount.com",
+  ]
+}
