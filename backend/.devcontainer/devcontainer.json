@@ -4,7 +4,6 @@
         "../../docker-compose.yml"
     ],
     "service": "backend",
-    // "workspaceFolder": "/go/src/app",
     "workspaceFolder": "/app/backend",
     "extensions": [
         "apollographql.vscode-apollo",
