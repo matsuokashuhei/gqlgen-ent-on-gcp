@@ -1,15 +1,26 @@
 steps:
   - name: "gcr.io/cloud-builders/docker"
-    args: [
-            'build',
-            '-f',
-            'backend/Dockerfile',
-            '-t',
-            'asia-northeast1-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY_ID}/backend:${SHORT_SHA}',
-            './backend'
-          ]
+    args:
+    - 'build'
+    - '-f'
+    - 'backend/Dockerfile'
+    - '-t'
+    - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY_ID}/backend:${SHORT_SHA}'
+    - './backend'
   - name: 'gcr.io/cloud-builders/docker'
-    args: [
-            'push',
-            'asia-northeast1-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY_ID}/backend:${SHORT_SHA}'
-          ]
+    args:
+    - 'push'
+    - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY_ID}/backend:${SHORT_SHA}'
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+    - 'run'
+    - 'deploy'
+    - 'backend'
+    - '--image'
+    - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY_ID}/backend:${SHORT_SHA}'
+    - '--region'
+    - '${_REGION}'
+
+images:
+ - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY_ID}/backend:${SHORT_SHA}'
