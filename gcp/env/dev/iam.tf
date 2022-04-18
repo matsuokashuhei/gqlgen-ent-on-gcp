@@ -11,7 +11,7 @@ data "google_iam_policy" "backend" {
   binding {
     role = "roles/run.invoker"
     members = [
-      "serviceAccount:${google_service_account.backend.email}"
+      "allUsers"
     ]
   }
 }

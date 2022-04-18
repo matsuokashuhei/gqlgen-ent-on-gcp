@@ -44,7 +44,7 @@ resource "google_compute_managed_ssl_certificate" "backend" {
   provider = google-beta
   name     = "backend"
   managed {
-    domains = [join(".", ["graph", resource.google_dns_managed_zone.landin.dns_name])]
+    domains = [join(".", ["api", resource.google_dns_managed_zone.landin.dns_name])]
   }
 }
 

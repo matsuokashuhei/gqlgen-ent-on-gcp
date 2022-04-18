@@ -22,7 +22,7 @@ resource "google_dns_record_set" "frontend" {
 }
 
 resource "google_dns_record_set" "backend" {
-  name         = join(".", ["graph", resource.google_dns_managed_zone.landin.dns_name])
+  name         = join(".", ["api", resource.google_dns_managed_zone.landin.dns_name])
   type         = "A"
   ttl          = 300
   managed_zone = resource.google_dns_managed_zone.landin.name
