@@ -26,7 +26,7 @@ steps:
     - 'run'
     - '-v'
     - 'backend/migrations:/migrations'
-    - '-network'
+    - '--network'
     - 'host'
     - 'migrate/migrate'
     - '-database'
