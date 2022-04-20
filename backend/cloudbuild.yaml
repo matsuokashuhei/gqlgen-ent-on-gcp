@@ -1,5 +1,5 @@
 steps:
-  - name: "gcr.io/cloud-builders/docker"
+  - name: 'gcr.io/cloud-builders/docker'
     args:
     - 'build'
     - '-f'
@@ -21,6 +21,19 @@ steps:
     - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY_ID}/backend:${SHORT_SHA}'
     - '--region'
     - '${_REGION}'
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+    - 'run'
+    - '-v'
+    - 'backend/migrations:/migrations'
+    - '-network'
+    - 'host'
+    - 'migrate/migrate'
+    - '-database'
+    - '${_MYSQL_URL}'
+    - '-path'
+    - '/migrations'
+    - 'up'
 
 images:
  - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY_ID}/backend:${SHORT_SHA}'
