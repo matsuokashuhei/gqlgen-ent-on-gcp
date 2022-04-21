@@ -1,26 +1,26 @@
 steps:
-  # - name: 'gcr.io/cloud-builders/docker'
-  #   args:
-  #   - 'build'
-  #   - '-f'
-  #   - 'backend/Dockerfile'
-  #   - '-t'
-  #   - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY_ID}/backend:${SHORT_SHA}'
-  #   - './backend'
-  # - name: 'gcr.io/cloud-builders/docker'
-  #   args:
-  #   - push
-  #   - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY_ID}/backend:${SHORT_SHA}
-  # - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-  #   entrypoint: gcloud
-  #   args:
-  #   - 'run'
-  #   - 'deploy'
-  #   - 'backend'
-  #   - '--image'
-  #   - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY_ID}/backend:${SHORT_SHA}'
-  #   - '--region'
-  #   - '${_REGION}'
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+    - 'build'
+    - '-f'
+    - 'backend/Dockerfile'
+    - '-t'
+    - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY_ID}/backend:${SHORT_SHA}'
+    - './backend'
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+    - push
+    - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY_ID}/backend:${SHORT_SHA}
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+    - 'run'
+    - 'deploy'
+    - 'backend'
+    - '--image'
+    - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY_ID}/backend:${SHORT_SHA}'
+    - '--region'
+    - '${_REGION}'
   # - name: 'gcr.io/cloud-builders/docker'
   #   args:
   #   - 'run'
@@ -40,7 +40,7 @@ steps:
     - '-c'
     - |
       curl -L https://github.com/golang-migrate/migrate/releases/download/v4.15.1/migrate.linux-amd64.tar.gz | tar xvz
-      ./migrate -version
+      ./migrate -database ${_MYSQL_URL} -path /migrations up
 
 images:
  - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY_ID}/backend:${SHORT_SHA}'
