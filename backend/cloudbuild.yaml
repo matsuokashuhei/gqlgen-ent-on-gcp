@@ -1,39 +1,46 @@
 steps:
-  - name: 'gcr.io/cloud-builders/docker'
+  # - name: 'gcr.io/cloud-builders/docker'
+  #   args:
+  #   - 'build'
+  #   - '-f'
+  #   - 'backend/Dockerfile'
+  #   - '-t'
+  #   - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY_ID}/backend:${SHORT_SHA}'
+  #   - './backend'
+  # - name: 'gcr.io/cloud-builders/docker'
+  #   args:
+  #   - push
+  #   - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY_ID}/backend:${SHORT_SHA}
+  # - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  #   entrypoint: gcloud
+  #   args:
+  #   - 'run'
+  #   - 'deploy'
+  #   - 'backend'
+  #   - '--image'
+  #   - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY_ID}/backend:${SHORT_SHA}'
+  #   - '--region'
+  #   - '${_REGION}'
+  # - name: 'gcr.io/cloud-builders/docker'
+  #   args:
+  #   - 'run'
+  #   - '-v'
+  #   - './backend/migrations:/migrations'
+  #   - '--network'
+  #   - 'host'
+  #   - 'migrate/migrate'
+  #   - '-database'
+  #   - '${_MYSQL_URL}'
+  #   - '-path'
+  #   - '/migrations'
+  #   - 'up'
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: bash
     args:
-    - 'build'
-    - '-f'
-    - 'backend/Dockerfile'
-    - '-t'
-    - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY_ID}/backend:${SHORT_SHA}'
-    - './backend'
-  - name: 'gcr.io/cloud-builders/docker'
-    args:
-    - 'push'
-    - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY_ID}/backend:${SHORT_SHA}'
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    entrypoint: gcloud
-    args:
-    - 'run'
-    - 'deploy'
-    - 'backend'
-    - '--image'
-    - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY_ID}/backend:${SHORT_SHA}'
-    - '--region'
-    - '${_REGION}'
-  - name: 'gcr.io/cloud-builders/docker'
-    args:
-    - 'run'
-    - '-v'
-    - './backend/migrations:/migrations'
-    - '--network'
-    - 'host'
-    - 'migrate/migrate'
-    - '-database'
-    - '${_MYSQL_URL}'
-    - '-path'
-    - '/migrations'
-    - 'up'
+    - '-c'
+    - |
+      curl -L https://github.com/golang-migrate/migrate/releases/download/v4.15.1/migrate.linux-amd64.tar.gz | tar xvz
+      migrate -help
 
 images:
  - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY_ID}/backend:${SHORT_SHA}'
