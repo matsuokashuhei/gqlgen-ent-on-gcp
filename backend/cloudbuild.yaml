@@ -45,7 +45,7 @@ steps:
 logsBucket: 'gs://studio-landin-dev-cloudbuild'
 
 options:
-  logging: CLOUD_LOGGING_ONLY
+  logging: GCS_ONLY
 
 images:
  - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY_ID}/backend:${SHORT_SHA}'
