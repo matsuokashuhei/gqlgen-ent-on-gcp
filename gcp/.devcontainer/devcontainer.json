@@ -13,6 +13,9 @@
     "waitFor": "initializeCommand",
     "settings": {
         "editor.formatOnSave": true,
+        "files.associations": {
+            "*.hcl": "terraform"
+        },
         "files.insertFinalNewline": true,
         "files.trimFinalNewlines": true,
         "files.trimTrailingWhitespace": true,
