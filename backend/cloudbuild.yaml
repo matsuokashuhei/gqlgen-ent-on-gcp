@@ -33,6 +33,8 @@ logsBucket: 'gs://studio-landin-dev-cloudbuild'
 
 options:
   logging: GCS_ONLY
+  pool:
+    name: '${_POOL_NAME}'
 
 images:
  - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY_ID}/backend:${SHORT_SHA}'
