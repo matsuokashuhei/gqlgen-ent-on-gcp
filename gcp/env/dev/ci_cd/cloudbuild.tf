@@ -19,7 +19,7 @@ resource "google_cloudbuild_trigger" "landin" {
     _BUCKET_NAME   = data.google_storage_bucket.frontend.name
     _REPOSITORY_ID = var.backend.google_artifact_registry_repository.landin.repository_id
     _REGION        = var.project.region
-    _MYSQL_URL     = "mysql://${data.google_secret_manager_secret_version.landin["sql_user_name"].secret_data}:${data.google_secret_manager_secret_version.landin["sql_user_password"].secret_data}@tcp(${data.google_sql_database_instance.landin.private_ip_address})/${data.google_sql_database_instance.landin.name})"
+    _MYSQL_URL     = "mysql://${data.google_secret_manager_secret_version.landin["sql_user_name"].secret_data}:${data.google_secret_manager_secret_version.landin["sql_user_password"].secret_data}@tcp(${data.google_sql_database_instance.landin.private_ip_address}:3306)/${data.google_sql_database_instance.landin.name})"
     _POOL_NAME     = google_cloudbuild_worker_pool.db.id
   }
 }
