@@ -21,19 +21,6 @@ steps:
     - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY_ID}/backend:${SHORT_SHA}'
     - '--region'
     - '${_REGION}'
-  # - name: 'gcr.io/cloud-builders/docker'
-  #   args:
-  #   - 'run'
-  #   - '-v'
-  #   - './backend/migrations:/migrations'
-  #   - '--network'
-  #   - 'host'
-  #   - 'migrate/migrate'
-  #   - '-database'
-  #   - '${_MYSQL_URL}'
-  #   - '-path'
-  #   - '/migrations'
-  #   - 'up'
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk
     entrypoint: bash
     args:
@@ -44,8 +31,8 @@ steps:
 
 logsBucket: 'gs://studio-landin-dev-cloudbuild'
 
-# options:
-#   logging: GCS_ONLY
+options:
+  logging: GCS_ONLY
 
 images:
  - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY_ID}/backend:${SHORT_SHA}'
