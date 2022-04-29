@@ -21,7 +21,7 @@ steps:
   #   - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY_ID}/backend:${SHORT_SHA}'
   #   - '--region'
   #   - '${_REGION}'
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  - name: 'gcr.io/cloud-builders/curl'
     entrypoint: 'bash'
     args:
     - '-c'
