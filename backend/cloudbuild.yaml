@@ -44,9 +44,9 @@ steps:
 
 availableSecrets:
   secretManager:
-  - versionName: ${_MYSQL_USER}
+  - versionName: ${_MYSQL_USER_ID}
     env: MYSQL_USER
-  - versionName: ${_MYSQL_PASSWORD}
+  - versionName: ${_MYSQL_PASSWORD_ID}
     env: MYSQL_PASSWORD
 
 logsBucket: 'gs://studio-landin-dev-cloudbuild'
