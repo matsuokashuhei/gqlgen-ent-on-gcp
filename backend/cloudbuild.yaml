@@ -26,9 +26,9 @@ steps:
     args:
     - '-c'
     - |
-      curl https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -o cloud_sql_proxy
-      chmod +x cloud_sql_proxy
-      ./cloud_sql_proxy -instances=${_CLOUD_SQL_INSTANCE_NAME}=tcp:3306 &
+      # curl https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -o cloud_sql_proxy
+      # chmod +x cloud_sql_proxy
+      # ./cloud_sql_proxy -instances=${_CLOUD_SQL_INSTANCE_NAME}=tcp:3306 &
       curl -L https://github.com/golang-migrate/migrate/releases/download/v4.15.1/migrate.linux-amd64.tar.gz | tar xvz
       ./migrate -database "${_CLOUD_SQL_URL}" -path ./backend/migrations up
 
