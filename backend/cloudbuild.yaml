@@ -21,8 +21,6 @@ steps:
   #   - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY_ID}/backend:${SHORT_SHA}'
   #   - '--region'
   #   - '${_REGION}'
-  # - name: 'bash'
-  #   args: ['echo', 'I am running in a private pool!']
   - name: 'gcr.io/cloud-builders/curl'
     entrypoint: 'bash'
     args:
@@ -38,8 +36,8 @@ logsBucket: 'gs://studio-landin-dev-cloudbuild'
 
 options:
   logging: 'GCS_ONLY'
-  pool:
-    name: '${_POOL_NAME}'
+  # pool:
+  #   name: '${_POOL_NAME}'
 
 images:
  - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY_ID}/backend:${SHORT_SHA}'
