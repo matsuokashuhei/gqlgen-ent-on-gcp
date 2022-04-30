@@ -49,7 +49,7 @@ availableSecrets:
   - versionName: ${_MYSQL_PASSWORD_ID}
     env: MYSQL_PASSWORD
 
-logsBucket: 'gs://studio-landin-dev-cloudbuild'
+logsBucket: 'gs://${_LOG_BUCKET}'
 
 options:
   logging: 'GCS_ONLY'
