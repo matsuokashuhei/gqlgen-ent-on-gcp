@@ -32,7 +32,7 @@ steps:
     - 'MYSQL_PORT="3306"'
     - '--set-env-vars'
     - 'MYSQL_DATABASE="${_MYSQL_DATABASE}"'
-    - '--vpc-connector="${_VPC_CONNECTOR}"'
+    - '--vpc-connector=${_VPC_CONNECTOR}'
     secretEnv: ['MYSQL_USER', 'MYSQL_PASSWORD']
   - name: 'gcr.io/cloud-builders/curl'
     entrypoint: 'bash'
