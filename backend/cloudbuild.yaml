@@ -30,7 +30,7 @@ steps:
     - |
       curl https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -o cloud_sql_proxy
       chmod +x cloud_sql_proxy
-      ./cloud_sql_proxy -instances=landin-cd4e96ea=tcp:3306
+      ./cloud_sql_proxy -instances=studio-landin-dev:asia-northeast1:landin-cd4e96ea=tcp:3306
       curl -L https://github.com/golang-migrate/migrate/releases/download/v4.15.1/migrate.linux-amd64.tar.gz | tar xvz
       ./migrate -database "${_MYSQL_URL}" -path ./backend/migrations up
 
