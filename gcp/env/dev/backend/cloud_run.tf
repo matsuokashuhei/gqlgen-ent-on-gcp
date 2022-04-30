@@ -1,11 +1,48 @@
 resource "google_cloud_run_service" "backend" {
-  name     = "backend"
-  location = var.project.region
+  name                       = "backend"
+  location                   = var.region
+  autogenerate_revision_name = true
   template {
     spec {
       containers {
-        image = "us-docker.pkg.dev/cloudrun/container/hello"
-        # image = "${var.project.region}-docker.pkg.dev/${var.project.id}/${google_artifact_registry_repository.landin.repository_id}/backend"
+        image = "${var.region}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.landin.repository_id}/backend:84df23a"
+        # env {
+        #   name = "MYSQL_USER"
+        #   value_from {
+        #     secret_key_ref {
+        #       name = data.google_secret_manager_secret.landin["sql_user_name"].secret_id
+        #       key  = "latest"
+        #     }
+        #   }
+        # }
+        # env {
+        #   name = "MYSQL_PASSWORD"
+        #   value_from {
+        #     secret_key_ref {
+        #       name = data.google_secret_manager_secret.landin["sql_user_password"].secret_id
+        #       key  = "latest"
+        #     }
+        #   }
+        # }
+        # env {
+        #   name  = "MYSQL_HOST"
+        #   value = data.google_sql_database_instance.landin.private_ip_address
+        # }
+        # env {
+        #   name  = "MYSQL_PORT"
+        #   value = "3306"
+        # }
+        # env {
+        #   name  = "MYSQL_DATABASE"
+        #   value = var.db.google_sql_database.landin.name
+        # }
+      }
+      service_account_name = data.google_service_account.landin["backend"].email
+    }
+    metadata {
+      annotations = {
+        "run.googleapis.com/vpc-access-connector" = google_vpc_access_connector.backend.name
+        "run.googleapis.com/vpc-access-egress"    = "all"
       }
     }
   }
@@ -14,20 +51,4 @@ resource "google_cloud_run_service" "backend" {
   #     template[0].spec[0].containers[0].image
   #   ]
   # }
-}
-
-resource "google_cloud_run_service_iam_policy" "backend" {
-  location    = google_cloud_run_service.backend.location
-  project     = google_cloud_run_service.backend.project
-  service     = google_cloud_run_service.backend.name
-  policy_data = data.google_iam_policy.backend.policy_data
-}
-
-data "google_iam_policy" "backend" {
-  binding {
-    role = "roles/run.invoker"
-    members = [
-      "allUsers"
-    ]
-  }
 }

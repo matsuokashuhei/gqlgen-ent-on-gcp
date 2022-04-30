@@ -1,11 +1,11 @@
 resource "google_storage_bucket" "cloudbuild" {
-  name          = join("-", [var.project.id, "cloudbuild"])
+  name          = join("-", [var.project_id, "cloudbuild"])
   location      = "ASIA"
   force_destroy = true
 }
 
 resource "google_storage_bucket" "slack_notifier" {
-  name          = join("-", [var.project.id, "slack-notifier"])
+  name          = join("-", [var.project_id, "slack-notifier"])
   location      = "ASIA"
   force_destroy = true
 }

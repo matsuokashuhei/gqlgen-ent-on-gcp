@@ -8,7 +8,7 @@ resource "google_pubsub_subscription" "cloud_builds" {
   push_config {
     push_endpoint = google_cloud_run_service.slack_notifier.status[0].url
     oidc_token {
-      service_account_email = google_service_account.slack_notifier.email
+      service_account_email = data.google_service_account.landin["slack_notifier"].email
     }
   }
 }

@@ -17,3 +17,7 @@ variable "db" {
 variable "github" {
   type = map(any)
 }
+
+variable "project" {
+  type = map(any)
+}

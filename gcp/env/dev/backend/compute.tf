@@ -1,3 +1,7 @@
+data "google_compute_network" "landin" {
+  name = var.network.google_compute_network.landin.name
+}
+
 resource "google_compute_managed_ssl_certificate" "backend" {
   provider = google-beta
   name     = "backend"
@@ -10,7 +14,7 @@ resource "google_compute_region_network_endpoint_group" "backend" {
   provider              = google-beta
   name                  = "backend"
   network_endpoint_type = "SERVERLESS"
-  region                = var.project.region
+  region                = var.region
   cloud_run {
     service = google_cloud_run_service.backend.name
   }
@@ -39,13 +43,30 @@ resource "google_compute_target_https_proxy" "backend" {
   ]
 }
 
-# resource "google_compute_global_address" "backend" {
-#   name = "backend"
-# }
+resource "google_compute_global_address" "backend" {
+  name = "backend"
+}
 
-# resource "google_compute_global_forwarding_rule" "backend" {
-#   name       = "backend"
-#   target     = google_compute_target_https_proxy.backend.id
-#   port_range = "443"
-#   ip_address = google_compute_global_address.backend.address
-# }
+resource "google_compute_global_forwarding_rule" "backend" {
+  name       = "backend"
+  target     = google_compute_target_https_proxy.backend.id
+  port_range = "443"
+  ip_address = google_compute_global_address.backend.address
+}
+
+# NAT
+resource "google_compute_router" "backend" {
+  provider = google-beta
+  name     = "backend"
+  region   = var.region
+  network  = data.google_compute_network.landin.id
+}
+
+resource "google_compute_router_nat" "backend" {
+  provider                           = google-beta
+  name                               = "backend"
+  region                             = var.region
+  router                             = google_compute_router.backend.name
+  source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_IP_RANGES"
+  nat_ip_allocate_option             = "AUTO_ONLY"
+}

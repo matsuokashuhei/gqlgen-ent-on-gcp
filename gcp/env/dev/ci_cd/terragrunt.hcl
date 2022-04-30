@@ -18,9 +18,14 @@ dependency "network" {
   config_path = "../network"
 }
 
+dependency "project" {
+  config_path = "../project"
+}
+
 inputs = {
   frontend = dependency.frontend.outputs.frontend
   backend  = dependency.backend.outputs.backend
   network  = dependency.network.outputs.network
   db       = dependency.db.outputs.db
+  project  = dependency.project.outputs.project
 }
