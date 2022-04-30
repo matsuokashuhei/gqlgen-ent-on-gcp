@@ -22,10 +22,10 @@ steps:
     - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY_ID}/backend:bec24ac'
     - '--region'
     - '${_REGION}'
-    - '--set-env-vars'
-    - 'MYSQL_USER="$$MYSQL_USER"'
-    - '--set-env-vars'
-    - 'MYSQL_PASSWORD="$$MYSQL_PASSWORD"'
+    # - '--set-env-vars'
+    # - 'MYSQL_USER="$$MYSQL_USER"'
+    # - '--set-env-vars'
+    # - 'MYSQL_PASSWORD="$$MYSQL_PASSWORD"'
     - '--set-env-vars'
     - 'MYSQL_HOST="${_MYSQL_HOST}"'
     - '--set-env-vars'
@@ -33,7 +33,7 @@ steps:
     - '--set-env-vars'
     - 'MYSQL_DATABASE="${_MYSQL_DATABASE}"'
     - '--vpc-connector="${_VPC_CONNECTOR}"'
-    # secretEnv: ['MYSQL_USER', 'MYSQL_PASSWORD']
+    secretEnv: ['MYSQL_USER', 'MYSQL_PASSWORD']
   - name: 'gcr.io/cloud-builders/curl'
     entrypoint: 'bash'
     args:
