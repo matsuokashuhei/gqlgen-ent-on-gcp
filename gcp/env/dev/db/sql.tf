@@ -11,7 +11,7 @@ resource "google_sql_database_instance" "landin" {
     tier = "db-f1-micro"
     ip_configuration {
       ipv4_enabled    = false
-      private_network = google_compute_network.db.id
+      private_network = data.google_compute_network.landin.id
     }
   }
   depends_on = [google_service_networking_connection.db]

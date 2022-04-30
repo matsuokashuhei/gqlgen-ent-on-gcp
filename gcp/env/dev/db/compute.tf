@@ -1,6 +1,5 @@
-resource "google_compute_network" "db" {
-  provider = google-beta
-  name     = "db"
+data "google_compute_network" "landin" {
+  name = var.network.google_compute_network.landin.name
 }
 
 resource "google_compute_global_address" "db" {
@@ -9,12 +8,12 @@ resource "google_compute_global_address" "db" {
   purpose       = "VPC_PEERING"
   address_type  = "INTERNAL"
   prefix_length = 16
-  network       = google_compute_network.db.id
+  network       = data.google_compute_network.landin.id
 }
 
 resource "google_service_networking_connection" "db" {
   provider                = google-beta
-  network                 = google_compute_network.db.id
+  network                 = data.google_compute_network.landin.id
   service                 = "servicenetworking.googleapis.com"
   reserved_peering_ranges = [google_compute_global_address.db.name]
 }

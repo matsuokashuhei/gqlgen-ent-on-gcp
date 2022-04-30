@@ -19,8 +19,8 @@ resource "google_cloudbuild_trigger" "landin" {
     _BUCKET_NAME   = data.google_storage_bucket.frontend.name
     _REPOSITORY_ID = var.backend.google_artifact_registry_repository.landin.repository_id
     _REGION        = var.project.region
-    _MYSQL_URL     = "mysql://${data.google_secret_manager_secret_version.landin["sql_user_name"].secret_data}:${data.google_secret_manager_secret_version.landin["sql_user_password"].secret_data}@tcp(${data.google_sql_database_instance.landin.private_ip_address}:3306)/${data.google_sql_database_instance.landin.name}"
-    _POOL_NAME     = google_cloudbuild_worker_pool.db.id
+    _CLOUD_SQL_URL = "mysql://${data.google_secret_manager_secret_version.landin["sql_user_name"].secret_data}:${data.google_secret_manager_secret_version.landin["sql_user_password"].secret_data}@tcp(${data.google_sql_database_instance.landin.private_ip_address}:3306)/${var.db.google_sql_database.landin.name}"
+    _POOL_NAME     = google_cloudbuild_worker_pool.landin.id
   }
 }
 
@@ -33,6 +33,8 @@ resource "google_project_iam_member" "cloudbuild" {
   for_each = toset([
     "roles/artifactregistry.writer",
     "roles/cloudbuild.builds.editor",
+    "roles/cloudsql.client",
+    "roles/compute.networkAdmin",
     "roles/iam.serviceAccountUser",
     "roles/logging.logWriter",
     "roles/run.admin",
@@ -43,15 +45,10 @@ resource "google_project_iam_member" "cloudbuild" {
   member  = "serviceAccount:${google_service_account.cloudbuild.email}"
 }
 
-resource "google_cloudbuild_worker_pool" "db" {
-  name     = "db"
+resource "google_cloudbuild_worker_pool" "landin" {
+  name     = "landin"
   location = var.project.region
-  # worker_config {
-  #   disk_size_gb   = 100
-  #   machine_type   = "e2-medium"
-  #   no_external_ip = false
-  # }
   network_config {
-    peered_network = data.google_compute_network.db.id
+    peered_network = data.google_compute_network.landin.id
   }
 }
