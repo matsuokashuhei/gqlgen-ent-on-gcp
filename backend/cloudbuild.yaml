@@ -46,12 +46,12 @@ steps:
   #     curl -L https://github.com/golang-migrate/migrate/releases/download/v4.15.1/migrate.linux-amd64.tar.gz | tar xvz
   #     ./migrate -database "${_CLOUD_SQL_URL}" -path ./backend/migrations up
 
-availableSecrets:
-  secretManager:
-  - versionName: ${_MYSQL_USER_ID}
-    env: 'MYSQL_USER'
-  - versionName: ${_MYSQL_PASSWORD_ID}
-    env: 'MYSQL_PASSWORD'
+# availableSecrets:
+#   secretManager:
+#   - versionName: ${_MYSQL_USER_ID}
+#     env: 'MYSQL_USER'
+#   - versionName: ${_MYSQL_PASSWORD_ID}
+#     env: 'MYSQL_PASSWORD'
 
 logsBucket: 'gs://${_LOG_BUCKET}'
 
