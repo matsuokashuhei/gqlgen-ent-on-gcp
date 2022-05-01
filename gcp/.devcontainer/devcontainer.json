@@ -1,0 +1,35 @@
+{
+    "build": {
+        "dockerfile": "Dockerfile",
+    },
+    "runArgs": [
+        "-v",
+        "${env:HOME}/.config/gcloud:/root/.config/gcloud",
+    ],
+    "extensions": [
+        "HashiCorp.terraform"
+    ],
+    "initializeCommand": "docker run --rm --platform linux/x86_64 -v $HOME/.config/gcloud:/root/.config/gcloud -ti gcr.io/google.com/cloudsdktool/cloud-sdk gcloud auth application-default login --no-launch-browser",
+    "waitFor": "initializeCommand",
+    "settings": {
+        "editor.formatOnSave": true,
+        "files.associations": {
+            "*.hcl": "terraform"
+        },
+        "files.insertFinalNewline": true,
+        "files.trimFinalNewlines": true,
+        "files.trimTrailingWhitespace": true,
+        "workbench.editor.enablePreview": false,
+        "workbench.editor.enablePreviewFromQuickOpen": false,
+        "terraform.languageServer": {
+            "external": true,
+            "args": [
+                "serve"
+            ]
+        },
+        "[terraform]": {
+            "editor.formatOnSave": true,
+            "editor.tabSize": 2,
+        }
+    }
+}

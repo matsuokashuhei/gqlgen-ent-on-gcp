@@ -1,0 +1,51 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+    - 'build'
+    - '-f'
+    - 'backend/Dockerfile'
+    - '-t'
+    - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY_ID}/backend:${SHORT_SHA}'
+    - './backend'
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+    - push
+    - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY_ID}/backend:${SHORT_SHA}
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+    - 'run'
+    - 'deploy'
+    - 'backend'
+    - '--image'
+    - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY_ID}/backend:${SHORT_SHA}'
+    - '--region'
+    - '${_REGION}'
+    - '--set-secrets'
+    - 'MYSQL_USER=${_MYSQL_USER}'
+    - '--set-secrets'
+    - 'MYSQL_PASSWORD=${_MYSQL_PASSWORD}'
+    - '--set-env-vars'
+    - 'MYSQL_HOST=${_MYSQL_HOST}'
+    - '--set-env-vars'
+    - 'MYSQL_PORT=3306'
+    - '--set-env-vars'
+    - 'MYSQL_DATABASE=${_MYSQL_DATABASE}'
+    - '--vpc-connector=${_VPC_CONNECTOR}'
+  - name: 'gcr.io/cloud-builders/curl'
+    entrypoint: 'bash'
+    args:
+    - '-c'
+    - |
+      curl -L https://github.com/golang-migrate/migrate/releases/download/v4.15.1/migrate.linux-amd64.tar.gz | tar xvz
+      ./migrate -database "${_CLOUD_SQL_URL}" -path ./backend/migrations up
+
+logsBucket: 'gs://${_LOG_BUCKET}'
+
+options:
+  logging: 'GCS_ONLY'
+  pool:
+    name: '${_POOL_NAME}'
+
+images:
+ - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY_ID}/backend:${SHORT_SHA}'

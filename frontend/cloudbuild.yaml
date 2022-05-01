@@ -1,0 +1,18 @@
+steps:
+  - name: node:$_NODE_VERSION
+    entrypoint: npm
+    args: ["install"]
+    dir: "frontend"
+  - name: node:$_NODE_VERSION
+    entrypoint: npm
+    args: ["run", "build"]
+    dir: "frontend"
+  - name: 'gcr.io/cloud-builders/gsutil'
+    # https://cloud.google.com/storage/docs/gsutil/commands/rsync#options
+    args: ["-m", "rsync", "-r", "-c", "-d", "./build", "gs://landin.tk"]
+    dir: "frontend"
+
+logsBucket: 'gs://${_LOG_BUCKET}'
+
+options:
+  logging: 'GCS_ONLY'
