@@ -22,11 +22,13 @@ steps:
     - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY_ID}/backend:e28ac94'
     - '--region'
     - '${_REGION}'
-    - '--set-env-vars'
-    # - MYSQL_USER=$$MYSQL_USER
+    # - '--set-env-vars'
+    # - 'MYSQL_USER=$$MYSQL_USER'
+    - '--set-secrets'
     - 'MYSQL_USER=${_MYSQL_USER_ID}'
-    - '--set-env-vars'
-    # - MYSQL_PASSWORD=$$MYSQL_PASSWORD
+    # - '--set-env-vars'
+    # - 'MYSQL_PASSWORD=$$MYSQL_PASSWORD'
+    - '--set-secrets'
     - 'MYSQL_PASSWORD=${_MYSQL_PASSWORD_ID}'
     - '--set-env-vars'
     - 'MYSQL_HOST=${_MYSQL_HOST}'
@@ -44,12 +46,12 @@ steps:
   #     curl -L https://github.com/golang-migrate/migrate/releases/download/v4.15.1/migrate.linux-amd64.tar.gz | tar xvz
   #     ./migrate -database "${_CLOUD_SQL_URL}" -path ./backend/migrations up
 
-# availableSecrets:
-#   secretManager:
-#   - versionName: ${_MYSQL_USER_ID}
-#     env: 'MYSQL_USER'
-#   - versionName: ${_MYSQL_PASSWORD_ID}
-#     env: 'MYSQL_PASSWORD'
+availableSecrets:
+  secretManager:
+  - versionName: ${_MYSQL_USER_ID}
+    env: 'MYSQL_USER'
+  - versionName: ${_MYSQL_PASSWORD_ID}
+    env: 'MYSQL_PASSWORD'
 
 logsBucket: 'gs://${_LOG_BUCKET}'
 
