@@ -10,6 +10,7 @@ steps:
   - name: 'gcr.io/cloud-builders/gsutil'
     # https://cloud.google.com/storage/docs/gsutil/commands/rsync#options
     args: ["-m", "rsync", "-r", "-c", "-d", "./build", "gs://landin.tk"]
+    dir: "frontend"
 
 logsBucket: 'gs://${_LOG_BUCKET}'
 
