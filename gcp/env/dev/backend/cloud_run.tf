@@ -5,7 +5,8 @@ resource "google_cloud_run_service" "backend" {
   template {
     spec {
       containers {
-        image = "${var.region}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.landin.repository_id}/backend:84df23a"
+        # image = "${var.region}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.landin.repository_id}/backend:84df23a"
+        image = "gcr.io/cloudrun/hello"
         # env {
         #   name = "MYSQL_USER"
         #   value_from {

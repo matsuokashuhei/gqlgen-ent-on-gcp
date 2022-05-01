@@ -41,3 +41,19 @@ resource "google_cloud_run_service" "slack_notifier" {
 #   secret_id   = data.google_secret_manager_secret.landin[each.key].secret_id
 #   policy_data = data.google_iam_policy.slack_notifier.policy_data
 # }
+
+data "google_iam_policy" "slack_notifier" {
+  binding {
+    role = "roles/run.invoker"
+    members = [
+      "serviceAccount:${data.google_service_account.landin["slack_notifier"].email}"
+    ]
+  }
+}
+
+resource "google_cloud_run_service_iam_policy" "slack_notifier" {
+  location    = google_cloud_run_service.slack_notifier.location
+  project     = google_cloud_run_service.slack_notifier.project
+  service     = google_cloud_run_service.slack_notifier.name
+  policy_data = data.google_iam_policy.slack_notifier.policy_data
+}

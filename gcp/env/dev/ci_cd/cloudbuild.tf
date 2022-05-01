@@ -15,18 +15,18 @@ resource "google_cloudbuild_trigger" "landin" {
     "${each.key}/**/*"
   ]
   substitutions = {
-    _NODE_VERSION      = "16"
-    _BUCKET_NAME       = data.google_storage_bucket.frontend.name
-    _REPOSITORY_ID     = var.backend.google_artifact_registry_repository.landin.repository_id
-    _REGION            = var.region
-    _CLOUD_SQL_URL     = "mysql://${data.google_secret_manager_secret_version.landin["sql_user_name"].secret_data}:${data.google_secret_manager_secret_version.landin["sql_user_password"].secret_data}@tcp(${data.google_sql_database_instance.landin.private_ip_address}:3306)/${var.db.google_sql_database.landin.name}"
-    _POOL_NAME         = google_cloudbuild_worker_pool.landin.id
-    _MYSQL_USER_ID     = data.google_secret_manager_secret_version.landin["sql_user_name"].name
-    _MYSQL_PASSWORD_ID = data.google_secret_manager_secret_version.landin["sql_user_password"].name
-    _MYSQL_HOST        = data.google_sql_database_instance.landin.private_ip_address
-    _MYSQL_DATABASE    = var.db.google_sql_database.landin.name
-    _VPC_CONNECTOR     = var.backend.google_vpc_access_connector.backend.name
-    _LOG_BUCKET        = google_storage_bucket.cloudbuild.name
+    _NODE_VERSION   = "16"
+    _BUCKET_NAME    = data.google_storage_bucket.frontend.name
+    _REPOSITORY_ID  = var.backend.google_artifact_registry_repository.landin.repository_id
+    _REGION         = var.region
+    _CLOUD_SQL_URL  = "mysql://${data.google_secret_manager_secret_version.landin["sql_user_name"].secret_data}:${data.google_secret_manager_secret_version.landin["sql_user_password"].secret_data}@tcp(${data.google_sql_database_instance.landin.private_ip_address}:3306)/${var.db.google_sql_database.landin.name}"
+    _POOL_NAME      = google_cloudbuild_worker_pool.landin.id
+    _MYSQL_USER     = data.google_secret_manager_secret_version.landin["sql_user_name"].name
+    _MYSQL_PASSWORD = data.google_secret_manager_secret_version.landin["sql_user_password"].name
+    _MYSQL_HOST     = data.google_sql_database_instance.landin.private_ip_address
+    _MYSQL_DATABASE = var.db.google_sql_database.landin.name
+    _VPC_CONNECTOR  = var.backend.google_vpc_access_connector.backend.name
+    _LOG_BUCKET     = google_storage_bucket.cloudbuild.name
   }
 }
 
