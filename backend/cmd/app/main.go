@@ -33,7 +33,6 @@ func playgroundHandler() gin.HandlerFunc {
 }
 
 func main() {
-	// db, _ := database.Connect()
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true",
 		os.Getenv("MYSQL_USER"),
 		os.Getenv("MYSQL_PASSWORD"),
@@ -41,7 +40,6 @@ func main() {
 		os.Getenv("MYSQL_PORT"),
 		os.Getenv("MYSQL_DATABASE"),
 	)
-	log.Print(dsn)
 	client, err := ent.Open("mysql", dsn)
 	if err != nil {
 		log.Fatalf("opening ent client: %v", err)
