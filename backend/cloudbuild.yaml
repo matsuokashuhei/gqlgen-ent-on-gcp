@@ -23,9 +23,9 @@ steps:
     - '--region'
     - '${_REGION}'
     - '--set-env-vars'
-    - MYSQL_USER=$$MYSQL_USER
+    - MYSQL_USER=$MYSQL_USER
     - '--set-env-vars'
-    - MYSQL_PASSWORD=$$MYSQL_PASSWORD
+    - MYSQL_PASSWORD=$MYSQL_PASSWORD
     - '--set-env-vars'
     - 'MYSQL_HOST=${_MYSQL_HOST}'
     - '--set-env-vars'
@@ -34,13 +34,13 @@ steps:
     - 'MYSQL_DATABASE=${_MYSQL_DATABASE}'
     - '--vpc-connector=${_VPC_CONNECTOR}'
     secretEnv: ['MYSQL_USER', 'MYSQL_PASSWORD']
-  - name: 'gcr.io/cloud-builders/curl'
-    entrypoint: 'bash'
-    args:
-    - '-c'
-    - |
-      curl -L https://github.com/golang-migrate/migrate/releases/download/v4.15.1/migrate.linux-amd64.tar.gz | tar xvz
-      ./migrate -database "${_CLOUD_SQL_URL}" -path ./backend/migrations up
+  # - name: 'gcr.io/cloud-builders/curl'
+  #   entrypoint: 'bash'
+  #   args:
+  #   - '-c'
+  #   - |
+  #     curl -L https://github.com/golang-migrate/migrate/releases/download/v4.15.1/migrate.linux-amd64.tar.gz | tar xvz
+  #     ./migrate -database "${_CLOUD_SQL_URL}" -path ./backend/migrations up
 
 availableSecrets:
   secretManager:
