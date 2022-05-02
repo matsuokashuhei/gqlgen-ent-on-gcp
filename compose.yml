@@ -30,7 +30,7 @@ services:
     command: sleep infinity
     depends_on:
       - mysql
-      - firebase
+      # - firebase
     environment:
       USE_LOCAL_BACKEND: 1
     env_file:

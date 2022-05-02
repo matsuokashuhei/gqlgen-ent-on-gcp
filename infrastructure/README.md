@@ -11,7 +11,7 @@
     ```
     docker run --rm --platform linux/x86_64 -v $HOME/.config/gcloud:/root/.config/gcloud -ti gcr.io/google.com/cloudsdktool/cloud-sdk gcloud init --console-only
     ```
-4. Open the `gcp` directory in a container. Please see https://code.visualstudio.com/docs/remote/containers in details.
+4. Open the `instrastructure` directory in a container. Please see https://code.visualstudio.com/docs/remote/containers in details.
 
 5. Initialize
 
