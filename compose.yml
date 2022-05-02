@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   frontend:
     build:
@@ -9,6 +7,7 @@ services:
       dockerfile: frontend/.devcontainer/Dockerfile
       # target: dev
     command: sleep infinity
+    # command: npm run start
     depends_on:
       - backend
     env_file:
@@ -20,7 +19,7 @@ services:
       # - ./frontend:/usr/local/src
       - .:/app
       - frontend-extensions:/root/.vscode-server/extensions
-      - node_modules:/usr/local/src/node_modules
+      # - node_modules:/usr/local/src/node_modules
   backend:
     build:
       # context: backend
@@ -45,8 +44,7 @@ services:
       - "8080:8080"
       - "2345:2345"
   mysql:
-    platform: linux/x86_64
-    image: mysql:8
+    image: mysql:8-oracle
     env_file:
       - .env
     command: mysqld --default_authentication_plugin=mysql_native_password
@@ -54,17 +52,17 @@ services:
       - "3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
-  firebase:
-    build:
-      context: firebase
-    command: firebase emulators:start
-    ports:
-      - "4000:4000"
-      - "9099:9099"
-    volumes:
-      - ./firebase/firebase.json:/app/firebase.json
-      - ./firebase/.firebaserc:/app/.firebaserc
-      - ./firebase/.config/configstore:/root/.config/configstore
+  # firebase:
+  #   build:
+  #     context: firebase
+  #   command: firebase emulators:start
+  #   ports:
+  #     - "4000:4000"
+  #     - "9099:9099"
+  #   volumes:
+  #     - ./firebase/firebase.json:/app/firebase.json
+  #     - ./firebase/.firebaserc:/app/.firebaserc
+  #     - ./firebase/.config/configstore:/root/.config/configstore
 
 volumes:
   frontend-extensions:

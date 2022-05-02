@@ -1,6 +1,6 @@
 {
   "name": "frontend",
-  "dockerComposeFile": ["../../docker-compose.yml"],
+  "dockerComposeFile": ["../../compose.yml"],
   "service": "frontend",
   "shutdownAction": "none",
   // "workspaceFolder": "/usr/local/src",
