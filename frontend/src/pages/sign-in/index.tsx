@@ -15,6 +15,7 @@ import {
 import { FormEvent, useEffect, VFC } from "react";
 import { useForm } from "react-hook-form";
 import { useAuth } from "../../contexts/AuthContext";
+import { Copyright } from "../../components";
 
 export const SignIn: VFC = () => {
   const { signIn } = useAuth();
@@ -60,7 +61,7 @@ export const SignIn: VFC = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <Container component="main" maxWidth="xs">
+      <Container component="main" maxWidth="sm">
         <CssBaseline />
         <Box
           sx={{
@@ -80,7 +81,7 @@ export const SignIn: VFC = () => {
             component="form"
             noValidate
             onSubmit={handleSubmit}
-            sx={{ mt: 1 }}
+            sx={{ mt: 2 }}
           >
             <TextField
               margin="normal"
@@ -106,7 +107,7 @@ export const SignIn: VFC = () => {
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+              sx={{ mt: 4, mb: 2 }}
             >
               Sign in
             </Button>
@@ -124,6 +125,7 @@ export const SignIn: VFC = () => {
             </Grid>
           </Box>
         </Box>
+        <Copyright />
       </Container>
     </ThemeProvider>
     // <div className="h-full">
