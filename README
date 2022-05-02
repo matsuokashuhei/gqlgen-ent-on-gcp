@@ -1,15 +1,26 @@
-# Set up Firebase Local Emulator Suite
+# Set up for local environment
 
-```
-docker-compose run --rm firebase firebase login --no-localhost
-```
+## GCP
 
-`.firebaserc`
+1. Create a GCP project
+2. Add [Identity Platform](https://console.cloud.google.com/customer-identity/) to the projec
+    1. Add Email/Password provider
+    2. Create key for `firebase-adminsdk`
 
-```
-{
-  "projects": {
-    "default": "<PROJECT_ID>"
-  }
-}
-```
+## Frontend app
+
+1. Add `apiKey` and `authDomain` to .env
+
+    ```
+    REACT_APP_FIREBASE_API_KEY=xxxxxxxxxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxx
+    REACT_APP_FIREBASE_AUTH_DOMAIN=<GCP_PROJECT_ID>.firebaseapp.com
+    ```
+
+
+## Backend app
+
+1. Add serviceaccount.json for `firebase-adminsdk` to .env
+
+    ```
+    GOOGLE_APPLICATION_CREDENTIALS=gserviceaccount.json
+    ```

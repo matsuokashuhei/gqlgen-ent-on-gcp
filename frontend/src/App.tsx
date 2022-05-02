@@ -17,8 +17,7 @@ import { SignUp } from "./pages/sign-up";
 import { Private, Public } from "./routes";
 
 const client = new ApolloClient({
-  // uri: "http://localhost:8080/query",
-  uri: "https://api.landin.tk",
+  uri: `${process.env.REACT_APP_BACKEND_HOST}/query`,
   cache: new InMemoryCache(),
 });
 
