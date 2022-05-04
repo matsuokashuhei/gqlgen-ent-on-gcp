@@ -13,59 +13,53 @@ import {
   ThemeProvider,
   Typography,
 } from "@mui/material";
-import {
-  ChangeEventHandler,
-  FormEvent,
-  useEffect,
-  useReducer,
-  VFC,
-} from "react";
-import { useForm } from "react-hook-form";
+import { VFC } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { Copyright } from "../../components";
 import { useAuth } from "../../contexts/AuthContext";
 
-type State = {
-  email: string;
-  password: string;
-  isSignUpButtonDisabled: boolean;
-};
+// type State = {
+//   email: string;
+//   password: string;
+//   isSignUpButtonDisabled: boolean;
+// };
 
-const initialState: State = {
-  email: "",
-  password: "",
-  isSignUpButtonDisabled: true,
-};
+// const initialState: State = {
+//   email: "",
+//   password: "",
+//   isSignUpButtonDisabled: true,
+// };
 
-type Action =
-  | { type: "setEmail"; payload: string }
-  | { type: "setPassword"; payload: string }
-  | { type: "setIsSignUpButtonDisabled"; payload: boolean };
-//   | { type: "signupSucceeded"; payload: string }
-//   | { type: "signUpFailed"; payload: string };
+// type Action =
+//   | { type: "setEmail"; payload: string }
+//   | { type: "setPassword"; payload: string }
+//   | { type: "setIsSignUpButtonDisabled"; payload: boolean };
+// //   | { type: "signupSucceeded"; payload: string }
+// //   | { type: "signUpFailed"; payload: string };
 
 const theme = createTheme();
 
-const reducer = (state: State, action: Action): State => {
-  switch (action.type) {
-    case "setEmail":
-      return {
-        ...state,
-        email: action.payload,
-      };
-    case "setPassword":
-      return {
-        ...state,
-        password: action.payload,
-      };
-    case "setIsSignUpButtonDisabled":
-      return {
-        ...state,
-        isSignUpButtonDisabled: action.payload,
-      };
-    default:
-      return state;
-  }
-};
+// const reducer = (state: State, action: Action): State => {
+//   switch (action.type) {
+//     case "setEmail":
+//       return {
+//         ...state,
+//         email: action.payload,
+//       };
+//     case "setPassword":
+//       return {
+//         ...state,
+//         password: action.payload,
+//       };
+//     case "setIsSignUpButtonDisabled":
+//       return {
+//         ...state,
+//         isSignUpButtonDisabled: action.payload,
+//       };
+//     default:
+//       return state;
+//   }
+// };
 
 const SIGN_UP = gql`
   mutation SignUp($input: SignUpInput!) {
@@ -83,49 +77,24 @@ export const SignUp: VFC = () => {
     password: string;
   };
   const {
-    register,
-    // handleSubmit,
-    formState: { errors },
+    // register,
+    handleSubmit,
+    // formState: { errors },
+    control,
   } = useForm<FormType>();
-  const [state, dispatch] = useReducer(reducer, initialState);
+  // const [state, dispatch] = useReducer(reducer, initialState);
   const { signIn } = useAuth();
   const [signUp, { loading, error }] = useMutation(SIGN_UP);
 
-  const { email, password, isSignUpButtonDisabled } = state;
+  // const { email, password, isSignUpButtonDisabled } = state;
 
-  useEffect(() => {
-    console.log(email.length > 0 && password.length);
-    dispatch({
-      type: "setIsSignUpButtonDisabled",
-      payload: email.length === 0 || password.length === 0,
-    });
-  }, [email, password]);
-
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    const email = data.get("email")?.toString();
-    const password = data.get("password")?.toString();
-    if (email && password) {
-      handleSignUp({ email, password });
-    }
-  };
-
-  const handleEmailChange: ChangeEventHandler<HTMLInputElement> = (event) => {
-    dispatch({
-      type: "setEmail",
-      payload: event.target.value,
-    });
-  };
-
-  const handlePasswordChange: ChangeEventHandler<HTMLInputElement> = (
-    event
-  ) => {
-    dispatch({
-      type: "setPassword",
-      payload: event.target.value,
-    });
-  };
+  // useEffect(() => {
+  //   console.log(email.length > 0 && password.length);
+  //   dispatch({
+  //     type: "setIsSignUpButtonDisabled",
+  //     payload: email.length === 0 || password.length === 0,
+  //   });
+  // }, [email, password]);
 
   const handleSignUp = async ({ email, password }: FormType) => {
     try {
@@ -159,36 +128,45 @@ export const SignUp: VFC = () => {
           <Typography component="h1" variant="h5">
             Sign up
           </Typography>
-          <Box
-            component="form"
-            noValidate
-            onSubmit={handleSubmit}
-            sx={{ mt: 2 }}
-          >
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="Email"
+          <Box component="form" noValidate sx={{ mt: 2 }}>
+            <Controller
               name="email"
-              autoComplete="email"
-              autoFocus
+              control={control}
+              render={({ field: { onChange, value } }) => (
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="email"
+                  label="Email"
+                  name="email"
+                  autoComplete="email"
+                  autoFocus
+                  value={value}
+                />
+              )}
             />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
+            <Controller
               name="password"
-              label="Password"
-              type="password"
-              id="password"
-              autoComplete="new-password"
+              control={control}
+              render={({ field: { onChange, value } }) => (
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  name="password"
+                  label="Password"
+                  type="password"
+                  id="password"
+                  autoComplete="new-password"
+                />
+              )}
             />
             <Button
               type="submit"
               fullWidth
               variant="contained"
+              onClick={handleSubmit(handleSignUp)}
               sx={{ mt: 4, mb: 2 }}
             >
               Sign up
@@ -205,74 +183,5 @@ export const SignUp: VFC = () => {
         <Copyright />
       </Container>
     </ThemeProvider>
-    // <div className="h-full">
-    //   <div className="flex min-h-full items-center justify-center">
-    //     <div className="w-full max-w-md space-y-8">
-    //       <div>
-    //         <h2 className="text-center font-extrabold text-gray-900">
-    //           Sign up
-    //         </h2>
-    //       </div>
-    //       <form className="mt-8 space-y-6">
-    //         <div className="-space-y-px rounded-md shadow-sm">
-    //           <div>
-    //             <input
-    //               id="email"
-    //               type="email"
-    //               {...register("email", { required: true })}
-    //               onChange={handleEmailChange}
-    //               className="relative block w-full appearance-none rounded-none rounded-t-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
-    //               placeholder="Email"
-    //             />
-    //           </div>
-    //           <div>
-    //             <input
-    //               id="password"
-    //               type="password"
-    //               {...register("password", { required: true })}
-    //               onChange={handlePasswordChange}
-    //               className="relative block w-full appearance-none rounded-none rounded-b-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
-    //               placeholder="Password"
-    //             />
-    //           </div>
-    //         </div>
-    //         <div className="flex items-center justify-between">
-    //           <div className="flex items-center">
-    //             <div className="text-sm">
-    //               <a
-    //                 href="/fogot-password"
-    //                 className="font-medium text-indigo-600 hover:text-indigo-500"
-    //               >
-    //                 Forgot your password?
-    //               </a>
-    //             </div>
-    //           </div>
-    //         </div>
-    //         <div>
-    //           <button
-    //             type="submit"
-    //             disabled={isSignUpButtonDisabled}
-    //             onClick={handleSubmit(handleSignUp)}
-    //             className="group relative flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-    //           >
-    //             Sign Up
-    //           </button>
-    //         </div>
-    //       </form>
-    //       <div className="flex items-center justify-between">
-    //         <div className="flex items-center">
-    //           <div className="text-sm">
-    //             <a
-    //               href="/sign-in"
-    //               className="font-medium text-indigo-600 hover:text-indigo-500"
-    //             >
-    //               Sign in
-    //             </a>
-    //           </div>
-    //         </div>
-    //       </div>
-    //     </div>
-    //   </div>
-    // </div>
   );
 };
