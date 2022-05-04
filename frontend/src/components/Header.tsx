@@ -1,5 +1,4 @@
-import { Menu, Notifications } from "@mui/icons-material";
-import { AppBar, IconButton, Toolbar, Typography } from "@mui/material";
+import { AppBar, Toolbar } from "@mui/material";
 import { VFC } from "react";
 
 export const Header: VFC = () => {
