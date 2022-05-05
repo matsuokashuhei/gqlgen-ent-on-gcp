@@ -10,7 +10,10 @@ import { VFC } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 
+import { useNavigate } from "react-router-dom";
+
 export const SideBar: VFC = () => {
+  const navigate = useNavigate();
   const { signOut } = useAuth();
 
   return (
@@ -23,38 +26,39 @@ export const SideBar: VFC = () => {
     >
       <Box>
         <List component="nav">
-          <Link to="/">
-            <ListItemButton>
-              <ListItemIcon>
-                <Home />
-              </ListItemIcon>
-              <ListItemText primary="HOME" />
-            </ListItemButton>
-          </Link>
-          <Link to="/classes">
-            <ListItemButton>
-              <ListItemIcon>
-                <School />
-              </ListItemIcon>
-              <ListItemText primary="CLASS" />
-            </ListItemButton>
-          </Link>
-          <Link to="/members">
-            <ListItemButton>
-              <ListItemIcon>
-                <Group />
-              </ListItemIcon>
-              <ListItemText primary="MEMBER" />
-            </ListItemButton>
-          </Link>
-          <Link to="/instructors">
-            <ListItemButton>
-              <ListItemIcon>
-                <Person />
-              </ListItemIcon>
-              <ListItemText primary="SIGN OUT" />
-            </ListItemButton>
-          </Link>
+          <ListItemButton component="button" onClick={() => navigate("/")}>
+            <ListItemIcon>
+              <Home />
+            </ListItemIcon>
+            <ListItemText primary="HOME" />
+          </ListItemButton>
+          <ListItemButton
+            component="button"
+            onClick={() => navigate("/classes")}
+          >
+            <ListItemIcon>
+              <School />
+            </ListItemIcon>
+            <ListItemText primary="CLASS" />
+          </ListItemButton>
+          <ListItemButton
+            component="button"
+            onClick={() => navigate("/members")}
+          >
+            <ListItemIcon>
+              <Group />
+            </ListItemIcon>
+            <ListItemText primary="MEMBER" />
+          </ListItemButton>
+          <ListItemButton
+            component="button"
+            onClick={() => navigate("/instructors")}
+          >
+            <ListItemIcon>
+              <Person />
+            </ListItemIcon>
+            <ListItemText primary="INSTRUCTORS" />
+          </ListItemButton>
         </List>
       </Box>
       <Box>

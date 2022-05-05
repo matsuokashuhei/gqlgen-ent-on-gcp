@@ -1,7 +1,7 @@
-import { Tab } from "@headlessui/react";
-import { PlusSmIcon } from "@heroicons/react/solid";
+import { TabContext, TabList, TabPanel } from "@mui/lab";
+import { Box, Grid, Tab, Tabs } from "@mui/material";
 import { formatRFC3339, parse } from "date-fns";
-import { useEffect, VFC } from "react";
+import { useEffect, useState, VFC, SyntheticEvent } from "react";
 import { Link } from "react-router-dom";
 import { PartialDeep } from "type-fest";
 import {
@@ -27,6 +27,10 @@ export const Timetable: VFC<Props> = ({ date, onClickClass }) => {
   const [getClassesBySchool, { data, loading, error }] =
     useGetClassesBySchoolLazyQuery();
 
+  const [studios, setStudios] = useState<StudiosType>([]);
+  const [studioId, setStudioId] = useState<string | null>(null);
+  const [roomId, setRoomId] = useState<string | null>(null);
+
   useEffect(() => {
     getClassesBySchool({
       variables: {
@@ -36,46 +40,91 @@ export const Timetable: VFC<Props> = ({ date, onClickClass }) => {
     });
   }, [date, getClassesBySchool]);
 
-  const renderTabGroupForStudios = (studios: StudiosType) => (
-    <Tab.Group>
-      <Tab.List>
-        {studios.map((studio) => (
-          <Tab key={studio.id}>{studio.name}</Tab>
-        ))}
-      </Tab.List>
-      <Tab.Panels>
-        {studios.map((studio) => (
-          <Tab.Panel key={studio.id}>
-            {renderTabGroupForRooms(studio.rooms)}
-          </Tab.Panel>
-        ))}
-      </Tab.Panels>
-    </Tab.Group>
-  );
+  useEffect(() => {
+    if (!data) return;
+    setStudios(data.school.studios);
+  }, [data]);
 
-  const renderTabGroupForRooms = (rooms: RoomsType) => (
-    <Tab.Group>
-      <Tab.List>
-        {rooms.map((room) => (
-          <Tab key={room.id}>{room.name}</Tab>
-        ))}
-      </Tab.List>
-      <Tab.Panels>
-        {rooms.map((room) => (
-          <Tab.Panel key={room.id}>{renderSchedules(room.schedules)}</Tab.Panel>
-        ))}
-      </Tab.Panels>
-    </Tab.Group>
-  );
+  useEffect(() => {
+    if (!studios || studios.length === 0) return;
+
+    setStudioId(studios[0].id);
+  }, [studios]);
+
+  useEffect(() => {
+    if (!studioId) return;
+
+    // setRoomId(studios.find((studio) => studio.id === studioId).rooms[0].id);
+  }, [studioId]);
+
+  const handleChangeStudio = (event: SyntheticEvent, newValue: string) => {
+    setStudioId(newValue);
+  };
+
+  const handleChangeRoom = (event: SyntheticEvent, newValue: string) => {
+    setRoomId(newValue);
+  };
+
+  const renderTabGroupForStudios = (studios: StudiosType) => {
+    if (!studios || !studioId) return;
+    return (
+      <Box>
+        <TabContext value={studioId}>
+          <Box>
+            <TabList onChange={handleChangeStudio}>
+              {studios.map((studio) => (
+                <Tab
+                  key={studio.id}
+                  label={studio.name}
+                  value={studio.id}
+                ></Tab>
+              ))}
+            </TabList>
+          </Box>
+          {studios.map((studio) => (
+            <TabPanel key={studio.id} value={studio.id}>
+              {renderTabGroupForRooms(studio.rooms)}
+            </TabPanel>
+          ))}
+        </TabContext>
+      </Box>
+    );
+  };
+
+  const renderTabGroupForRooms = (rooms: RoomsType) => {
+    if (!rooms || !roomId) return;
+    return (
+      <Box>
+        <TabContext value={roomId}>
+          <Box>
+            <TabList onChange={handleChangeRoom}>
+              {rooms.map((room) => (
+                <Tab key={room.id} label={room.name} value={room.id} />
+              ))}
+            </TabList>
+          </Box>
+          {rooms.map((room) => (
+            <TabPanel key={room.id} value={room.id}>
+              {renderSchedules(room.schedules)}
+            </TabPanel>
+          ))}
+        </TabContext>
+      </Box>
+    );
+  };
 
   const renderSchedules = (schedules: SchedulesType) => {
     return (
-      <div className="grid grid-cols-8">
+      <Grid container columns={8}>
         {[0, 1, 2, 3, 4, 5, 6, 7].map((dayOfWeek) => {
-          return <div key={dayOfWeek}>{dayOfWeek}</div>;
+          return (
+            <Grid item xs={1} key={dayOfWeek}>
+              {dayOfWeek}
+            </Grid>
+          );
         })}
         {renderTimeslots(schedules)}
-      </div>
+      </Grid>
     );
   };
 
@@ -93,13 +142,10 @@ export const Timetable: VFC<Props> = ({ date, onClickClass }) => {
       return [0, 1, 2, 3, 4, 5, 6, 7].map((dayOfWeek) => {
         if (dayOfWeek === 0) {
           return (
-            <div
-              key={dayOfWeek}
-              className="text-md flex flex-col px-4 py-2 font-bold text-gray-700"
-            >
+            <Grid item xs={1} key={dayOfWeek}>
               <div>{slot.startTime}</div>
               <div>~ {slot.endTime}</div>
-            </div>
+            </Grid>
           );
         }
         const schedule = schedules.find(
@@ -107,18 +153,19 @@ export const Timetable: VFC<Props> = ({ date, onClickClass }) => {
             schedule.dayOfWeek === dayOfWeek &&
             schedule.startTime === slot.startTime
         );
-        if (!schedule) return <div key={`${dayOfWeek}-none`}></div>;
+        if (!schedule)
+          return <Grid item xs={1} key={`${dayOfWeek}-none`}></Grid>;
         if (schedule.class) {
           return (
-            <div key={`${dayOfWeek}-${schedule.id}`}>
+            <Grid item xs={1} key={`${dayOfWeek}-${schedule.id}`}>
               {renderClass(schedule.class)}
-            </div>
+            </Grid>
           );
         } else {
           return (
-            <div key={`${dayOfWeek}-${schedule.id}`}>
+            <Grid item xs={1} key={`${dayOfWeek}-${schedule.id}`}>
               {renderNewClassButton(schedule)}
-            </div>
+            </Grid>
           );
         }
       });
@@ -144,19 +191,15 @@ export const Timetable: VFC<Props> = ({ date, onClickClass }) => {
     schedule?: PartialDeep<SchedulesType[number]>
   ) => {
     if (!schedule) return <></>;
-    return (
-      <Link to={`/schedules/${schedule.id}/classes/new`}>
-        <PlusSmIcon className="h-4 w-4" />
-      </Link>
-    );
+    return <Link to={`/schedules/${schedule.id}/classes/new`}>+</Link>;
   };
 
   if (!data) {
     return <></>;
   }
-  const {
-    school: { studios },
-  } = data;
+  // const {
+  //   school: { studios },
+  // } = data;
 
   return (
     <>
