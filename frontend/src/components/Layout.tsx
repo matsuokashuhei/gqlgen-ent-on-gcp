@@ -1,16 +1,25 @@
+import { ThemeProvider } from "@emotion/react";
+import { Box, createTheme, CssBaseline } from "@mui/material";
 import { FC } from "react";
 import { Outlet } from "react-router-dom";
-import { SideBar } from ".";
+import { Footer, Header, SideBar } from ".";
+
+const theme = createTheme();
 
 export const Layout: FC = () => {
   return (
-    <div className="flex min-h-screen flex-row">
-      <div>
-        <SideBar />
-      </div>
-      <div className="flex-grow">
-        <Outlet />
-      </div>
-    </div>
+    <ThemeProvider theme={theme}>
+      <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
+        <CssBaseline />
+        <Header />
+        <Box sx={{ display: "flex", flexDirection: "row", flexGrow: "1" }}>
+          <SideBar />
+          <Box sx={{ color: "inherit" }}>
+            <Outlet />
+          </Box>
+        </Box>
+        <Footer />
+      </Box>
+    </ThemeProvider>
   );
 };

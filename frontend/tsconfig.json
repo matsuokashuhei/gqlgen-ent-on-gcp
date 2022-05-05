@@ -18,3 +18,9 @@
   },
   "include": ["src"]
 }
+// {
+//   "extends": "@tsconfig/node16/tsconfig.json",
+//   "compilerOptions": {
+//     "jsx": "react-jsx"
+//   }
+// }
