@@ -1,7 +1,7 @@
+import { ChevronLeft, ChevronRight } from "@mui/icons-material";
 import { VFC } from "react";
-import { PageInfo } from "../generated/graphql";
 import { Link, useSearchParams } from "react-router-dom";
-import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/solid";
+import { PageInfo } from "../generated/graphql";
 
 type Props = {
   path: string;
@@ -17,7 +17,7 @@ export const PaginationLinks: VFC<Props> = ({ path, pageInfo }) => {
         return (
           <div>
             <Link to={`${path}?last=10&before=${pageInfo.startCursor}`}>
-              <ChevronLeftIcon className="h-8 w-8 text-gray-500" />
+              <ChevronLeft />
             </Link>
           </div>
         );
@@ -30,7 +30,7 @@ export const PaginationLinks: VFC<Props> = ({ path, pageInfo }) => {
         return (
           <div>
             <Link to={`${path}?last=10&before=${pageInfo.startCursor}`}>
-              <ChevronLeftIcon className="h-8 w-8 text-gray-500" />
+              <ChevronLeft />
             </Link>
           </div>
         );
@@ -46,7 +46,7 @@ export const PaginationLinks: VFC<Props> = ({ path, pageInfo }) => {
         return (
           <div>
             <Link to={`${path}?first=10&after=${pageInfo.endCursor}`}>
-              <ChevronRightIcon className="h-8 w-8 text-gray-500" />
+              <ChevronRight />
             </Link>
           </div>
         );
@@ -59,7 +59,7 @@ export const PaginationLinks: VFC<Props> = ({ path, pageInfo }) => {
         return (
           <div>
             <Link to={`${path}?first=10&after=${pageInfo.endCursor}`}>
-              <ChevronRightIcon className="h-8 w-8 text-gray-500" />
+              <ChevronRight />
             </Link>
           </div>
         );
@@ -75,7 +75,7 @@ export const PaginationLinks: VFC<Props> = ({ path, pageInfo }) => {
       return (
         <div>
           <Link to={`${path}?first=10&after=${pageInfo.endCursor}`}>
-            <ChevronRightIcon className="h-8 w-8 text-gray-500" />
+            <ChevronRight />
           </Link>
         </div>
       );
