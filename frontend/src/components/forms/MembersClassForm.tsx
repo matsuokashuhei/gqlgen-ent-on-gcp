@@ -71,7 +71,7 @@ export const MembersClassForm: VFC<Props> = ({ member, onSubmitted }) => {
         isOpen={isOpenTimetable}
         onClose={() => setIsOpenTimetable(false)}
       >
-        <Timetable
+        {/* <Timetable
           date={format(new Date(), "yyyyMMdd")}
           onClickClass={(clazz) => {
             setValue("classId", clazz.id);
@@ -80,7 +80,7 @@ export const MembersClassForm: VFC<Props> = ({ member, onSubmitted }) => {
             );
             setIsOpenTimetable(false);
           }}
-        />
+        /> */}
       </Dialog>
     </>
   );

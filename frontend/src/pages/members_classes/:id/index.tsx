@@ -129,7 +129,7 @@ export const MembersClassPage: VFC = () => {
         isOpen={isOpenTimetable}
         onClose={() => setIsOpenTimetable(false)}
       >
-        <Timetable
+        {/* <Timetable
           date={format(new Date(), "yyyyMMdd")}
           onClickClass={(clazz) => {
             setValue("classId", parseInt(clazz.id));
@@ -138,7 +138,7 @@ export const MembersClassPage: VFC = () => {
             );
             setIsOpenTimetable(false);
           }}
-        />
+        /> */}
       </Dialog>
     </>
   );

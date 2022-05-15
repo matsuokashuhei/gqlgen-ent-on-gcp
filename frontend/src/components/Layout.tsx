@@ -14,7 +14,7 @@ export const Layout: FC = () => {
         <Header />
         <Box sx={{ display: "flex", flexDirection: "row", flexGrow: "1" }}>
           <SideBar />
-          <Box sx={{ color: "inherit" }}>
+          <Box sx={{ color: "inherit", flexGrow: "1" }}>
             <Outlet />
           </Box>
         </Box>
