@@ -28,11 +28,15 @@ export const Timetable: VFC<Props> = ({
   selectedStudioId,
   selectedRoomId,
   handleSelectStudioId,
+  handleSelectRoomId,
   ...props
 }) => {
   const { studios } = school;
   const handleChangeStudio = (event: SyntheticEvent, newValue: string) => {
     handleSelectStudioId(newValue);
+  };
+  const handleChangeRoom = (event: SyntheticEvent, newValue: string) => {
+    handleSelectRoomId(newValue);
   };
 
   return (
@@ -45,7 +49,7 @@ export const Timetable: VFC<Props> = ({
       {studios.map((studio) => (
         <TabPanel key={studio.id} value={studio.id} sx={{ px: 0 }}>
           <TabContext value={selectedRoomId}>
-            <TabList>
+            <TabList onChange={handleChangeRoom}>
               {studio.rooms.map((room) => (
                 <Tab key={room.id} label={room.name} value={room.id} />
               ))}
