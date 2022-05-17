@@ -81,7 +81,6 @@ export const ClassesPage: VFC = () => {
       date={date}
       handleSelectStudioId={(studioId) => {
         navigate(`/classes?date=${date}&studioId=${studioId}`);
-        // setStudioId(studioId);
       }}
       handleSelectRoomId={(roomId) => {
         navigate(`/classes?date=${date}&studioId=${studioId}&roomId=${roomId}`);

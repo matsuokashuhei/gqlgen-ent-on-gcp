@@ -1,6 +1,7 @@
 import { TabContext, TabList, TabPanel } from "@mui/lab";
-import { Tab } from "@mui/material";
+import { Grid, Tab } from "@mui/material";
 import { SyntheticEvent, VFC } from "react";
+import { Link } from "react-router-dom";
 import { PartialDeep } from "type-fest";
 import { GetClassesBySchoolQuery } from "../generated/graphql";
 
@@ -39,6 +40,63 @@ export const Timetable: VFC<Props> = ({
     handleSelectRoomId(newValue);
   };
 
+  const renderScheduleHeader = () =>
+    [0, 1, 2, 3, 4, 5, 6, 7].map((dayOfWeek) => (
+      <Grid item xs={1} key={dayOfWeek}>
+        {dayOfWeek}
+      </Grid>
+    ));
+
+  const renderSchedules = (schedules: SchedulesType) =>
+    [
+      { startTime: "13:00", endTime: "14:00" },
+      { startTime: "14:15", endTime: "15:25" },
+      { startTime: "15:30", endTime: "16:40" },
+      { startTime: "16:45", endTime: "17:55" },
+      { startTime: "18:00", endTime: "19:10" },
+      { startTime: "19:15", endTime: "20:25" },
+      { startTime: "20:30", endTime: "21:40" },
+      { startTime: "21:45", endTime: "22:55" },
+    ].map((slot) =>
+      [0, 1, 2, 3, 4, 5, 6, 7].map((dayOfWeek) => {
+        if (dayOfWeek === 0) {
+          return (
+            <Grid item xs={1} key={dayOfWeek}>
+              <div>{slot.startTime}</div>
+              <div>{slot.endTime}</div>
+            </Grid>
+          );
+        } else {
+          const schedule = schedules.find(
+            (schedule) =>
+              schedule.dayOfWeek === dayOfWeek &&
+              schedule.startTime === slot.startTime
+          );
+          console.log("schedule", schedule);
+          if (schedule) {
+            if (schedule.class) {
+              return (
+                <Grid item xs={1} key={schedule.class.id}>
+                  {schedule.class.name}
+                  {schedule.class.level}
+                  {schedule.class.instructor.name}
+                </Grid>
+              );
+            } else {
+              return (
+                <Grid item xs={1} key={`${dayOfWeek}-${slot.startTime}`}>
+                  <Link to={`/schedules/${schedule.id}/classes/new`}>+</Link>
+                </Grid>
+              );
+            }
+          } else {
+            return (
+              <Grid item xs={1} key={`${dayOfWeek}-${slot.startTime}`}></Grid>
+            );
+          }
+        }
+      })
+    );
   return (
     <TabContext value={selectedStudioId}>
       <TabList onChange={handleChangeStudio}>
@@ -54,6 +112,14 @@ export const Timetable: VFC<Props> = ({
                 <Tab key={room.id} label={room.name} value={room.id} />
               ))}
             </TabList>
+            {studio.rooms.map((room) => (
+              <TabPanel key={room.id} value={room.id}>
+                <Grid container columns={8}>
+                  {renderScheduleHeader()}
+                  {renderSchedules(room.schedules)}
+                </Grid>
+              </TabPanel>
+            ))}
           </TabContext>
         </TabPanel>
       ))}
